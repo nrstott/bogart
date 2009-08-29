@@ -1,4 +1,3 @@
-this.exports = exports || {};
 exports.testBogartApp = require("./app-tests");
 exports.testDsl = require("./dsl-tests");
 

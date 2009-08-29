@@ -1,39 +1,55 @@
+
 var assert = require("test/assert");
 var bogart = require("bogart");
-var MockRequest = require("jack/mock").MockRequest
-var get = bogart.get;
+var MockRequest = require("jack/mock").MockRequest;
 
-assert.isFalse(typeof bogart.Bogart.Base == "undefined", "Bogart.Base should not be undefined");
+bogart.baseApp.log = function() {};
 
-var indexPageCount = 0;
 
-exports.testGetRoute = function() {
+/**
+ * Test a basic GET route calls the handler function
+ */
+exports.testGetRouteCallsHandler = function() {
+    var indexPageCount = 0;
 
     get("/", function() {
         indexPageCount += 1;
-        this.response.write("the index page");
         return this.response.finish();
     });
-    
+
     var env = MockRequest.envFor("get", "/", {});
-    var val = bogart.app(env);
+    bogart.app(env);
     assert.isTrue(indexPageCount == 1, "IndexPage function should've been called '1' time, was called '" + indexPageCount + "' times");
 };
 
-exports.testNoConflict = function() {
-    Bogart.noConflict();
+/**
+ * Test that regex routes produce a single splat variable in the params array when
+ * the route contains a single matcher
+ */
+exports.testSplatWithSingleGroupCapture = function() {
+    var params = null;
 
-    assert.isTrue(typeof get == "undefined", "Get should be undefined");
-    assert.isTrue(typeof route == "undefined", "Route should be undefined");
+    get(/\/(.*)/g, function() {
+        params = this.params;
+        return this.response.finish();
+    });
+
+    var env = MockRequest.envFor("get", "/test/with/slashes", {});
+    bogart.app(env);
+
+    assert.isTrue(params["splat"] == "test/with/slashes",
+            "params['splat'] should be /test/with/slashes, was " + params["splat"]);
 };
 
-exports.testSplat = function() {
-	get(/\/(.*)/g, function() {
-		assert.isTrue(this.params["splat"] == "test/with/slashes", "this.params['splat'] should be /test/with/slashes, was " + this.params["splat"]);
-		return this.response.finish();
-	});
+/**
+ * Test that noConflict() removes globals
+ */
+exports.testNoConflictRemovesGlobals = function() {
+    Bogart.noConflict();
 
-	var env = MockRequest.envFor("get", "/test/with/slashes", {});
-	var val = bogart.app(env);
-}
-
+    assert.isTrue(typeof get == "undefined", "get should be undefined");
+    assert.isTrue(typeof post == "undefined", "post should be undefined");
+    assert.isTrue(typeof put == "undefined", "put should be undefined");
+    assert.isTrue(typeof del == "undefined", "del should be undefined");
+    assert.isTrue(typeof route == "undefined", "route should be undefined");
+};
