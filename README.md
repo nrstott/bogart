@@ -13,13 +13,13 @@
 >get("/:name", function() {
 >  this.response.write("Hello " + this.params["name"]);
 >  return this.response.finish();
->});
+>});  
 >
 >exports.app = bogart.app;
 
 Start your app: `jackup -r app.js`
 
-Visit it in a web browser at [http://localhost:8080](http://localhost:8080)].
+Visit it in a web browser at [http://localhost:8080](http://localhost:8080).
 
 ## Inspirations
 
