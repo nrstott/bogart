@@ -1,6 +1,7 @@
 var assert = require("test/assert");
 var bogart = require("bogart");
 var MockRequest = require("jack/mock").MockRequest
+var get = bogart.get;
 
 assert.isFalse(typeof bogart.Bogart.Base == "undefined", "Bogart.Base should not be undefined");
 
@@ -26,5 +27,13 @@ exports.testNoConflict = function() {
     assert.isTrue(typeof route == "undefined", "Route should be undefined");
 };
 
-if (require.main == module.id)
-    require("test/runner").run(exports);
+exports.testSplat = function() {
+	get(/\/(.*)/g, function() {
+		assert.isTrue(this.params["splat"] == "test/with/slashes", "this.params['splat'] should be /test/with/slashes, was " + this.params["splat"]);
+		return this.response.finish();
+	});
+
+	var env = MockRequest.envFor("get", "/test/with/slashes", {});
+	var val = bogart.app(env);
+}
+

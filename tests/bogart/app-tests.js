@@ -5,8 +5,8 @@ var Bogart = require("bogart").Bogart;
 var exports = exports || {};
 
 var Request = require("jack/request").Request,
-    MockRequest = require("jack/mock").MockRequest,
-    Response = require("jack").Response;
+        MockRequest = require("jack/mock").MockRequest,
+        Response = require("jack").Response;
 
 assert.isFalse(typeof Bogart == "undefined");
 assert.isFalse(typeof Bogart.Base == "undefined");
@@ -134,16 +134,34 @@ exports.testObjectCreation = function() {
     assert.isFalse(obj1 == obj2);
 };
 
+exports.testRedirectTo = function() {
+	var response = null;
+
+	var base = new Bogart.Base(function() {
+		this.get("/", function() {
+			assert.isFalse(this.redirectTo == null, "redirectTo should exist in context of a route handler");
+			var rv = this.redirectTo("/test");
+			
+			assert.isTrue(rv[0] == 302, "Should return redirect response");
+
+			return rv;
+		});
+	});
+
+  var env = MockRequest.envFor("get", "/");
+
+	base.start(env);
+};
+
 exports.testTemplate = function() {
     var base = new Bogart.Base(function() {
         this.get("/time", function() {
-            with(this) {
-                return jsontemplate("index", {});
-            }
+            this.jsontemplate("index", {});
+            return this.response.finish();
         });
     });
-
     var env = MockRequest.envFor("get", "/time");
+
     base.start(env);
 };
 
