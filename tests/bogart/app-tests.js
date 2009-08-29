@@ -152,7 +152,7 @@ exports.testRedirectTo = function() {
 exports.testTemplate = function() {
     var base = new Bogart.Base(function() {
         this.route("get", "/time", function() {
-            return this.jsonT("index", {});
+            return this.template("index", {});
         });
     });
     var env = MockRequest.envFor("get", "/time");
