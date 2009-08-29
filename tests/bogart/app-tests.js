@@ -1,17 +1,13 @@
 var assert = require("test/assert");
 var util = require("util");
-var Bogart = require("bogart").Bogart;
-
-var exports = exports || {};
+var bogart = require("bogart");
+var Bogart = bogart.Bogart;
 
 var Request = require("jack/request").Request,
         MockRequest = require("jack/mock").MockRequest,
         Response = require("jack").Response;
 
-assert.isFalse(typeof Bogart == "undefined");
-assert.isFalse(typeof Bogart.Base == "undefined");
-
-Bogart.Base.prototype.log = function() {};
+bogart.baseApp.log = function() {};
 
 exports.testTwoInstancesDoNotShareRoutes = function() {
     var bb = new Bogart.Base();
@@ -92,19 +88,19 @@ exports.testMatchesLongestRouteFirst = function() {
     var longerCalled = false;
     var app1 = new Bogart.Base(function() {
         with(this) {
-            get("/venue/:id", function() {
+            route("get", "/venue/:id", function() {
             });
-            get("/venue/:id/shows/:show_id", function() {
+            route("get", "/venue/:id/shows/:show_id", function() {
                 longerCalled = true;
             });
         }
     });
     var app2 = new Bogart.Base(function() {
         with(this) {
-            get("/venue/:id/shows/:show_id", function() {
+            route("get", "/venue/:id/shows/:show_id", function() {
                 longerCalled = true;
             });
-            get("/venue/:id", function() {
+            route("get", "/venue/:id", function() {
             });
         }
     });
@@ -117,10 +113,10 @@ exports.testMatchesLongestRouteFirst = function() {
     });
 };
 
-exports.testTemplateIsDefined = function() {
+exports.testJsonTIsDefined = function() {
     var app = new Bogart.Base(function() {
         with(this) {
-            get("/", function() {
+            route("get", "/", function() {
                 assert.isTrue(this.template != null);
             });
         }
@@ -138,7 +134,7 @@ exports.testRedirectTo = function() {
 	var response = null;
 
 	var base = new Bogart.Base(function() {
-		this.get("/", function() {
+		this.route("get", "/", function() {
 			assert.isFalse(this.redirectTo == null, "redirectTo should exist in context of a route handler");
 			var rv = this.redirectTo("/test");
 			
@@ -155,15 +151,11 @@ exports.testRedirectTo = function() {
 
 exports.testTemplate = function() {
     var base = new Bogart.Base(function() {
-        this.get("/time", function() {
-            this.jsontemplate("index", {});
-            return this.response.finish();
+        this.route("get", "/time", function() {
+            return this.jsonT("index", {});
         });
     });
     var env = MockRequest.envFor("get", "/time");
 
     base.start(env);
 };
-
-if (require.main == module.id)
-    require("os").exit(require("test/runner").run(exports));

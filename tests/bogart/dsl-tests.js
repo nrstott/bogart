@@ -12,7 +12,7 @@ bogart.baseApp.log = function() {};
 exports.testGetRouteCallsHandler = function() {
     var indexPageCount = 0;
 
-    get("/", function() {
+    GET("/", function() {
         indexPageCount += 1;
         return this.response.finish();
     });
@@ -29,12 +29,12 @@ exports.testGetRouteCallsHandler = function() {
 exports.testSplatWithSingleGroupCapture = function() {
     var params = null;
 
-    get(/\/(.*)/g, function() {
+    GET(/\/(.*)/g, function() {
         params = this.params;
         return this.response.finish();
     });
 
-    var env = MockRequest.envFor("get", "/test/with/slashes", {});
+    var env = MockRequest.envFor("GET", "/test/with/slashes", {});
     bogart.app(env);
 
     assert.isTrue(params["splat"] == "test/with/slashes",
@@ -47,9 +47,9 @@ exports.testSplatWithSingleGroupCapture = function() {
 exports.testNoConflictRemovesGlobals = function() {
     Bogart.noConflict();
 
-    assert.isTrue(typeof get == "undefined", "get should be undefined");
-    assert.isTrue(typeof post == "undefined", "post should be undefined");
-    assert.isTrue(typeof put == "undefined", "put should be undefined");
-    assert.isTrue(typeof del == "undefined", "del should be undefined");
+    assert.isTrue(typeof GET == "undefined", "get should be undefined");
+    assert.isTrue(typeof POST == "undefined", "post should be undefined");
+    assert.isTrue(typeof PUT == "undefined", "put should be undefined");
+    assert.isTrue(typeof DELETE == "undefined", "del should be undefined");
     assert.isTrue(typeof route == "undefined", "route should be undefined");
 };
