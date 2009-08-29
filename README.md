@@ -23,8 +23,8 @@ Visit it in a web browser at [http://localhost:8080](http://localhost:8080).
 
 ## Inspirations
 
-[Sinatra](http://www.sinatrarb.com/)
-[Rails](http://rubyonrails.org/)
+* [Sinatra](http://www.sinatrarb.com/)
+* [Rails](http://rubyonrails.org/)
 
 ## License
 
