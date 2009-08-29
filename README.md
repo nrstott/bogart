@@ -10,7 +10,7 @@
 
 >var bogart = require("bogart");
 >
->get("/:name", function() {
+>GET("/:name", function() {
 >  this.response.write("Hello " + this.params["name"]);
 >  return this.response.finish();
 >});  
