@@ -8,16 +8,14 @@
 
 ## Hello World in Bogart
 
-`
-var bogart = require("bogart");
-
-get("/:name", function() {
-  this.response.write("Hello " + this.params["name"]);
-  return this.response.finish();
-});
-
-exports.app = bogart.app;
-`
+>var bogart = require("bogart");
+>
+>get("/:name", function() {
+>  this.response.write("Hello " + this.params["name"]);
+>  return this.response.finish();
+>});
+>
+>exports.app = bogart.app;
 
 Start your app: `jackup -r app.js`
 
