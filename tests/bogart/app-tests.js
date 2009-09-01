@@ -1,13 +1,10 @@
 var assert = require("test/assert");
 var util = require("util");
-var bogart = require("bogart");
-var Bogart = bogart.Bogart;
+var Bogart = require("bogart");
 
 var Request = require("jack/request").Request,
         MockRequest = require("jack/mock").MockRequest,
         Response = require("jack").Response;
-
-bogart.baseApp.log = function() {};
 
 exports.testTwoInstancesDoNotShareRoutes = function() {
     var bb = new Bogart.Base();
@@ -113,8 +110,8 @@ exports.testMatchesLongestRouteFirst = function() {
     });
 };
 
-exports.testJsonTIsDefined = function() {
-    var app = new Bogart.Base(function() {
+exports.testTemplateIsDefined = function() {
+    new Bogart.Base(function() {
         with(this) {
             route("get", "/", function() {
                 assert.isTrue(this.template != null);
@@ -131,22 +128,20 @@ exports.testObjectCreation = function() {
 };
 
 exports.testRedirectTo = function() {
-	var response = null;
+    var base = new Bogart.Base(function() {
+        this.route("get", "/", function() {
+            assert.isFalse(this.redirectTo == null, "redirectTo should exist in context of a route handler");
+            var rv = this.redirectTo("/test");
 
-	var base = new Bogart.Base(function() {
-		this.route("get", "/", function() {
-			assert.isFalse(this.redirectTo == null, "redirectTo should exist in context of a route handler");
-			var rv = this.redirectTo("/test");
-			
-			assert.isTrue(rv[0] == 302, "Should return redirect response");
+            assert.isTrue(rv[0] == 302, "Should return redirect response");
 
-			return rv;
-		});
-	});
+            return rv;
+        });
+    });
 
-  var env = MockRequest.envFor("get", "/");
+    var env = MockRequest.envFor("get", "/");
 
-	base.start(env);
+    base.start(env);
 };
 
 exports.testTemplate = function() {
