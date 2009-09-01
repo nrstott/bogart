@@ -27,11 +27,11 @@ exports.testConstructorIsResource = function() {
 });
 
 exports.testGetResourceIndex = function() {
-    var indexRun = false;
+    var routeHandled = false;
 
     var resource = new Bogart.Resource("tasks", function(){
         this.GET("/", function() {
-            indexRun = true;
+            routeHandled = true;
             return this.response.finish();
         });
     });
@@ -40,5 +40,39 @@ exports.testGetResourceIndex = function() {
 
     resource.start(env);
 
-    assert.isTrue(indexRun, "Index route should have handled request");
+    assert.isTrue(routeHandled, "Index route should have handled request");
+};
+
+exports.testGetResourceWithParameter = function() {
+    var routeHandled = false;
+
+    var resource = new Bogart.Resource("tasks", function() {
+        this.GET("/:id", function() {
+            routeHandled = true;
+            return this.response.finish();
+        });
+    });
+
+    var env = MockRequest.envFor("get", "/tasks/1", {});
+    resource.start(env);
+
+    assert.isTrue(routeHandled, "Route should have been handled");
+};
+
+exports.testBaseDelegatingToResource = function() {
+    var routeHandled = false;
+
+    var base = new Bogart.Base();
+
+    var resource = new Bogart.Resource("tasks", function() {
+        this.GET("/", function() { routeHandled = true; return this.response.finish(); });
+    });
+
+    base.addResource(resource);
+
+    var env = MockRequest.envFor("get", "/tasks", {});
+
+    base.start(env);
+
+    assert.isTrue(routeHandled, "Base should have delegated to resource to handle route");
 };
