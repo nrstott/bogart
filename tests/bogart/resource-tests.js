@@ -38,12 +38,55 @@ exports.testBaseDelegatingToResource = function() {
         this.GET("/", function() { routeHandled = true; return this.response.finish(); });
     });
 
-    var base = new Bogart.Base();
-    base.addResource("/tasks", resource);
-
     var env = MockRequest.envFor("get", "/tasks", {});
 
+    var base = new Bogart.Base();
+    base.addResource("/tasks", resource);
     base.start(env);
 
     assert.isTrue(routeHandled, "Base should have delegated to resource to handle route");
+};
+
+exports.testResourceWithParameterInPath = function() {
+    var routeHandled = false;
+    var params = null;
+
+    var resource = new Bogart.Resource(function() {
+        this.GET("/", function() {
+            routeHandled = true;
+            params = this.params;
+            return this.response.finish();
+        });
+    });
+
+    var env = MockRequest.envFor("get", "/tasks.json", {});
+    
+    var base = new Bogart.Base();
+    base.addResource("/tasks.:format", resource);
+    base.start(env);
+
+    assert.isTrue(routeHandled, "Base should have delegated to resource to handle route");
+    assert.isTrue(params && params["format"] == "json");
+};
+
+exports.testResourceWithParameterInPathAndInResource = function() {
+    var routeHandled = false;
+    var params = null;
+
+    var resource = new Bogart.Resource(function() {
+        this.GET("/:id", function() {
+            routeHandled = true;
+            params = this.params;
+            return this.response.finish();
+        });
+    });
+
+    var env = MockRequest.envFor("get", "/tasks.json/1");
+
+    var base = new Bogart.Base();
+    base.addResource("/tasks.:format", resource);
+    base.start(env);
+
+    assert.isTrue(routeHandled, "Base should have delegated to resource to handle route");
+    assert.isTrue(params && params["format"] == "json" && params["id"] == "1");
 };
