@@ -81,6 +81,24 @@ exports.testGetRouteWithComplexPath = function() {
     app.start(env, req, new Response(env));
 };
 
+exports.testParamsAreNotHtmlEscaped = function(){
+    var paramValue = escape("this string is escaped");
+    var routeHandlerParamValue = "";
+
+    var app = new Bogart.Base(function() {
+        this.route("get", "/:id", function() {
+            routeHandlerParamValue = this.params["id"];
+        });
+    });
+
+    var env = MockRequest.envFor("get", "/" + paramValue);
+    var req = new Request(env);
+
+    app.start(env, req, new Response(env));
+
+    assert.isEqual(unescape(paramValue), routeHandlerParamValue);
+};
+
 exports.testMatchesLongestRouteFirst = function() {
     var longerCalled = false;
     var app1 = new Bogart.Base(function() {
