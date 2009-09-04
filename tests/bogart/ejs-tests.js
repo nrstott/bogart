@@ -15,7 +15,7 @@ exports.testRenderLayout = function() {
 
 exports.testContentFor = function(){
     var layout = "<html><head><%= hold('end_of_head') %></head><body><%= hold() %></body></html>";
-    var view = "<% contentFor('end_of_head', function() { %><title>Hello</title><% }); %>World";
+    var view = "<% content_for('end_of_head', function() { %><title>Hello</title><% }); %>World";
 
     var viewEJS = new EJS({text:view});
     var layoutRenderer = new EjsLayoutRenderer(new EJS({text: layout}));
