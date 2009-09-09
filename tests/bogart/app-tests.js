@@ -7,8 +7,8 @@ var Request = require("jack/request").Request,
         Response = require("jack").Response;
 
 exports.testTwoInstancesDoNotShareRoutes = function() {
-    var bb = new Bogart.Base();
-    var bb2 = new Bogart.Base();
+    var bb = new Bogart.App();
+    var bb2 = new Bogart.App();
 
     assert.isFalse(bb._routes == bb2._routes, "Two instances of Bogart.Base should not share routes");
 };
@@ -18,7 +18,7 @@ exports.testTwoInstancesDoNotShareRoutes = function() {
 
     var callbackExecuted = false;
 
-    var app = new Bogart.Base(function() {
+    var app = new Bogart.App(function() {
         this.route("get", "/", function() { callbackExecuted = true; });
     });
     app.log = function() { };
@@ -28,7 +28,7 @@ exports.testTwoInstancesDoNotShareRoutes = function() {
         var req = new Request(env);
         callbackExecuted = false;
 
-        app.start(env, req, new Response(env));
+        app.run(env, req, new Response(env));
 
         assert.isFalse(callbackExecuted);
     };
@@ -37,7 +37,7 @@ exports.testTwoInstancesDoNotShareRoutes = function() {
         var env = MockRequest.envFor("get", "/", {});
         callbackExecuted = false;
 
-        app.start(env);
+        app.run(env);
 
         assert.isTrue(callbackExecuted);
     };
@@ -48,7 +48,7 @@ exports.testTwoInstancesDoNotShareRoutes = function() {
 exports.testGetRouteWithParameters = function() {
     var idParamValue = "foo";
 
-    var app = new Bogart.Base(function() {
+    var app = new Bogart.App(function() {
         with(this) {
             route("get", "/:id", function() {
                 assert.isTrue(this.params["id"] == idParamValue);
@@ -59,14 +59,14 @@ exports.testGetRouteWithParameters = function() {
     var env = MockRequest.envFor("get", "/" + idParamValue, {});
     var req = new Request(env);
 
-    app.start(env, req, new Response(env));
+    app.run(env, req, new Response(env));
 };
 
 exports.testGetRouteWithComplexPath = function() {
     var idParamValue = "foo";
     var showIdParamValue = "bar";
 
-    var app = new Bogart.Base(function() {
+    var app = new Bogart.App(function() {
         with(this) {
             route("post", "/venue/:id/shows/:show_id", function() {
                 assert.isTrue(this.params["id"] == idParamValue, "Expected " + idParamValue + " got " + this.params["id"]);
@@ -78,14 +78,14 @@ exports.testGetRouteWithComplexPath = function() {
     var env = MockRequest.envFor("post", "/venue/" + idParamValue + "/shows/" + showIdParamValue);
     var req = new Request(env);
 
-    app.start(env, req, new Response(env));
+    app.run(env, req, new Response(env));
 };
 
 exports.testParamsAreNotHtmlEscaped = function(){
     var paramValue = escape("this string is escaped");
     var routeHandlerParamValue = "";
 
-    var app = new Bogart.Base(function() {
+    var app = new Bogart.App(function() {
         this.route("get", "/:id", function() {
             routeHandlerParamValue = this.params["id"];
         });
@@ -94,14 +94,14 @@ exports.testParamsAreNotHtmlEscaped = function(){
     var env = MockRequest.envFor("get", "/" + paramValue);
     var req = new Request(env);
 
-    app.start(env, req, new Response(env));
+    app.run(env, req, new Response(env));
 
     assert.isEqual(unescape(paramValue), routeHandlerParamValue);
 };
 
 exports.testMatchesLongestRouteFirst = function() {
     var longerCalled = false;
-    var app1 = new Bogart.Base(function() {
+    var app1 = new Bogart.App(function() {
         with(this) {
             route("get", "/venue/:id", function() {
             });
@@ -110,7 +110,7 @@ exports.testMatchesLongestRouteFirst = function() {
             });
         }
     });
-    var app2 = new Bogart.Base(function() {
+    var app2 = new Bogart.App(function() {
         with(this) {
             route("get", "/venue/:id/shows/:show_id", function() {
                 longerCalled = true;
@@ -123,13 +123,13 @@ exports.testMatchesLongestRouteFirst = function() {
     [app1, app2].forEach(function(app) {
         var env = MockRequest.envFor("get", "/venue/foo/shows/bar");
         longerCalled = false;
-        app.start(env, new Request(env), new Response(env));
+        app.run(env, new Request(env), new Response(env));
         assert.isTrue(longerCalled);
     });
 };
 
 exports.testTemplateIsDefined = function() {
-    new Bogart.Base(function() {
+    new Bogart.App(function() {
         with(this) {
             route("get", "/", function() {
                 assert.isTrue(this.template != null);
@@ -139,14 +139,14 @@ exports.testTemplateIsDefined = function() {
 };
 
 exports.testObjectCreation = function() {
-    var obj1 = new Bogart.Base();
-    var obj2 = new Bogart.Base();
+    var obj1 = new Bogart.App();
+    var obj2 = new Bogart.App();
 
     assert.isFalse(obj1 == obj2);
 };
 
 exports.testRedirectTo = function() {
-    var base = new Bogart.Base(function() {
+    var base = new Bogart.App(function() {
         this.route("get", "/", function() {
             assert.isFalse(this.redirectTo == null, "redirectTo should exist in context of a route handler");
             var rv = this.redirectTo("/test");
@@ -159,16 +159,16 @@ exports.testRedirectTo = function() {
 
     var env = MockRequest.envFor("get", "/");
 
-    base.start(env);
+    base.run(env);
 };
 
 exports.testTemplate = function() {
-    var base = new Bogart.Base(function() {
+    var base = new Bogart.App(function() {
         this.route("get", "/time", function() {
             return this.jsontemplate("index", {});
         });
     });
     var env = MockRequest.envFor("get", "/time");
 
-    base.start(env);
+    base.run(env);
 };
