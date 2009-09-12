@@ -172,3 +172,13 @@ exports.testTemplate = function() {
 
     base.run(env);
 };
+
+exports.testLoadsTasksRouter = function() {
+    var app = new Bogart.App(function() {
+    });
+
+    var env = MockRequest.envFor("get", "/cats");
+    var resp = app.run(env);
+
+    assert.isTrue(resp != undefined && resp != null);
+};

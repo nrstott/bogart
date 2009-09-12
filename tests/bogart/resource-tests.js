@@ -22,7 +22,7 @@ exports.testGetResourceWithParameter = function() {
     });
 
     var base = new Bogart.App();
-    base.addResource("/tasks", resource);
+    base.addRouter("/tasks", resource);
 
     var env = MockRequest.envFor("get", "/tasks/1", {});
 
@@ -41,7 +41,7 @@ exports.testBaseDelegatingToResource = function() {
     var env = MockRequest.envFor("get", "/tasks", {});
 
     var base = new Bogart.App();
-    base.addResource("/tasks", resource);
+    base.addRouter("/tasks", resource);
     base.run(env);
 
     assert.isTrue(routeHandled, "Base should have delegated to resource to handle route");
@@ -62,7 +62,7 @@ exports.testResourceWithParameterInPath = function() {
     var env = MockRequest.envFor("get", "/tasks.json", {});
     
     var base = new Bogart.App();
-    base.addResource("/tasks.:format", resource);
+    base.addRouter("/tasks.:format", resource);
     base.run(env);
 
     assert.isTrue(routeHandled, "Base should have delegated to resource to handle route");
@@ -73,7 +73,7 @@ exports.testResourceWithParameterInPathAndInResource = function() {
     var routeHandled = false;
     var params = null;
 
-    var resource = new Bogart.Router(function() {
+    var router = new Bogart.Router(function() {
         this.GET("/:id", function() {
             routeHandled = true;
             params = this.params;
@@ -84,7 +84,7 @@ exports.testResourceWithParameterInPathAndInResource = function() {
     var env = MockRequest.envFor("get", "/tasks.json/1");
 
     var base = new Bogart.App();
-    base.addResource("/tasks.:format", resource);
+    base.addRouter("/tasks.:format", router);
     base.run(env);
 
     assert.isTrue(routeHandled, "Base should have delegated to resource to handle route");
