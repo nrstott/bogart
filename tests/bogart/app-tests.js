@@ -182,3 +182,18 @@ exports.testLoadsTasksRouter = function() {
 
     assert.isTrue(resp != undefined && resp != null);
 };
+
+exports["test not returning anything from route handler automatically finishes the response"] = function() {
+    var bodyContent = "hello world";
+    var app = new Bogart.App(function() {
+        this.GET("/", function() {
+            this.response.write(bodyContent);
+        });
+    });
+
+    var env = MockRequest.envFor("get", "/");
+    var resp = app.run(env);
+
+    assert.isTrue(resp != undefined, "Response should not be undefined");
+    assert.isFalse(resp[2].isEmpty());
+};
