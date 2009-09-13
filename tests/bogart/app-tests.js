@@ -162,7 +162,7 @@ exports.testRedirectTo = function() {
     base.run(env);
 };
 
-exports.testTemplate = function() {
+exports["test jsontemplate"] = function() {
     var base = new Bogart.App(function() {
         this.route("get", "/time", function() {
             return this.jsontemplate("index", {});
@@ -173,7 +173,7 @@ exports.testTemplate = function() {
     base.run(env);
 };
 
-exports.testLoadsTasksRouter = function() {
+exports["test loads tasks router"] = function() {
     var app = new Bogart.App(function() {
     });
 
@@ -196,4 +196,46 @@ exports["test not returning anything from route handler automatically finishes t
 
     assert.isTrue(resp != undefined, "Response should not be undefined");
     assert.isFalse(resp[2].isEmpty());
+};
+
+exports["test add router with one path"] = function(){
+    var app = new Bogart.App();
+
+    var isRouteHandlerCalled = false;
+
+    var router = new Bogart.Router(function(){
+        this.GET("/", function() {
+            isRouteHandlerCalled = true;
+        });
+    });
+    app.addRouter("/", router);
+
+    var env = MockRequest.envFor("get", "/");
+    app.run(env);
+
+    assert.isTrue(isRouteHandlerCalled);
+};
+
+exports["test add router with array of paths"] = function(){
+    var app = new Bogart.App();
+
+    var isRouteHandlerCalled = false;
+
+    var router = new Bogart.Router(function(){
+        this.GET("/", function(){
+            isRouteHandlerCalled = true;
+        });
+    });
+
+    app.addRouter("/one", router);
+    app.addRouter("/two", router);
+
+    app.run(MockRequest.envFor("get", "/one"));
+
+    assert.isTrue(isRouteHandlerCalled);
+
+    isRouteHandlerCalled = false;
+
+    app.run(MockRequest.envFor("get", "/two"));
+    assert.isTrue(isRouteHandlerCalled);
 };
