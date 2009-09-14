@@ -21,7 +21,6 @@ exports.testTwoInstancesDoNotShareRoutes = function() {
     var app = new Bogart.App(function() {
         this.route("get", "/", function() { callbackExecuted = true; });
     });
-    app.log = function() { };
 
     exports.testGetRouteNotExecutedWhenVerbIsPost = function() {
         var env = MockRequest.envFor("post", "/", {});
@@ -238,4 +237,21 @@ exports["test add router with array of paths"] = function(){
 
     app.run(MockRequest.envFor("get", "/two"));
     assert.isTrue(isRouteHandlerCalled);
+};
+
+exports["test route with querystring"] = function(){
+    var isRouteHandlerCalled = false;
+    var params = null;
+
+    var app = new Bogart.App(function() {
+        this.GET("/", function() {
+            isRouteHandlerCalled = true;
+            params = this.params;
+        });
+    });
+
+    app.run(MockRequest.envFor("get", "/?a=b"));
+
+    assert.isTrue(isRouteHandlerCalled);
+    assert.isEqual(params["a"], "b");
 };
