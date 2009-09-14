@@ -173,7 +173,7 @@ exports["test jsontemplate"] = function() {
     base.run(env);
 };
 
-exports["test loads tasks router"] = function() {
+exports["test loads cats router"] = function() {
     var app = new Bogart.App(function() {
     });
 

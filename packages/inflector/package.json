@@ -1,0 +1,10 @@
+{
+    "name": "inflector",
+    "description": "prettifies text",
+    "keywords": ["inflector"],
+    "author": "Nathan Stott",
+    "email": "nathan.stott@whiteboard-it.com",
+    "dependencies": [],
+    "lib": "lib"
+}
+
