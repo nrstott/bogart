@@ -240,15 +240,14 @@ exports["test add router with array of paths"] = function(){
 };
 
 exports["test route with querystring"] = function(){
-    var isRouteHandlerCalled = false;
-    var params = null;
-
-    var app = new Bogart.App(function() {
-        this.GET("/", function() {
-            isRouteHandlerCalled = true;
-            params = this.params;
+    var isRouteHandlerCalled = false,
+        params = null,
+        app = new Bogart.App(function() {
+            this.GET("/", function() {
+                isRouteHandlerCalled = true;
+                params = this.params;
+            });
         });
-    });
 
     app.run(MockRequest.envFor("get", "/?a=b"));
 
