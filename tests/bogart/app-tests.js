@@ -150,7 +150,7 @@ exports.testRedirectTo = function() {
             assert.isFalse(this.redirectTo == null, "redirectTo should exist in context of a route handler");
             var rv = this.redirectTo("/test");
 
-            assert.isTrue(rv[0] == 302, "Should return redirect response");
+            assert.isTrue(rv["status"] == 302, "Should return redirect response");
 
             return rv;
         });
