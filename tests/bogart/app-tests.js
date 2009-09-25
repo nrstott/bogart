@@ -194,7 +194,7 @@ exports["test not returning anything from route handler automatically finishes t
     var resp = app.run(env);
 
     assert.isTrue(resp != undefined, "Response should not be undefined");
-    assert.isFalse(resp[2].isEmpty());
+    assert.isFalse(resp["body"].isEmpty());
 };
 
 exports["test add router with one path"] = function(){
