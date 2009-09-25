@@ -2,6 +2,7 @@ var EJS = require("ejs").EJS;
 var assert = require("test/assert");
 var EjsLayoutRenderer = require("../../lib/bogart-ejs").EjsLayoutRenderer;
 var MockRequest = require("jack/mock").MockRequest;
+var simpleLayout = "<html><body><%= hold() %></body></html>";
 
 exports.testRenderLayout = function() {
     var layout = "<html><body><%= hold() %></body></html>";
@@ -27,14 +28,25 @@ exports.testContentFor = function(){
 };
 
 exports["test form_for with put method renders hidden field _method"] = function() {
-    var layout = "<html><body><%= hold() %></body></html>";
-    var view = "<span>test</span>" +
-               "<% form_for({ hello: 'word' }, '/', { method: 'put' }, function(f) {}) %>";
+    var view = "<% form_for({ hello: 'world' }, '/', { method: 'put' }, function(f) {}) %>";
 
     var viewEJS = new EJS({text:view});
-    var layoutRenderer = new EjsLayoutRenderer(new EJS({text: layout}), MockRequest.envFor(null, "", {}));
+    var layoutRenderer = new EjsLayoutRenderer(new EJS({text: simpleLayout}), MockRequest.envFor(null, "", {}));
 
     var result = layoutRenderer.render(viewEJS);
 
     assert.isTrue(/<input id=['"]_method['"] value=['"]put['"] type=['"]hidden['"] name=['"]_method['"] \/>/g.test(result), result);
+};
+
+exports["test form helper submit tag"] = function() {
+    var view = "<% form_for({ hello: 'world' }, '/', { method: 'put' }, function(f) { %>" +
+               "<%= f.submit('Press Me') %>" +
+               "<% }) %>";
+
+    var viewEJS = new EJS({text:view});
+    var layoutRenderer = new EjsLayoutRenderer(new EJS({ text: simpleLayout }), MockRequest.envFor(null, "", {}));
+
+    var result = layoutRenderer.render(viewEJS);
+
+    assert.isTrue(/<input type=['"]submit['"]\s*value=['"]Press Me['"]\s*\/>/.test(result), result);
 };
