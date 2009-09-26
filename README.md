@@ -10,12 +10,12 @@
 
 >var bogart = require("bogart");
 >
->GET("/:name", function() {
+>var app = new Bogart.App(GET("/:name", function() {
 >  this.response.write("Hello " + this.params["name"]);
 >  return this.response.finish();
 >});  
 >
->exports.app = bogart.app;
+>exports.app = app;
 
 Start your app: `jackup -r app.js`
 

@@ -11,13 +11,13 @@ var emptyApp = function(env) {
 };
 
 exports.testTwoInstancesDoNotShareRoutes = function() {
-    var app1 = new Bogart.App(emptyApp, function() {
+    var app1 = new Bogart.App(function() {
         this.GET("/1", function() {
             this.response.write("hello");
             return this.response.finish();
         });
     });
-    var app2 = new Bogart.App(emptyApp, function(){
+    var app2 = new Bogart.App(function(){
         this.GET("/2", function() {
             this.response.write("hello");
             return this.response.finish();
@@ -38,7 +38,7 @@ exports.testTwoInstancesDoNotShareRoutes = function() {
 
     var callbackExecuted = false;
 
-    var app = new Bogart.App(emptyApp, function() {
+    var app = new Bogart.App(function() {
         this.route("get", "/", function() { callbackExecuted = true; });
     });
 
@@ -67,7 +67,7 @@ exports.testTwoInstancesDoNotShareRoutes = function() {
 exports.testGetRouteWithParameters = function() {
     var idParamValue = "foo";
 
-    var app = new Bogart.App(emptyApp, { init: function() {
+    var app = new Bogart.App({ init: function() {
         with(this) {
             route("get", "/:id", function() {
                 assert.isTrue(this.params["id"] == idParamValue);
@@ -85,7 +85,7 @@ exports.testGetRouteWithComplexPath = function() {
     var idParamValue = "foo";
     var showIdParamValue = "bar";
 
-    var app = new Bogart.App(emptyApp, function() {
+    var app = new Bogart.App(function() {
         with(this) {
             route("post", "/venue/:id/shows/:show_id", function() {
                 assert.isTrue(this.params["id"] == idParamValue, "Expected " + idParamValue + " got " + this.params["id"]);
@@ -104,7 +104,7 @@ exports.testParamsAreNotHtmlEscaped = function(){
     var paramValue = escape("this string is escaped");
     var routeHandlerParamValue = "";
 
-    var app = new Bogart.App(emptyApp, function() {
+    var app = new Bogart.App(function() {
         this.route("get", "/:id", function() {
             routeHandlerParamValue = this.params["id"];
         });
@@ -120,7 +120,7 @@ exports.testParamsAreNotHtmlEscaped = function(){
 
 exports.testMatchesLongestRouteFirst = function() {
     var longerCalled = false;
-    var app1 = new Bogart.App(emptyApp, function() {
+    var app1 = new Bogart.App(function() {
         with(this) {
             route("get", "/venue/:id", function() {
             });
@@ -129,7 +129,7 @@ exports.testMatchesLongestRouteFirst = function() {
             });
         }
     });
-    var app2 = new Bogart.App(emptyApp, function() {
+    var app2 = new Bogart.App(function() {
         with(this) {
             route("get", "/venue/:id/shows/:show_id", function() {
                 longerCalled = true;
@@ -165,7 +165,7 @@ exports.testObjectCreation = function() {
 };
 
 exports.testRedirectTo = function() {
-    var base = new Bogart.App(emptyApp, function() {
+    var base = new Bogart.App(function() {
         this.route("get", "/", function() {
             assert.isFalse(this.redirectTo == null, "redirectTo should exist in context of a route handler");
             var rv = this.redirectTo("/test");
@@ -182,7 +182,7 @@ exports.testRedirectTo = function() {
 };
 
 exports["test jsontemplate"] = function() {
-    var base = new Bogart.App(emptyApp, function() {
+    var base = new Bogart.App(function() {
         this.route("get", "/time", function() {
             return this.jsontemplate("index", {});
         });
@@ -194,7 +194,7 @@ exports["test jsontemplate"] = function() {
 
 exports["test not returning anything from route handler automatically finishes the response"] = function() {
     var bodyContent = "hello world";
-    var app = new Bogart.App(emptyApp, function() {
+    var app = new Bogart.App(function() {
         this.GET("/", function() {
             this.response.write(bodyContent);
         });
@@ -210,7 +210,7 @@ exports["test not returning anything from route handler automatically finishes t
 exports["test route with querystring"] = function(){
     var isRouteHandlerCalled = false,
         params = null,
-        app = new Bogart.App(emptyApp, function() {
+        app = new Bogart.App(function() {
             this.GET("/", function() {
                 isRouteHandlerCalled = true;
                 params = this.params;
