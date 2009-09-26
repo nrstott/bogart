@@ -10,7 +10,8 @@
 
 >var bogart = require("bogart");
 >
->var app = new Bogart.App(GET("/:name", function() {
+>var app = new bogart.App(function() {
+>  this.GET("/:name", function() {
 >  this.response.write("Hello " + this.params["name"]);
 >  return this.response.finish();
 >});  
