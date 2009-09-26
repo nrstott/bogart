@@ -21,6 +21,30 @@ Start your app: `jackup -r app.js`
 
 Visit it in a web browser at [http://localhost:8080](http://localhost:8080).
 
+## Bogart with Jack.URLMap
+
+>var Bogart = require("bogart").App;
+>var URLMap = require("jack").URLMap;
+>
+>var hello = new Bogart(function() {
+>  this.GET("/:name", function() {
+>    return this.text("hello " + this.params["name"]);
+>  });
+>});  
+>
+>var calc = new Bogart(function() {
+>  this.GET("/add/:first/:second", function() {
+>    var first = parseInt(this.params["first"]);
+>    var second = parseInt(this.params["second"]);
+>    return this.text("addition result: " + (first + second).toString());
+>  });
+>});
+>
+>exports.app = URLMap({
+>  "/hello": hello,
+>  "/calc": calc
+>});
+
 ## Inspirations
 
 * [Sinatra](http://www.sinatrarb.com/)
