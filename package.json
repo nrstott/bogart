@@ -4,7 +4,7 @@
     "keywords": ["bogart", "framework", "routes"],
     "author": "Nathan Stott",
     "email": "nathan.stott@whiteboard-it.com",
-    "dependencies": ["jsontemplate", "ejs"],
+    "dependencies": ["ejs"],
     "lib": "lib"
 }
 

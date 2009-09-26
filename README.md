@@ -3,8 +3,8 @@
 * Download [Narwhal](http://github.com/tlrobinson/narwhal/tree/master).
 * Add the Narwhal bin directory to your PATH `export PATH=$PATH:/path/to/narwhal/bin`
 * Install Jack `tusk install jack`
-* Download [narwhal-jsontemplate](http://github.com/nrstott/narwhal-jsontemplate/tree/master)
-* Create a symbolic link in your narwhal packages directory to jsontemplate.  `ln -s /path/to/jsontemplate /path/to/narwhal/packages`
+* Download [narwhal-ejs](http://github.com/nrstott/narwhal-ejs/tree/master)
+* Create a symbolic link in your narwhal packages directory to ejs.  `ln -s /path/to/ejs /path/to/narwhal/packages`
 
 ## Hello World in Bogart
 
