@@ -18,9 +18,14 @@ if (!fs.exists(logFile))
     fs.touch(logFile);
 
 exports.error = function(message){
-    fs.write(logFile, message, { append: true, write: true, exclusive: true });
+    fs.write(logFile, message, { append: true, exclusive: true });
 };
 
 exports.debug = function(message) {
-    fs.write(logFile, message, { append: true, write: true, exclusive: true });
+    fs.write(logFile, message, { append: true, exclusive: true });
 };
+
+exports.info = function(message) {
+    fs.write(logFile, message, { append: true, exclusive: true });
+};
+

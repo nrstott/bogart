@@ -114,6 +114,32 @@ var Inflector = {
     },
     underscore: function(camelCaseWord){
         return camelCaseWord.replace(/([a-z\d]+)([A-Z])/g, "$1_$2").toLowerCase();
+    },
+    camelize: function(snakeCaseWord, firstLetterIsUpperCase) {
+        var camelCaseWord = "";
+        var i;
+
+        if (firstLetterIsUpperCase == undefined) {
+            firstLetterIsUpperCase = true;
+        } else if (typeof firstLetterIsUpperCase == "string") {
+            firstLetterIsUpperCase = firstLetterIsUpperCase != "lower";
+        }
+
+        if (firstLetterIsUpperCase) {
+            camelCaseWord += snakeCaseWord.charAt(0).toUpperCase(0);
+        } else {
+            camelCaseWord += snakeCaseWord.charAt(0);
+        }
+
+        for (i=1;i<snakeCaseWord.length;++i) {
+            if (snakeCaseWord.charAt(i - 1) == "_") {
+                camelCaseWord += snakeCaseWord.charAt(i).toUpperCase();
+            } else if (snakeCaseWord.charAt(i) != "_") {
+                camelCaseWord += snakeCaseWord.charAt(i);
+            }
+        }
+
+        return camelCaseWord;
     }
 };
 
@@ -132,3 +158,8 @@ exports.titleize = function(word) {
 exports.underscore = function(word) {
     return Inflector.underscore(word);
 }
+
+exports.camelize = function(word, isFirstLetterUpperCase) {
+    return Inflector.camelize(word, isFirstLetterUpperCase);
+}
+
