@@ -222,3 +222,19 @@ exports["test route with querystring"] = function(){
     assert.isTrue(isRouteHandlerCalled);
     assert.isEqual(params["a"], "b");
 };
+
+["before-execute-route","after-execute-route"].forEach(function(event) {
+    exports["test publishes '" + event + "'"] = function(){
+        var eventPublished = false;
+        var app = new Bogart.App(function() {
+            this.subscribeTo(event, function() { eventPublished = true; });
+
+            this.GET("/", function() {});
+        });
+
+        app(MockRequest.envFor("get", "/"));
+
+        assert.isTrue(eventPublished, "Should have published '" + event + "'");
+    }
+});
+
