@@ -272,3 +272,19 @@ exports["test flash should be available"] = function() {
     assert.isTrue(flash == jsgiSession.flash, "Flash should equal jsgiSession.flash");
 }
 
+exports["test updating flash should update the jsgi.session.flash variable in env"] = function() {
+    var jsgiSession = { "flash": {} };
+    var env = MockRequest.envFor("get", "/", { "jsgi.session": jsgiSession });
+
+    var app = new Bogart.App(function() {
+        this.GET("/", function() {
+            this.flash.notice = "message";
+        });
+    });
+
+    app(env);
+
+    assert.isTrue(jsgiSession.flash.notice != undefined, "Should have defined notice");
+    assert.isEqual(jsgiSession.flash.notice, "message");
+}
+
