@@ -255,3 +255,20 @@ exports["test makes jsgi.session data available in session property of RouteHand
     assert.isTrue(session == jsgiSession, "Session should equal jsgiSession");
 }
 
+exports["test flash should be available"] = function() {
+    var jsgiSession = { "flash": { "notice": "saved" } };
+    var env = MockRequest.envFor("get", "/", { "jsgi.session": jsgiSession });
+    var flash = null;
+
+    var app = new Bogart.App(function() {
+        this.GET("/", function(){
+            flash = this.flash;
+        });
+    });
+
+    app(env);
+
+    assert.isFalse(flash == null, "Flash should not be null");
+    assert.isTrue(flash == jsgiSession.flash, "Flash should equal jsgiSession.flash");
+}
+
