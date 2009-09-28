@@ -288,3 +288,19 @@ exports["test updating flash should update the jsgi.session.flash variable in en
     assert.isEqual(jsgiSession.flash.notice, "message");
 }
 
+exports["test updating session should update the jsgi.session in env"] = function(){
+    var jsgiSession = {};
+    var env = MockRequest.envFor("get","/",{"jsgi.session": jsgiSession});
+
+    var app = new Bogart.App(function() {
+        this.GET("/", function (){
+            this.session.user = "Bob";
+        });
+    });
+
+    app(env);
+
+    assert.isTrue(jsgiSession.user != undefined, "Should have defined 'user'");
+    assert.isEqual(jsgiSession.user, "Bob", "Should have set 'user' to 'Bob'");
+}
+
