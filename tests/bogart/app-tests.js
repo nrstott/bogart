@@ -238,3 +238,20 @@ exports["test route with querystring"] = function(){
     }
 });
 
+exports["test makes jsgi.session data available in session property of RouteHandlerContext"] = function() {
+    var jsgiSession = { "user": "Bob" };
+    var env = MockRequest.envFor("get", "/", { "jsgi.session": jsgiSession });
+    var session = null;
+
+    var app = new Bogart.App(function() {
+        this.GET("/", function() {
+            session = this.session;
+        });
+    });
+
+    app(env);
+
+    assert.isFalse(session == null, "Session should not be null");
+    assert.isTrue(session == jsgiSession, "Session should equal jsgiSession");
+}
+
