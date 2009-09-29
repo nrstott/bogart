@@ -27,6 +27,17 @@ exports.testContentFor = function(){
     assert.isEqual("<html><head><title>Hello</title></head><body>World</body></html>", result);
 };
 
+exports["test form_for should render action attribute"] = function() {
+    var view = "<% form_for({ hello: 'world' }, '/test', {}, function(f) {}) %>";
+
+    var viewEJS = new EJS({text:view});
+    var layoutRenderer = new EjsLayoutRenderer(new EJS({text: simpleLayout}), MockRequest.envFor(null, "", {}));
+
+    var result = layoutRenderer.render(viewEJS);
+
+    assert.isTrue(/<form\s.*action=['"]\/test['"]\s.*>/.test(result), result);
+};
+
 exports["test form_for with put method renders hidden field _method"] = function() {
     var view = "<% form_for({ hello: 'world' }, '/', { method: 'put' }, function(f) {}) %>";
 
@@ -36,6 +47,7 @@ exports["test form_for with put method renders hidden field _method"] = function
     var result = layoutRenderer.render(viewEJS);
 
     assert.isTrue(/<input id=['"]_method['"] value=['"]put['"] type=['"]hidden['"] name=['"]_method['"] \/>/g.test(result), result);
+    assert.isTrue(/<form.*method=['"]post['"].*\/>/.test(result), result);
 };
 
 exports["test form helper submit tag"] = function() {
