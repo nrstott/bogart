@@ -46,7 +46,7 @@ exports["test form_for with put method renders hidden field _method"] = function
 
     var result = layoutRenderer.render(viewEJS);
 
-    assert.isTrue(/<input id=['"]_method['"] value=['"]put['"] type=['"]hidden['"] name=['"]_method['"] \/>/g.test(result), result);
+    assert.isTrue(/<input id=['"]_method['"] type=['"]hidden['"] name=['"]_method['"] value=['"]put['"] \/>/g.test(result), result);
     assert.isTrue(/<form.*method=['"]post['"].*\/>/.test(result), result);
 };
 
@@ -62,3 +62,4 @@ exports["test form helper submit tag"] = function() {
 
     assert.isTrue(/<input type=['"]submit['"]\s*value=['"]Press Me['"]\s*\/>/.test(result), result);
 };
+
