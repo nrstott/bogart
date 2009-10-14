@@ -65,6 +65,8 @@ to the root directory of the application.
     var Bogart = require("bogart").App;
     
     exports.app = new Bogart(function() {
+      this.layout = "site";
+
       this.GET("/:name", function() {
         return this.ejs("hello", { name: this.params.name });
       });
