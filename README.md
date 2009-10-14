@@ -2,9 +2,7 @@
 
 * Download [Narwhal](http://github.com/tlrobinson/narwhal/tree/master).
 * Add the Narwhal bin directory to your PATH `export PATH=$PATH:/path/to/narwhal/bin`
-* Install Jack `tusk install jack`
-* Download [narwhal-ejs](http://github.com/nrstott/narwhal-ejs/tree/master)
-* Create a symbolic link in your narwhal packages directory to ejs.  `ln -s /path/to/ejs /path/to/narwhal/packages`
+* Install Bogart `tusk install bogart`
 
 ## Hello World in Bogart
 
@@ -42,6 +40,34 @@ Visit it in a web browser at [http://localhost:8080](http://localhost:8080).
     exports.app = URLMap({
       "/hello": hello,
       "/calc": calc
+    });
+
+## EJS Templates
+
+EJS Template helpers are available in bogart in the route handlers.  Templates are assumed to be under 'views' relative
+to the root directory of the application.
+
+### EJS Layout (/views/site.ejs.html)
+
+    <html>
+        <head><title>Hello</title></head>
+        <body>
+            <%= hold() %>
+        </body>
+    </html>
+
+### EJS Template (/views/hello.ejs.html
+
+    <h1><%= name %></h1>
+
+### App
+
+    var Bogart = require("bogart").App;
+    
+    exports.app = new Bogart(function() {
+      this.GET("/:name", function() {
+        return this.ejs("hello", { name: this.params.name });
+      });
     });
 
 ## Inspirations
