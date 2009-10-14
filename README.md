@@ -58,7 +58,7 @@ to the root directory of the application.
 
 ### EJS Template (/views/hello.ejs.html
 
-    <h1><%= name %></h1>
+    <h1>Hello <%= name %></h1>
 
 ### App
 
@@ -69,6 +69,15 @@ to the root directory of the application.
         return this.ejs("hello", { name: this.params.name });
       });
     });
+
+### Results of navigating to /bob
+
+    <html>
+        <head><title>Hello</title></head>
+        <body>
+            <h1>Hello bob</h1>
+        </body>
+    </html>
 
 ## Inspirations
 
