@@ -223,7 +223,7 @@ exports["test route with querystring"] = function(){
     assert.isEqual(params["a"], "b");
 };
 
-["before-execute-route","after-execute-route"].forEach(function(event) {
+["before_execute_route","after_execute_route"].forEach(function(event) {
     exports["test publishes '" + event + "'"] = function(){
         var eventPublished = false;
         var app = new Bogart.App(function() {
