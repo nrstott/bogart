@@ -223,19 +223,18 @@ exports["test route with querystring"] = function(){
     assert.isEqual(params["a"], "b");
 };
 
-["before_execute_route","after_execute_route"].forEach(function(event) {
+["before_execute_route","after_execute_route","before_init"].forEach(function(event) {
     exports["test publishes '" + event + "'"] = function(){
         var eventPublished = false;
+        Bogart.App.subscribeTo(event, function() { eventPublished = true; });
         var app = new Bogart.App(function() {
-            this.subscribeTo(event, function() { eventPublished = true; });
-
             this.GET("/", function() {});
         });
 
         app(MockRequest.envFor("get", "/"));
 
         assert.isTrue(eventPublished, "Should have published '" + event + "'");
-    }
+    };
 });
 
 exports["test makes jsgi.session data available in session property of RouteHandlerContext"] = function() {
