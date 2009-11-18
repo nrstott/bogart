@@ -10,6 +10,15 @@ var emptyApp = function(env) {
     return { status: 404 };
 };
 
+exports["test has PublishEvents plugin"] = function() {
+    // The PublishEvents plugin should be available by default
+
+    var app = new Bogart.App();
+
+    assert.isEqual(1, Bogart.App.prototype.plugins.length);
+    assert.isEqual("PublishEvents", Bogart.App.prototype.plugins[0].name);
+};
+
 exports.testTwoInstancesDoNotShareRoutes = function() {
     var app1 = new Bogart.App(function() {
         this.GET("/1", function() {

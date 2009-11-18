@@ -56,7 +56,9 @@ exports["test plugin method is called"] = function() {
     var callbackCalled = false;
 
     var plugin = {
-        hello: function() { callbackCalled = true; }
+        callbacks: {
+            hello: function() { callbackCalled = true; }
+        }
     };
 
     var obs = new ObservableWithPlugins({ plugins: [plugin] });
