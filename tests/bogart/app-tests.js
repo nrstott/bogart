@@ -12,11 +12,15 @@ var emptyApp = function(env) {
 
 exports["test has PublishEvents plugin"] = function() {
     // The PublishEvents plugin should be available by default
-
     var app = new Bogart.App();
 
-    assert.isEqual(1, Bogart.App.prototype.plugins.length);
     assert.isEqual("PublishEvents", Bogart.App.prototype.plugins[0].name);
+};
+
+exports["test has Ejs plugin"] = function() {
+    var app = new Bogart.App();
+
+    assert.isEqual("Ejs", Bogart.App.prototype.plugins[1].name);
 };
 
 exports.testTwoInstancesDoNotShareRoutes = function() {

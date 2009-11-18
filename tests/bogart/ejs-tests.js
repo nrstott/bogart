@@ -1,6 +1,6 @@
 var EJS = require("ejs").EJS;
 var assert = require("test/assert");
-var EjsLayoutRenderer = require("../../lib/bogart-ejs").EjsLayoutRenderer;
+var EjsLayoutRenderer = require("bogart/plugin/ejs/ejs_layout_renderer").EjsLayoutRenderer;
 var MockRequest = require("jack/mock").MockRequest;
 var simpleLayout = "<html><body><%= hold() %></body></html>";
 
