@@ -1,6 +1,7 @@
 var assert = require("test/assert");
 var observable = require("bogart/observable");
 var Observable = observable.Observable;
+var ObservableWithPlugins = observable.ObservableWithPlugins;
 
 exports["test publish"] = function() {
     var obj = new Observable();
@@ -33,4 +34,33 @@ exports["test two observables do not share events"] = function() {
     obs1.publish("a");
 
     assert.isTrue(aCalled);
+};
+
+exports["test addPlugin"] = function() {
+    var obs = new ObservableWithPlugins();
+    obs.addPlugin({});
+
+    assert.isEqual(1, obs.plugins.length);
+};
+
+exports["test removePlugin"] = function() {
+    var plugin = {};
+
+    var obs = new ObservableWithPlugins({ plugins: [plugin] });
+    obs.removePlugin(plugin);
+
+    assert.isEqual(0, obs.plugins.length);
+};
+
+exports["test plugin method is called"] = function() {
+    var callbackCalled = false;
+
+    var plugin = {
+        hello: function() { callbackCalled = true; }
+    };
+
+    var obs = new ObservableWithPlugins({ plugins: [plugin] });
+    obs.publish("hello");
+
+    assert.isTrue(callbackCalled);
 };
