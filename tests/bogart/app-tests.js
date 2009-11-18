@@ -226,12 +226,17 @@ exports["test route with querystring"] = function(){
 ["before_execute_route","after_execute_route","before_init"].forEach(function(event) {
     exports["test publishes '" + event + "'"] = function(){
         var eventPublished = false;
-        Bogart.App.subscribeTo(event, function() { eventPublished = true; });
+        var eventHandler = function() { eventPublished = true; };
+
+        Bogart.App.subscribeTo(event, eventHandler);
+
         var app = new Bogart.App(function() {
             this.GET("/", function() {});
         });
 
         app(MockRequest.envFor("get", "/"));
+
+        Bogart.App.unsubscribe(eventHandler);
 
         assert.isTrue(eventPublished, "Should have published '" + event + "'");
     };
