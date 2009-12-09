@@ -57,12 +57,12 @@ exports["test form_for with put method renders hidden field _method"] = function
 };
 
 exports["test form helper submit tag"] = function() {
-    var view = "<% form_for({ hello: 'world' }, '/', { method: 'put' }, function(f) { %><div>" +
+    var view = "<% form_for({ hello: 'world' }, '/', { method: 'put' }, function(f) { %>" +
                "<%= f.submit('Press Me') %>" +
-               "</div><% }) %>";
+               "<% }) %>";
 
     var viewEJS = new EJS({text:view});
-    var layoutRenderer = new EjsLayoutRenderer(new EJS({ text: simpleLayout }), {});
+    var layoutRenderer = new EjsLayoutRenderer(new EJS({ text: simpleLayout }), MockRequest.envFor(null, "", {}));
 
     var result = layoutRenderer.render(viewEJS);
 
@@ -131,4 +131,4 @@ exports["test pass model to partial"] = function() {
 
     // Assert
     assert.isEqual(simpleLayout.replace("<%= hold() %>", partial.replace("<%= name %>", name)), result);
-}
+};
