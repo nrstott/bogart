@@ -112,3 +112,23 @@ exports["test model variable is available in view"] = function() {
     // Assert
     assert.isEqual(simpleLayout.replace("<%= hold() %>", view.replace("<%= name %>", name)), result);
 };
+
+exports["test pass model to partial"] = function() {
+    // Arrange
+    var name = "Bob";
+    var view = "<%= partial('header', { name: name }) %>";
+    var partial = "<h1><%= name %></h1>";
+    var viewEJS = new EJS({text: view});
+
+    var layoutRenderer = new EjsLayoutRenderer(layoutEJS, {
+        getViewTemplate: function() {
+            return new EJS({text: partial});
+        }
+    });
+
+    // Act
+    var result = layoutRenderer.render(viewEJS, { name: name });
+
+    // Assert
+    assert.isEqual(simpleLayout.replace("<%= hold() %>", partial.replace("<%= name %>", name)), result);
+}
