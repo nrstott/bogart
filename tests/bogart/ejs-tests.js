@@ -63,7 +63,7 @@ exports["test form helper submit tag"] = function() {
     assert.isTrue(/<input type=['"]submit['"]\s*value=['"]Press Me['"]\s*\/>/.test(result), result);
 };
 
-exports["test renders partial without layout"] = function() {
+exports["test renders without layout"] = function() {
     var view = "<h1>Hello World</h1>";
     var layout = "<html><body><%= hold() %></body></html>";
 
@@ -74,4 +74,20 @@ exports["test renders partial without layout"] = function() {
     var result = layoutRenderer.render(viewEJS, {}, { useLayout: "no" });
 
     assert.isEqual(view, result, "Did not match expected view: " + result);
+};
+
+exports["test renders partial"] = function() {
+    var view = "<h1><%= partial('test_partial') %></h1>";
+    var partial = "hello";
+    var layout = "<html><body><%= hold() %></body></html>";
+
+    var viewEJS = new EJS({ text: view });
+    var layoutEJS = new EJS({ text: layout });
+    var layoutRenderer = new EjsLayoutRenderer(layoutEJS, {
+        getViewTemplate: function() { return new EJS({text:partial}); }
+    });
+
+    var result = layoutRenderer.render(viewEJS, {});
+
+    assert.isEqual("<html><body><h1>hello</h1></body></html>", result);
 };
