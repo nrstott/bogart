@@ -131,29 +131,4 @@ exports["test pass model to partial"] = function() {
 
     // Assert
     assert.isEqual(simpleLayout.replace("<%= hold() %>", partial.replace("<%= name %>", name)), result);
-};
-
-exports["test pass model to forms helper inside of partial"] = function() {
-    // Arrange
-    var name = "Bob";
-    var view = "<%= partial('header', { model: model, name: name }) %>";
-    var partial = "<% form_for(model, '/person', {}, function(f) { %>" +
-            "<%= f.submit(name) %>" +
-            "<% }); %>";
-    var viewEJS = new EJS({ text: view });
-
-    var layoutRenderer = new EjsLayoutRenderer(layoutEJS, {
-        getViewTemplate: function() { return new EJS({text: partial}); }
-    });
-
-    // Act
-    var result = layoutRenderer.render(viewEJS, { name: name, model: new Person() });
-
-    // Assert
-    assert.isTrue(result.indexOf(name) !== -1, "Should contain '" + name + "'");
-};
-
-function Person() {
-    this.firstName = "Sam";
-    this.LastName = "Smith";
 }
