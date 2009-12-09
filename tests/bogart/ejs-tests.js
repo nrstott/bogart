@@ -2,7 +2,13 @@ var EJS = require("ejs").EJS;
 var assert = require("test/assert");
 var EjsLayoutRenderer = require("bogart/plugin/ejs/ejs_layout_renderer").EjsLayoutRenderer;
 var MockRequest = require("jack/mock").MockRequest;
-var simpleLayout = "<html><body><%= hold() %></body></html>";
+var simpleLayout;
+var layoutEJS;
+
+exports.setup = function() {
+    simpleLayout = "<html><body><%= hold() %></body></html>";
+    layoutEJS = new EJS({text:simpleLayout});
+};
 
 exports.testRenderLayout = function() {
     var layout = "<html><body><%= hold() %></body></html>";
@@ -79,7 +85,7 @@ exports["test renders without layout"] = function() {
 exports["test renders partial"] = function() {
     var view = "<h1><%= partial('test_partial') %></h1>";
     var partial = "hello";
-    var layout = "<html><body><%= hold() %></body></html>";
+    var layout = simpleLayout;
 
     var viewEJS = new EJS({ text: view });
     var layoutEJS = new EJS({ text: layout });
@@ -90,4 +96,19 @@ exports["test renders partial"] = function() {
     var result = layoutRenderer.render(viewEJS, {});
 
     assert.isEqual("<html><body><h1>hello</h1></body></html>", result);
+};
+
+
+exports["test model variable is available in view"] = function() {
+    // Arrange
+    var name = "Bob";
+    var view = "<h1><%= name %></h1>";
+    var viewEJS = new EJS({ text: view });
+    var layoutRenderer = new EjsLayoutRenderer(layoutEJS, {});
+
+    // Act
+    var result = layoutRenderer.render(viewEJS, { name: name });
+
+    // Assert
+    assert.isEqual(simpleLayout.replace("<%= hold() %>", view.replace("<%= name %>", name)), result);
 };
