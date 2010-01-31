@@ -321,3 +321,23 @@ exports["test updating session should update the jsgi.session in env"] = functio
     assert.isEqual(jsgiSession.user, "Bob", "Should have set 'user' to 'Bob'");
 }
 
+exports["test variable matches stop at question mark"] = function() {
+		var idVariable = null;
+		var formatVariable = null;
+
+		var env = MockRequest.envFor("get", "/abc.json?most-recent", {});
+
+		var app = new Bogart.App(function() {
+				this.GET("/:id.:format", function() {
+						idVariable = this.params.id;
+						formatVariable = this.params.format;
+				});
+		});
+
+		app(env);
+
+		assert.isEqual("abc", idVariable);
+		assert.isEqual("json", formatVariable);
+}
+
+
