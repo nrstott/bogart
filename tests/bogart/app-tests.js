@@ -10,6 +10,61 @@ var emptyApp = function(env) {
     return { status: 404 };
 };
 
+exports["test app.viewsPath is defaulting to 'views'"] = function () {
+    var handler = function () {
+        this.ejs("bar", {});
+    };
+    var app = new Bogart.App(function () {
+                                 this.GET("/", handler);
+                             });
+    var env = MockRequest.envFor("get", "/");
+    try {
+        app(env);
+        assert.isTrue(false, "This shouldn't be reached b/c of an exception.");
+    } catch (e) {
+        assert.isTrue((/\/views\/bar.ejs.html$/).test(e.message),
+                      "The default viewsPath is 'views'");
+    }
+};
+
+exports["test app.viewsPath is being interpreted correctly"] = function () {
+    var handler = function () {
+        this.ejs("bar", {});
+    };
+    var app = new Bogart.App(function () {
+                                 this.viewsPath = "foo";
+                                 this.GET("/", handler);
+                             });
+    var env = MockRequest.envFor("get", "/");
+    try {
+        app(env);
+        assert.isTrue(false, "This shouldn't be reached b/c of an exception.");
+    } catch (e) {
+        assert.isTrue((/\/foo\/bar.ejs.html$/).test(e.message),
+                      "The viewsPath is set to 'foo'");
+    }
+};
+
+exports["test app.viewsPath is being interpreted correctly when absolute"] = function () {
+    var path = "/foo/";
+    var handler = function () {
+        this.ejs("bar", {});
+    };
+    var app = new Bogart.App(function () {
+                                 this.viewsPath = path;
+                                 this.GET("/", handler);
+                             });
+    var env = MockRequest.envFor("get", "/");
+    try {
+        app(env);
+        assert.isTrue(false, "This shouldn't be reached b/c of an exception.");
+    } catch (e) {
+        print(e.message);
+        assert.isTrue((/\s\/foo\/bar.ejs.html$/).test(e.message),
+                      "The viewsPath is set to '/foo'");
+    }
+};
+
 exports["test has PublishEvents plugin"] = function() {
     // The PublishEvents plugin should be available by default
     var app = new Bogart.App();
