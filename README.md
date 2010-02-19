@@ -48,22 +48,32 @@ All event callbacks receive the instance of App that called them as the first ar
 
 Bogart raises the following events:
 
-* before_init: Before any of the options passed to the App constructor have been evaluated.
+* **"before_init" args: (app, options)**: Before any of the options passed to
+  the App constructor have been evaluated.
 
-* before_execute_route: Raised immediately before a route handler is executed.  The callback function will receive
-  two arguments.  The first argument will contain a reference to the Bogart App raising the event.  The second
-  will contain the RouteHandlerContext that the route handler that is about to be executed will run inside of.  Use
-  this event to attach custom helpers to the route's context just before it is executed.
+* **"before_execute_route" args: (app, routeContext)**: Raised immediately before a
+  route handler is executed.  The callback function will receive two arguments.
+  The first argument will contain a reference to the Bogart App raising the
+  event.  The second will contain the RouteHandlerContext that the route handler
+  that is about to be executed will run inside of.  Use this event to attach
+  custom helpers to the route's context just before it is executed.
 
-* after_execute_route: Raised after a route handler is executed.  The callback function receives two arguments.  The
-  first argument contains a reference to the Bogart App raising the event.  The second contains the RouteHandlerContext
-  in which the route handler was executed.  Use this event to clean up after your before_execute_route callback or to
-  gather information from the RouteHandlerContext after the route has been executed.
+* **"after_execute_route" args: (routeContext)**: Raised after a route handler
+  is executed.  The callback function receives two arguments.  The first
+  argument contains a reference to the Bogart App raising the event.  The second
+  contains the RouteHandlerContext in which the route handler was executed.  Use
+  this event to clean up after your before_execute_route callback or to gather
+  information from the RouteHandlerContext after the route has been executed.
 
-* route_error: Raised when a route handler throws an error.  Callback function receives three arguments.  The first
-  argument contains a reference to te Bogart App raising the event.  The second argument contains the error
-  thrown by the route handler.  The third arguments is a hash with the verb and path of the route that threw the
-  error.
+* **"route_error" args: (app, error, routeInfo)**: Raised when a route handler
+  throws an error.  Callback function receives three arguments.  The first
+  argument contains a reference to te Bogart App raising the event.  The second
+  argument contains the error thrown by the route handler.  The third arguments
+  is a hash with the verb and path of the route that threw the error.
+
+* **"before_render" args: (routeContext, templateContext)**: Raised right before
+  rendering an EJS template. Useful for providing sane defaults to template
+  variables that are only explicitly bound some of the time.
 
 ## Subscribing to Events
 
