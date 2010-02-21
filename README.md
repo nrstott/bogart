@@ -128,6 +128,7 @@ to the root directory of the application.
 
 ## Contributors
 * [Nick Fitzgerald](http://github.com/fitzgen)
+* [Martin Murphy](http://github.com/soitgoes)
 * [Nathan Stott](http://github.com/nrstott)
 
 ## License
