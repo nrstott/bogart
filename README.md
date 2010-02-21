@@ -126,6 +126,10 @@ to the root directory of the application.
 * [Sinatra](http://www.sinatrarb.com/)
 * [Rails](http://rubyonrails.org/)
 
+## Contributors
+* [Nick Fitzgerald](http://github.com/fitzgen)
+* [Nathan Stott](http://github.com/nrstott)
+
 ## License
 
 Copyright (c) 2009 Nathan Stott <[nathan.whiteboard-it.com](http://nathan.whiteboard-it.com/)\>
