@@ -9,7 +9,7 @@ exports['test render'] = function(assert, beforeExit) {
   var app = 
     bogart.app(function(show) {
       
-      this.setting('view root', __dirname + '/fixtures')
+      this.setting('views', __dirname + '/fixtures')
 
       show('/', function(req, resp) {
 	return resp.render('index.haml')
