@@ -4,10 +4,10 @@ var
 
 var app = bogart.app(function(show) {
   show('/', function(req, res) {
-    return res.render('index.haml')
+    return res.render('index.haml', { layout: false })
   })
 
-  this.setting('view root', __dirname + '/views')
+  this.setting('views', __dirname + '/views')
 })
 
 jsgi.start(app)
