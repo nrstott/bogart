@@ -6,6 +6,9 @@
     "author": "Nathan Stott",
     "email": "nathan.stott@whiteboard-it.com",
     "main": "./lib/bogart",
-    "directories": { "lib": "./lib" }
+    "directories": { "lib": "./lib" },	
+    "mappings": {
+        "promised-io": "jar:http://github.com/kriszyp/promised-io/zipball/master!/lib/",
+        "jsgi-node": "jar:http://github.com/kriszyp/jsgi-node/zipball/master!/lib/"
+    }
 }
-
