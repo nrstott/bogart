@@ -1,12 +1,12 @@
 var 
   bogart = require('../lib/bogart'),
-  jsgi = require('jsgi')
+  jsgi = require('jsgi');
 
 var app = bogart.app(function(show, create, update, destroy) {
   show('/hello/:name', function(req, resp, name) {
-    resp.send("Hello ")
-    resp.send(name)
-  })
-})
+    resp.send("Hello ");
+    resp.send(name);
+  });
+});
 
-jsgi.start(app)
+jsgi.start(app);
