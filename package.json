@@ -9,7 +9,7 @@
     "directories": { "lib": "./lib" },	
     "mappings": {
         "promised-io": "jar:http://github.com/kriszyp/promised-io/zipball/master!/lib/",
-        "jsgi-node": "jar:http://github.com/kriszyp/jsgi-node/zipball/master!/lib/",
+        "jsgi": "jar:http://github.com/kriszyp/jsgi-node/zipball/master!/lib/jsgi-node",
         "patr": "jar:http://github.com/kriszyp/patr/zipball/master!/lib/"
     }
 }
