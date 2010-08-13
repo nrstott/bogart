@@ -1,0 +1,15 @@
+{
+    "name": "bogart",
+    "description": "Fast JSGI web framework taking inspiration from Sinatra",
+    "version": "0.0.3",
+    "keywords": ["bogart", "framework", "sinatra", "REST"],
+    "author": "Nathan Stott",
+    "email": "nathan.stott@whiteboard-it.com",
+    "main": "./lib/bogart",
+    "directories": { "lib": "./lib" },	
+    "mappings": {
+        "promised-io": "jar:http://github.com/kriszyp/promised-io/zipball/master!/lib/",
+        "jsgi": "jar:http://github.com/kriszyp/jsgi-node/zipball/master!/lib/jsgi-node",
+        "patr": "jar:http://github.com/kriszyp/patr/zipball/master!/lib/"
+    }
+}

@@ -3,11 +3,11 @@ var
   bogart = require('../../lib/bogart')
 
 var app = bogart.app(function(show) {
-  show('/', function(req, res) {
-    return res.render('index.haml', { layout: false })
-  })
-
-  this.setting('views', __dirname + '/views')
-})
+  var viewEngine = bogart.viewEngine("haml");
+  
+  show('/', function(req) {
+    return viewEngine.respond('index.haml', { layout: false });
+  });
+});
 
 jsgi.start(app)
