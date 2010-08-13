@@ -1,0 +1,1 @@
+exports.watchFile = require('fs').watchFile;
