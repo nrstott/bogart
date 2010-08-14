@@ -3,7 +3,7 @@ var
   view   = require('../lib/view'),
   jsgi   = require('jsgi'),
   sys    = require('sys'),
-  when   = require('jsgi/promise').when,
+  when   = require('promised-io/promise').when,
   assert = require('assert'),
   rootRequest = {
     headers: {},
