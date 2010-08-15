@@ -5,13 +5,6 @@ var
   sys    = require('sys'),
   when   = require('promised-io/promise').when,
   assert = require('assert'),
-  rootRequest = {
-    headers: {},
-    pathInfo: '/',
-    method: 'GET',
-    jsgi: { version: [0, 3] },
-    env: {}
-  },
   fixturesDir = process.cwd() + '/test/fixtures';
 
 exports['test render haml'] = function() {
