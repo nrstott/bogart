@@ -1,11 +1,28 @@
 var 
   bogart = require('../lib/bogart'),
-  jsgi = require('jsgi');
+  Q      = require('promised-io/promise'),
+  jsgi   = require('jsgi');
 
 var app = bogart.app(function(show, create, update, destroy) {
   show('/hello/:name', function(req, resp, name) {
-    resp.send("Hello ");
-    resp.send(name);
+    return bogart.html({
+      body: [ 'Hello ', name ]
+    });
+  });
+  
+  show('/stream', function(req) {
+    var streamer = bogart.stream();
+    
+    setInterval(function() {
+      var currentTime = new Date();
+      streamer(currentTime.getHours()+':'+currentTime.getMinutes()+':'+currentTime.getSeconds()+"\n");
+    }, 10);
+    
+    setTimeout(function() {
+      streamer.end();
+    }, 10000);
+    
+    return streamer.respond();
   });
 });
 
