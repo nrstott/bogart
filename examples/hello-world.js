@@ -4,10 +4,8 @@ var
   jsgi   = require('jsgi');
 
 var app = bogart.app(function(show, create, update, destroy) {
-  show('/hello/:name', function(req, resp, name) {
-    return bogart.html({
-      body: [ 'Hello ', name ]
-    });
+  show('/hello/:name', function(req, name) {
+    return bogart.html('Hello '+name);
   });
   
   show('/stream', function(req) {
