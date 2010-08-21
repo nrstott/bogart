@@ -1,9 +1,6 @@
-var 
-  bogart = require('../lib/bogart'),
-  Q      = require('promised-io/promise'),
-  jsgi   = require('jsgi');
+var bogart = require('../lib/bogart');
 
-var app = bogart.app(function(show, create, update, destroy) {
+var config = function(show, create, update, destroy) {
   show('/hello/:name', function(req, name) {
     return bogart.html('Hello '+name);
   });
@@ -22,6 +19,6 @@ var app = bogart.app(function(show, create, update, destroy) {
     
     return streamer.respond();
   });
-});
+};
 
-jsgi.start(app);
+bogart.start(bogart.router(config));
