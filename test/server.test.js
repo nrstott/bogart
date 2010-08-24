@@ -10,14 +10,18 @@ var
     method: 'GET',
     jsgi: { version: [0, 3] },
     env: {}
-  };;
+  };
 
-exports["should have run"] = function() {
-  assert.ok(bogart.run);
-};
+
+/*
+    No idea what this was supposed to do, but there is no bogart.run export
+ */
+//exports["should have run"] = function() {
+//  assert.ok(bogart.run);
+//};
 
 exports["should have middleware"] = function() {
-  var server = new bogart.Server(function() {
+  var server = new bogart.server(function() {
     this.use(function(nextApp) {
       return function(req) {
         return when(nextApp(req), function(resp) {
