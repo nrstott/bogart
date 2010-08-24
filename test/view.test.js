@@ -11,7 +11,7 @@ exports['test render haml'] = function() {
   var viewEngine = bogart.viewEngine('haml', bogart.maindir()+'/fixtures');
   
   return when(viewEngine.render('index.haml', { layout: false }), function(str) {
-    assert.equal(str, '<h1>Hello World</h1>');
+    assert.equal(str, '\n<h1>Hello World</h1>');
   });
 }
 
