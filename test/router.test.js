@@ -38,6 +38,23 @@ exports['test should have default notFoundApp behavior of returning 404'] = func
   });
 };
 
+exports['test should have status 500 if body is not a forEachable'] = function() {
+  var
+    router = bogart.router(function(get) {
+      get('/', function(req) {
+        return {
+          status: 200,
+          body: "hello"      
+        };
+      });
+    }),
+    respPromise = router(rootRequest);
+
+  return when(respPromise, function(resp) {
+    assert.equal(500, resp.status);
+  });
+}
+
 if(require.main == module) {
   require("patr/runner").run(exports);
 }
