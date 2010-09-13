@@ -12,15 +12,7 @@ var
     env: {}
   };
 
-
-/*
-    No idea what this was supposed to do, but there is no bogart.run export
- */
-//exports["should have run"] = function() {
-//  assert.ok(bogart.run);
-//};
-
-exports["should have middleware"] = function() {
+exports["test should have middleware"] = function() {
   var server = new bogart.server(function() {
     this.use(function(nextApp) {
       return function(req) {
@@ -47,3 +39,7 @@ exports["should have middleware"] = function() {
   assert.ok(resp.headers);
   assert.equal("xyz", resp.headers["custom-header"]);
 };
+
+if(require.main == module) {
+  require("patr/runner").run(exports);
+}

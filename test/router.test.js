@@ -12,7 +12,7 @@ var
     env: {}
   };
 
-exports['should call notFoundApp'] = function() {
+exports['test should call notFoundApp'] = function() {
   var
     called = false,
     notFoundApp = function(req) {
@@ -28,7 +28,7 @@ exports['should call notFoundApp'] = function() {
   });
 };
 
-exports['should have default notFoundApp behavior of returning 404'] = function() {
+exports['test should have default notFoundApp behavior of returning 404'] = function() {
   var
     router = bogart.router(function(){}),
     respPromise = router(rootRequest);
