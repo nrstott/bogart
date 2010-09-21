@@ -53,7 +53,44 @@ exports['test should have status 500 if body is not a forEachable'] = function()
   return when(respPromise, function(resp) {
     assert.equal(500, resp.status);
   });
-}
+};
+
+exports['test should not partially match route'] = function() {
+  var
+    router = bogart.router(function(get) {
+      get('/partial', function(req) {
+        return {
+          status: 200,
+          body: ['hello']
+        }
+      })
+    }),
+    req = rootRequest;
+
+  req.pathInfo = '/partial/path';
+  
+  return when(router(req), function(resp) {
+    assert.equal(404, resp.status);
+  });
+};
+
+exports['test should match route with querystring'] = function() {
+  var
+    router = bogart.router(function(get) {
+      get('/home', function(req) {
+        return {
+          status: 200,
+          body: ['home']
+        }
+      });
+    }),
+    req = rootRequest;
+
+  req.pathInfo = '/home';
+  req.queryString = "hello=world";
+
+  return when(router(req), function(resp) { assert.equal(200, resp.status); });
+};
 
 if(require.main == module) {
   require("patr/runner").run(exports);
