@@ -11,6 +11,7 @@
         "promised-io": "jar:http://github.com/kriszyp/promised-io/zipball/master!/lib/",
         "jsgi": "jar:http://github.com/kriszyp/jsgi-node/zipball/master!/lib/jsgi-node",
         "patr": "jar:http://github.com/kriszyp/patr/zipball/master!/lib/",
-        "haml": "jar:http://github.com/visionmedia/haml.js/zipball/master!/lib/haml.js"
+        "haml": "jar:http://github.com/visionmedia/haml.js/zipball/master!/lib/haml.js",
+        "pintura": "http://github.com/kriszyp/pintura/zipball/v0.2.1"
     }
 }
