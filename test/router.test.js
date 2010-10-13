@@ -74,6 +74,27 @@ exports['test should not partially match route'] = function() {
   });
 };
 
+exports['test should not partially match route from beginning'] = function() {
+  var 
+    req = rootRequest,
+    router;
+
+  router = bogart.router(function(get) {
+    get('/:foo', function(req) {
+      return {
+        status: 200,
+        body: ['hello']
+      };
+    });
+  });
+
+  req.pathInfo = '/hello/world';
+
+  return when(router(req), function(resp) {
+    assert.equal(404, resp.status);
+  });
+};
+
 exports['test should match route with querystring'] = function() {
   var
     router = bogart.router(function(get) {
