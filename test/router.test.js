@@ -4,17 +4,19 @@ var
   Q      = require('promised-io/promise'),
   when   = Q.when,
   jsgi   = require('jsgi'),
-  rootRequest = {
-    headers: {},
-    pathInfo: '/',
-    method: 'GET',
-    jsgi: { version: [0, 3] },
-    env: {}
-  };
+  rootRequest = function() {
+    return {
+      headers: {},
+      pathInfo: '/',
+      method: 'GET',
+      jsgi: { version: [0, 3] },
+      env: {}
+    };
+ };
   
 exports['test matches parameter'] = function() {
   var
-    name, req = rootRequest,
+    name, req = rootRequest(),
     router = bogart.router(function(get) {
      get('/hello/:name', function(req) {
        name = req.params.name;
@@ -38,7 +40,7 @@ exports['test should call notFoundApp'] = function() {
       return { status: 409, body: [ '' ] };
     },
     router = bogart.router(function() {}, notFoundApp),
-    respPromise = router(rootRequest);
+    respPromise = router(rootRequest());
     
   return when(respPromise, function(resp) {
     assert.equal(409, resp.status);
@@ -49,7 +51,7 @@ exports['test should call notFoundApp'] = function() {
 exports['test should have default notFoundApp behavior of returning 404'] = function() {
   var
     router = bogart.router(function(){}),
-    respPromise = router(rootRequest);
+    respPromise = router(rootRequest());
   
   return when(respPromise, function(resp) {
     assert.equal(404, resp.status);
@@ -66,7 +68,7 @@ exports['test should have status 500 if body is not a forEachable'] = function()
         };
       });
     }),
-    respPromise = router(rootRequest);
+    respPromise = router(rootRequest());
 
   return when(respPromise, function(resp) {
     assert.equal(500, resp.status);
@@ -83,7 +85,7 @@ exports['test should not partially match route'] = function() {
         }
       })
     }),
-    req = rootRequest;
+    req = rootRequest();
 
   req.pathInfo = '/partial/path';
   
@@ -94,7 +96,7 @@ exports['test should not partially match route'] = function() {
 
 exports['test should not partially match route from beginning'] = function() {
   var 
-    req = rootRequest,
+    req = rootRequest(),
     router;
 
   router = bogart.router(function(get) {
@@ -123,7 +125,7 @@ exports['test should match route with querystring'] = function() {
         }
       });
     }),
-    req = rootRequest;
+    req = rootRequest();
 
   req.pathInfo = '/home';
   req.queryString = "hello=world";
@@ -134,7 +136,7 @@ exports['test should match route with querystring'] = function() {
 exports['test regex route'] = function() {
   var
     router,
-    req = rootRequest,
+    req = rootRequest(),
     splat;
 
   req.pathInfo = '/hello/world';
