@@ -113,6 +113,28 @@ exports['test should match route with querystring'] = function() {
   return when(router(req), function(resp) { assert.equal(200, resp.status); });
 };
 
+exports['test regex route'] = function() {
+  var
+    router,
+    req = rootRequest,
+    splat;
+
+  req.pathInfo = '/hello/world';
+
+  router = bogart.router(function(get) {
+    get(/\/hello\/(.*)/, function(req) {
+      splat = req.params.splat;
+      return bogart.html("hello");
+    });
+  });
+
+  return when(router(req), function(resp) {
+    assert.equal(200, resp.status);
+    assert.ok(splat, "Should have set 'splat'");
+    assert.equal(splat[0], 'world');
+  });
+};
+
 if(require.main == module) {
   require("patr/runner").run(exports);
 }
