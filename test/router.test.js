@@ -11,6 +11,24 @@ var
     jsgi: { version: [0, 3] },
     env: {}
   };
+  
+exports['test matches parameter'] = function() {
+  var
+    name, req = rootRequest,
+    router = bogart.router(function(get) {
+     get('/hello/:name', function(req) {
+       name = req.params.name;
+       return bogart.html("hello");
+     });
+    });
+
+  req.pathInfo = '/hello/nathan';
+
+  return when(router(req), function(resp) {
+    assert.equal(200, resp.status);
+    assert.equal("nathan", name);
+  });
+};
 
 exports['test should call notFoundApp'] = function() {
   var
