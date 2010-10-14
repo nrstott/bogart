@@ -4,17 +4,21 @@
 
 ## Hello World in Bogart
 
+Make a directory: `mkdir hello-world`
+
+Create the following two files:
+
 ### app.js
 
-    var bogart = require("bogart");
-
     var site = bogart.router(function(get, create, update, del) {
-      this.get("/:name", function(req) {
-        return bogart.html("hello " + this.params["name"]);
+      get('/', function(req) { 
+        return bogart.html("hello world"); 
+      });
+
+      get("/:name", function(req) {
+        return bogart.html("hello " + req.params.name);
       });
     });
-
-    bogart.start(site);
 
 ### package.json
 
@@ -29,6 +33,7 @@
 Start your app: `nodules app.js`
 
 Visit it in a web browser at [http://localhost:8080](http://localhost:8080).
+Visit the route that says hello to you by name at [http://localhost:8080/bob](http://localhost:8080/bob)
 
 ## Inspirations
 
