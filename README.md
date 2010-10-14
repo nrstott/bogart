@@ -4,6 +4,8 @@
 
 ## Hello World in Bogart
 
+### app.js
+
     var bogart = require("bogart");
 
     var site = bogart.router(function(get, create, update, del) {
@@ -13,6 +15,16 @@
     });
 
     bogart.start(site);
+
+### package.json
+
+    {
+      "name": "Bogart Hello World",
+      "author": "<Enter Your Name>",
+      "mappings": {
+        "bogart": "jar:http://github.com/nrstott/bogart/zipball/master!/lib/bogart"
+      }
+    }
 
 Start your app: `nodules app.js`
 
