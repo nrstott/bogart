@@ -31,6 +31,30 @@ exports['test matches parameter'] = function() {
     assert.equal("nathan", name);
   });
 };
+exports['test order of routes matching should be longest to smallest'] = function(){
+  var
+    name, req = rootRequest(),
+    router = bogart.router(function(get) {
+     get('/hello/:name', function(req) {
+       name = req.params.name;
+       assert.ok (false, "should have matched the longest route");
+       return bogart.html("hello");
+     });
+      get("/hello/:name/:something", function(req){
+         name = req.params.name;
+         return bogart.html("hello");
+         assert.ok(true, "long route matched successfully")
+      })
+    });
+
+  req.pathInfo = '/hello/nathan/';
+
+  return when(router(req), function(resp) {
+    //do nothing
+  });
+
+};
+
 
 exports['test should call notFoundApp'] = function() {
   var
