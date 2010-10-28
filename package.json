@@ -8,7 +8,7 @@
     "main": "./lib/bogart",
     "directories": { "lib": "./lib" },	
     "mappings": {
-        "promised-io": "jar:http://github.com/kriszyp/promised-io/zipball/master!/lib/",
+        "promised-io": "http://github.com/kriszyp/promised-io/zipball/v0.2.1",
         "jsgi": "jar:http://github.com/kriszyp/jsgi-node/zipball/master!/lib/jsgi-node",
         "patr": "jar:http://github.com/kriszyp/patr/zipball/master!/lib/",
         "haml": "jar:http://github.com/visionmedia/haml.js/zipball/master!/lib/haml.js",
