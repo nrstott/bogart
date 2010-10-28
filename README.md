@@ -10,6 +10,8 @@ Create the following two files:
 
 ### app.js
 
+    var bogart = require("bogart");
+
     var site = bogart.router(function(get, create, update, del) {
       get('/', function(req) { 
         return bogart.html("hello world"); 
@@ -19,6 +21,8 @@ Create the following two files:
         return bogart.html("hello " + req.params.name);
       });
     });
+    
+    bogart.start(site);
 
 ### package.json
 
