@@ -8,15 +8,15 @@ var
   fixturesDir = process.cwd() + '/test/fixtures';
 
 exports['test render haml'] = function() {
-  var viewEngine = bogart.viewEngine('haml', bogart.maindir()+'/fixtures');
+  var viewEngine = bogart.viewEngine('haml', __dirname+'/fixtures');
   
   return when(viewEngine.render('index.haml', { layout: false }), function(str) {
-    assert.equal(str, '\n<h1>Hello World</h1>');
+    assert.equal(str, '<h1>Hello World</h1>');
   });
 }
 
 exports['test render mustache'] = function() {
-  var viewEngine = bogart.viewEngine("mustache", bogart.maindir()+'/fixtures');
+  var viewEngine = bogart.viewEngine("mustache", __dirname+'/fixtures');
   
   return when(viewEngine.render('index.mustache', { layout: false }), function(str) {
     assert.equal(str, '<h1>Hello World from Mustache</h1>\n');
