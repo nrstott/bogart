@@ -1,0 +1,12 @@
+{
+  "author": "<Your Name>",
+  "email": "<Your Email>",
+  "version": "0.0.1",
+  "directories": {
+    "lib": "./lib"
+  },
+  "main": "./app.js",
+  dependencies: {
+    "bogart": ">=0.1.1"
+  }
+}

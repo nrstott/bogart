@@ -1,0 +1,13 @@
+/**
+ * A bogart application skeleton
+ */
+
+var bogart = require("bogart");
+
+var homeRouter = bogart.router(function(get, post, put, del) {
+  get("/", function() {
+    return bogart.html("Hello World");
+  });
+});
+
+bogart.start(homeRouter);
