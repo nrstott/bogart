@@ -7,6 +7,6 @@ var router = bogart.router(function(get) {
   });
 });
 
-var root = bogart.maindir()+"/public/";
+var root = require("path").join(__dirname, "public");
 
-bogart.start(bogart.middleware.serveStatic({ "urls": [ "" ], "root": root }, router));
+bogart.start(bogart.middleware.Directory(root, router));
