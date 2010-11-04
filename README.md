@@ -10,7 +10,7 @@ Alternatively, clone the git repository
 
 Make a directory: `mkdir hello-world`
 
-Create the following two files:
+Create the following file:
 
 ### app.js
 
@@ -27,16 +27,6 @@ Create the following two files:
     });
     
     bogart.start(site);
-
-### package.json
-
-    {
-      "name": "Bogart Hello World",
-      "author": "<Enter Your Name>",
-      "mappings": {
-        "bogart": "jar:http://github.com/nrstott/bogart/zipball/master!/lib/bogart"
-      }
-    }
 
 Start your app: `node app.js`
 
