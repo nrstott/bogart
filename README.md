@@ -1,9 +1,9 @@
 ## Getting Started
 
-Bogart can be installed via npm
+Bogart can be installed via [npm](https://github.com/isaacs/npm).
     npm install bogart
 
-Alternatively, clone the git repository
+Alternatively, clone the git repository.
     git clone git://github.com/nrstott/bogart.git
 
 ## Hello World in Bogart
