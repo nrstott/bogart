@@ -1,0 +1,31 @@
+<h1>Task List</h1>
+
+<ul>
+  {{#tasks}}
+    <li>
+      <form action="/{{name}}" method="post">
+        <input type="hidden" name="_method" value="delete" />
+        <input type="submit" value="Delete" />
+      </form>
+      <span>{{name}}</span>
+      <p>{{description}}</p>
+    </li>
+  {{/tasks}}
+</ul>
+
+<form method="post">
+  <fieldset>
+    <legend>Add Task</legend>
+    <div>
+      <label for="name">Task Name</label>
+      <input name="name" type="text" />
+    </div>
+    <div>
+      <label for="description">Description</label>
+      <input name="description" type="text" />
+    </div>
+    <div>
+      <input type="submit" value="Add Task" />
+    </div>
+  </fieldset>
+</form>
