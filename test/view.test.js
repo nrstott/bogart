@@ -3,7 +3,7 @@ var
   view   = require('../lib/view'),
   jsgi   = require('jsgi'),
   sys    = require('sys'),
-  when   = require('promised-io/promise').when,
+  when   = require('promised-io/lib/promise').when,
   assert = require('assert'),
   fixturesDir = process.cwd() + '/test/fixtures';
 

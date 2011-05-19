@@ -1,7 +1,7 @@
 var
   bogart = require('../lib/bogart'),
   assert = require('assert'),
-  Q      = require('promised-io/promise'),
+  Q      = require('promised-io/lib/promise'),
   when   = Q.when,
   jsgi   = require('jsgi'),
   rootRequest = function() {
