@@ -1,7 +1,7 @@
 var
   bogart = require('../lib/bogart'),
   assert = require('assert'),
-  Q      = require('promised-io/lib/promise'),
+  Q      = require('q-util'),
   when   = Q.when,
   jsgi   = require('jsgi'),
   rootRequest = function() {
@@ -68,11 +68,17 @@ exports['test should have status 500 if body is not a forEachable'] = function()
         };
       });
     }),
-    respPromise = router(rootRequest());
+    respPromise = router(rootRequest()),
+    defer = Q.defer();
 
-  return when(respPromise, function(resp) {
-    assert.equal(500, resp.status);
+  when(respPromise, function(resp) {
+    defer.reject("Expected an error from respPromise");
+  }, function(err) {
+    assert.ok(true);
+    defer.resolve();
   });
+
+  return defer;
 };
 
 exports['test should not partially match route'] = function() {
