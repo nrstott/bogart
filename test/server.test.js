@@ -13,7 +13,7 @@ var
   };
 
 exports["test should have middleware"] = function() {
-  var server = new bogart.server(function() {
+  var server = new bogart.build(function() {
     this.use(function(nextApp) {
       return function(req) {
         return when(nextApp(req), function(resp) {
@@ -36,8 +36,10 @@ exports["test should have middleware"] = function() {
   
   var resp = server(rootRequest);
   
-  assert.ok(resp.headers);
-  assert.equal("xyz", resp.headers["custom-header"]);
+  return when(resp, function(resp) {
+    assert.ok(resp.headers);
+    assert.equal("xyz", resp.headers["custom-header"]);    
+  });
 };
 
 if(require.main == module) {
