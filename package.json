@@ -20,8 +20,8 @@
     	"mustache": "0.3.1-dev"
     },
     "devDependencies": {
-      "patr": ">= 0.2.1",
-     	"haml": ">=0.2.5"
+      "expresso": ">= 0.8.1",
+      "haml": ">=0.4.2"
     },
     "scripts": {
       "test": "node test/all-tests.js"

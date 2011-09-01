@@ -1,10 +1,9 @@
-var
-  bogart = require('../lib/bogart'),
-  assert = require('assert'),
-  Q      = require('promised-io/lib/promise'),
-  when   = Q.when,
-  jsgi   = require('jsgi'),
-  rootRequest = function() {
+var bogart = require('../lib/bogart')
+  , assert = require('assert')
+  , Q      = require('promised-io/lib/promise')
+  , when   = Q.when
+  , jsgi   = require('jsgi')
+  , rootRequest = function() {
     return {
       headers: {},
       pathInfo: '/',
@@ -14,9 +13,9 @@ var
     };
  };
   
-exports['test matches parameter'] = function() {
+exports['test matches parameter'] = function(beforeExit) {
   var
-    name, req = rootRequest(),
+    name, req = rootRequest(), response,
     router = bogart.router(function(get) {
      get('/hello/:name', function(req) {
        name = req.params.name;
@@ -26,78 +25,99 @@ exports['test matches parameter'] = function() {
 
   req.pathInfo = '/hello/nathan';
 
-  return when(router(req), function(resp) {
-    assert.equal(200, resp.status);
-    assert.equal("nathan", name);
+  when(router(req), function(resp) {
+    response = resp;
+  });
+
+  beforeExit(function() {
+    assert.equal(200, response.status);
+    assert.equal("nathan", name);    
   });
 };
 
-exports['test should call notFoundApp'] = function() {
-  var
-    called = false,
-    notFoundApp = function(req) {
-      called = true;
-      return { status: 409, body: [ '' ] };
-    },
-    router = bogart.router(function() {}, notFoundApp),
-    respPromise = router(rootRequest());
-    
-  return when(respPromise, function(resp) {
-    assert.equal(409, resp.status);
-    assert.ok(called);
-  });
-};
-
-exports['test should have default notFoundApp behavior of returning 404'] = function() {
-  var
-    router = bogart.router(function(){}),
-    respPromise = router(rootRequest());
+exports['test should call notFoundApp'] = function(beforeExit) {
+  var called = false
+    , notFoundApp = function(req) {
+        called = true;
+        return { status: 409, body: [ '' ] };
+      }
+    , router = bogart.router(function() {}, notFoundApp)
+    , respPromise = router(rootRequest())
+    , response;
   
-  return when(respPromise, function(resp) {
-    assert.equal(404, resp.status);
+  when(respPromise, function(resp) {
+    response = resp;
+  });
+    
+  beforeExit(function() {
+    assert.equal(409, response.status);
+    assert.ok(called);    
   });
 };
 
-exports['test should have status 500 if body is not a forEachable'] = function() {
-  var
-    router = bogart.router(function(get) {
-      get('/', function(req) {
-        return {
-          status: 200,
-          body: "hello"      
-        };
-      });
-    }),
-    respPromise = router(rootRequest());
+exports['test should have default notFoundApp behavior of returning 404'] = function(beforeExit) {
+  var router = bogart.router(function(){})
+    , respPromise = router(rootRequest())
+    , response;
+  
+  when(respPromise, function(resp) {
+    response = resp;
+  });
 
-  return when(respPromise, function(resp) {
-    assert.equal(500, resp.status);
+  beforeExit(function() {
+    assert.equal(404, response.status);
   });
 };
 
-exports['test should not partially match route'] = function() {
-  var
-    router = bogart.router(function(get) {
+exports['test should have status 500 if body is not a forEachable'] = function(beforeExit) {
+  var response
+    , router;
+    
+  router = bogart.router(function(get) {
+    get('/', function(req) {
+      return {
+        status: 200,
+        body: "hello"      
+      };
+    });
+  });
+
+  when(router(rootRequest()), function(resp) {
+    response = resp;
+  });
+
+  beforeExit(function() {
+    assert.equal(500, response.status);
+  });
+};
+
+exports['test should not partially match route'] = function(beforeExit) {
+  var router = bogart.router(function(get) {
       get('/partial', function(req) {
         return {
           status: 200,
           body: ['hello']
         }
       })
-    }),
-    req = rootRequest();
+    })
+    , req = rootRequest()
+    , response;
 
   req.pathInfo = '/partial/path';
   
-  return when(router(req), function(resp) {
-    assert.equal(404, resp.status);
+  when(router(req), function(resp) {
+    response = resp;
   });
+
+  beforeExit(function() {
+    assert.equal(404, response.status);
+  })
 };
 
-exports['test should not partially match route from beginning'] = function() {
-  var 
-    req = rootRequest(),
-    router;
+exports['test should not partially match route from beginning'] = function(beforeExit) {
+  var req = rootRequest()
+    , router
+    , response;
 
   router = bogart.router(function(get) {
     get('/:foo', function(req) {
@@ -110,34 +130,45 @@ exports['test should not partially match route from beginning'] = function() {
 
   req.pathInfo = '/hello/world';
 
-  return when(router(req), function(resp) {
-    assert.equal(404, resp.status);
+  when(router(req), function(resp) {
+    response = resp;
+  });
+
+  beforeExit(function() {
+    assert.equal(404, response.status);
   });
 };
 
-exports['test should match route with querystring'] = function() {
-  var
-    router = bogart.router(function(get) {
-      get('/home', function(req) {
-        return {
-          status: 200,
-          body: ['home']
-        }
-      });
-    }),
-    req = rootRequest();
+exports['test should match route with querystring'] = function(beforeExit) {
+  var req = rootRequest()
+    , router
+    , response;
+
+  router = bogart.router(function(get) {
+    get('/home', function(req) {
+      return {
+        status: 200,
+        body: ['home']
+      }
+    });
+  });
 
   req.pathInfo = '/home';
   req.queryString = "hello=world";
 
-  return when(router(req), function(resp) { assert.equal(200, resp.status); });
+  when(router(req), function(resp) { response = resp; });
+
+  beforeExit(function() {
+    assert.isNotNull(response);
+    assert.equal(200, response.status);
+  });
 };
 
-exports['test regex route'] = function() {
-  var
-    router,
-    req = rootRequest(),
-    splat;
+exports['test regex route'] = function(beforeExit) {
+  var router
+    , req = rootRequest()
+    , splat
+    , response;
 
   req.pathInfo = '/hello/world';
 
@@ -148,13 +179,14 @@ exports['test regex route'] = function() {
     });
   });
 
-  return when(router(req), function(resp) {
-    assert.equal(200, resp.status);
+  when(router(req), function(resp) {
+    response = resp;
+  });
+
+  beforeExit(function() {
+    assert.isNotNull(response);
+    assert.equal(200, response.status);
     assert.ok(splat, "Should have set 'splat'");
     assert.equal(splat[0], 'world');
   });
 };
-
-if(require.main == module) {
-  require("patr/runner").run(exports);
-}
