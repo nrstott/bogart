@@ -190,3 +190,26 @@ exports['test regex route'] = function(beforeExit) {
     assert.equal(splat[0], 'world');
   });
 };
+
+exports['test should have X-Powered-By Bogart header'] = function(beforeExit) {
+  var router
+    , response;
+
+  router = bogart.router(function(get) {
+    get('/', function(req) {
+      return bogart.html('hello world');
+    });
+  });
+
+  when(router(rootRequest()), function(resp) {
+    response = resp;
+  });
+
+  beforeExit(function() {
+    assert.isDefined(response);
+    assert.isDefined(response.headers);
+    assert.isDefined(response.headers['X-Powered-By'], 'X-Powered-By header should be defined');
+
+    assert.equal('Bogart', response.headers['X-Powered-By']);
+  });
+};
