@@ -24,6 +24,6 @@
       "haml": ">=0.4.2"
     },
     "scripts": {
-      "test": "node test/all-tests.js"
+      "test": "expresso"
     }
 }
