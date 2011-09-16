@@ -1,10 +1,9 @@
-var 
-  bogart = require('../lib/bogart'),
-  Q      = require('promised-io/lib/promise'),
-  when   = Q.when,
-  assert = require('assert'),
-  jsgi   = require('jsgi'),
-  rootRequest = {
+var bogart = require('../lib/bogart')
+  , Q      = require('promised-io/lib/promise')
+  , when   = Q.when
+  , assert = require('assert')
+  , jsgi   = require('jsgi')
+  , rootRequest = {
     headers: {},
     pathInfo: '/',
     method: 'GET',
@@ -41,7 +40,3 @@ exports["test should have middleware"] = function() {
     assert.equal("xyz", resp.headers["custom-header"]);    
   });
 };
-
-if(require.main == module) {
-  require("patr/runner").run(exports);
-}

@@ -89,6 +89,7 @@ You should see the image.
 * [Nathan Stott](http://github.com/nrstott)
 * [Nick Fitzgerald](http://github.com/fitzgen)
 * [Martin Murphy](http://github.com/soitgoes)
+* [Davis Clark](http://github.com/jdc0589)
 
 ## License
 

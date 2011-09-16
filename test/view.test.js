@@ -1,28 +1,45 @@
-var
-  bogart = require('../lib/bogart'),
-  view   = require('../lib/view'),
-  jsgi   = require('jsgi'),
-  sys    = require('sys'),
-  when   = require('promised-io/lib/promise').when,
-  assert = require('assert'),
-  fixturesDir = process.cwd() + '/test/fixtures';
+var bogart = require('../lib/bogart')
+  , view   = require('../lib/view')
+  , jsgi   = require('jsgi')
+  , when   = require('promised-io/lib/promise').when
+  , assert = require('assert')
+  , fixturesDir = process.cwd() + '/test/fixtures';
 
-exports['test render haml'] = function() {
-  var viewEngine = bogart.viewEngine('haml', __dirname+'/fixtures');
+exports['test render haml'] = function(beforeExit) {
+  var viewEngine = bogart.viewEngine('haml', __dirname+'/fixtures')
+    , renderedText;
   
-  return when(viewEngine.render('index.haml', { layout: false }), function(str) {
-    assert.equal(str, '<h1>Hello World</h1>');
+  when(viewEngine.render('index.haml', { layout: false }), function(str) {
+    renderedText = str;
   });
-}
 
-exports['test render mustache'] = function() {
-  var viewEngine = bogart.viewEngine("mustache", __dirname+'/fixtures');
+  beforeExit(function() {
+    assert.equal(renderedText, '<h1>Hello World</h1>');
+  });
+};
+
+exports['test render mustache'] = function(beforeExit) {
+  var viewEngine = bogart.viewEngine('mustache', __dirname+'/fixtures')
+    , renderedText;
   
-  return when(viewEngine.render('index.mustache', { layout: false }), function(str) {
-    assert.equal(str, '<h1>Hello World from Mustache</h1>\n');
+  when(viewEngine.render('index.mustache', { layout: false }), function(str) {
+    renderedText = str;
   });
-}
 
-if(require.main == module) {
-  require("patr/runner").run(exports);
+  beforeExit(function() {
+    assert.equal(renderedText, '<h1>Hello World from Mustache</h1>\n');
+  });
+};
+
+exports['test render jade'] = function(beforeExit) {
+  var viewEngine = bogart.viewEngine('jade', __dirname+'/fixtures')
+    , renderedText;
+  
+  when(viewEngine.render('index.jade', { layout: false }), function(str) {
+    renderedText = str;
+  });
+
+  beforeExit(function() {
+    assert.equal(renderedText, '<h1>Hello World from Jade</h1>');
+  });
 }

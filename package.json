@@ -1,7 +1,7 @@
 {
     "name": "bogart",
     "description": "Fast JSGI web framework taking inspiration from Sinatra",
-    "version": "0.1.6",
+    "version": "0.3.0",
     "keywords": ["bogart", "framework", "sinatra", "REST"],
     "author": "Nathan Stott",
     "email": "nathan.stott@whiteboard-it.com",
@@ -20,10 +20,11 @@
     	"mustache": "0.3.1-dev"
     },
     "devDependencies": {
-      "patr": ">= 0.2.1",
-     	"haml": ">=0.2.5"
+      "expresso": ">= 0.8.1",
+      "haml": ">=0.4.2",
+      "jade": ">=0.15.4"
     },
     "scripts": {
-      "test": "node test/all-tests.js"
+      "test": "expresso"
     }
 }
