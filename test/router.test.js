@@ -69,9 +69,10 @@ exports['test should have default notFoundApp behavior of returning 404'] = func
   });
 };
 
-exports['test should have status 500 if body is not a forEachable'] = function(beforeExit) {
+exports['test should reject promise if body is not forEachable'] = function(beforeExit) {
   var response
-    , router;
+    , router
+    , rejected = false;
     
   router = bogart.router(function(get) {
     get('/', function(req) {
@@ -84,13 +85,14 @@ exports['test should have status 500 if body is not a forEachable'] = function(b
 
   when(router(rootRequest()), function(resp) {
     response = resp;
+  }, function(err) {
+    rejected = true;
   });
 
   beforeExit(function() {
-    assert.equal(500, response.status);
+    assert.ok(response === undefined, 'Response should be undefined');
+    assert.ok(rejected, 'Should have rejected promise');
   });
-
-  return defer;
 };
 
 exports['test should not partially match route'] = function(beforeExit) {
