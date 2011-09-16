@@ -30,3 +30,16 @@ exports['test render mustache'] = function(beforeExit) {
     assert.equal(renderedText, '<h1>Hello World from Mustache</h1>\n');
   });
 };
+
+exports['test render jade'] = function(beforeExit) {
+  var viewEngine = bogart.viewEngine('jade', __dirname+'/fixtures')
+    , renderedText;
+  
+  when(viewEngine.render('index.jade', { layout: false }), function(str) {
+    renderedText = str;
+  });
+
+  beforeExit(function() {
+    assert.equal(renderedText, '<h1>Hello World from Jade</h1>');
+  });
+}
