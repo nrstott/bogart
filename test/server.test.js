@@ -2,7 +2,6 @@ var bogart = require('../lib/bogart')
   , Q      = require('promised-io/lib/promise')
   , when   = Q.when
   , assert = require('assert')
-  , jsgi   = require('jsgi')
   , rootRequest = {
     headers: {},
     pathInfo: '/',
