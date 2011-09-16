@@ -15,8 +15,8 @@
         "pintura": "http://github.com/kriszyp/pintura/zipball/v0.2.1"
     },
     "dependencies": {
-      "promised-io": ">=v0.2.1",
-    	"jsgi": ">=v0.2.2",
+        "promised-io": ">=v0.2.1",
+    	"q-http": ">=v0.1.3",
     	"mustache": "0.3.1-dev"
     },
     "devDependencies": {
