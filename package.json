@@ -21,7 +21,8 @@
     },
     "devDependencies": {
       "expresso": ">= 0.8.1",
-      "haml": ">=0.4.2"
+      "haml": ">=0.4.2",
+      "jade": ">=0.15.4"
     },
     "scripts": {
       "test": "expresso"
