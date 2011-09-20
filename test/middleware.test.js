@@ -1,5 +1,5 @@
 var bogart = require('../lib/bogart')
-  , Q      = require("promised-io/lib/promise")
+  , Q      = require("q-util")
   , assert = require('assert');
 
 exports["test parses JSON"] = function(beforeExit) {
@@ -28,9 +28,9 @@ exports["test parses JSON"] = function(beforeExit) {
   forEachDeferred.resolve();
 
   beforeExit(function() {
-    assert.ok(processedReq !== undefined);
+    assert.ok(processedReq !== undefined, 'route handler callback should have been called');
     assert.equal('1', processedReq.body.a);
-  })
+  });
 };
 
 exports["test parses form"] = function(beforeExit) {
