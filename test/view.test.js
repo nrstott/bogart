@@ -1,7 +1,7 @@
 var bogart = require('../lib/bogart')
   , view   = require('../lib/view')
   , jsgi   = require('jsgi')
-  , when   = require('promised-io/lib/promise').when
+  , when   = require('promised-io/promise').when
   , assert = require('assert')
   , fixturesDir = process.cwd() + '/test/fixtures';
 
