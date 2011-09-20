@@ -1,26 +1,13 @@
 var bogart = require('../lib/bogart');
 
-var config = function(show, create, update, destroy) {
-  show('/hello/:name', function(req, name) {
-    return bogart.html('Hello '+name);
-  });
-  
-  show('/stream', function(req) {
-    var streamer = bogart.stream();
-    
-    setInterval(function() {
-      var currentTime = new Date();
-      streamer(currentTime.getHours()+':'+currentTime.getMinutes()+':'+currentTime.getSeconds()+"\n");
-    }, 10);
-    
-    setTimeout(function() {
-      streamer.end();
-    }, 10000);
-    
-    return streamer.respond();
-  });
-};
+var app = bogart.router();
 
+app.get('/', function(req) {
+  return bogart.html('Hello World<br /><br /><a href="/hello/bogart">Hello Bogart</a>');
+});
 
+app.get('/hello/:name', function(req, name) {
+  return bogart.html('Hello '+name);
+});
 
-bogart.start(bogart.router(config));
+bogart.start(app);
