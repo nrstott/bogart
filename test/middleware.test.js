@@ -1,5 +1,5 @@
 var bogart = require('../lib/bogart')
-  , Q      = require("promised-io/promise")
+  , Q      = require("promised-io/lib/promise")
   , assert = require('assert');
 
 exports["test parses JSON"] = function(beforeExit) {
