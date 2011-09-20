@@ -1,5 +1,5 @@
 var bogart = require('../lib/bogart')
-  , Q      = require("q-util")
+  , Q      = require("q")
   , assert = require('assert');
 
 exports["test parses JSON"] = function(beforeExit) {

@@ -1,8 +1,7 @@
 var bogart = require('../lib/bogart')
   , assert = require('assert')
-  , Q      = require('q-util')
+  , Q      = require('q')
   , when   = Q.when
-  , jsgi   = require('jsgi')
   , rootRequest = function() {
     return {
       headers: {},
@@ -47,6 +46,8 @@ exports['test should call notFoundApp'] = function(beforeExit) {
   
   when(respPromise, function(resp) {
     response = resp;
+  }, function(err) {
+    console.log('error getting response:'+err);
   });
     
   beforeExit(function() {
