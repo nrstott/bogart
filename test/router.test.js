@@ -176,11 +176,11 @@ exports['test regex route'] = function(beforeExit) {
 
   req.pathInfo = '/hello/world';
 
-  router = bogart.router(function(get) {
-    get(/\/hello\/(.*)/, function(req) {
-      splat = req.params.splat;
-      return bogart.html("hello");
-    });
+  router = bogart.router();
+
+  router.get(/\/hello\/(.*)/, function(req) {
+    splat = req.params.splat;
+    return bogart.html("hello");
   });
 
   when(router(req), function(resp) {
