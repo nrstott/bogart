@@ -1,6 +1,8 @@
 var bogart = require('../lib/bogart')
   , assert = require('assert')
-  , Q      = require('promised-io/lib/promise');
+  , Q      = require('promised-io/lib/promise')
+  , fs     = require('fs')
+  , path   = require('path');
 
 function identity(){};
  
@@ -65,12 +67,37 @@ exports["test ResponseBuilder send buffer"] = function(beforeExit) {
   response.end();
 
   response.then(function(resp) {
-  	return resp.body.forEach(function(data) {
-  		written += data;
-  	});
+    return resp.body.forEach(function(data) {
+      written += data;
+    });
   });
 
   beforeExit(function() {
-  	assert.equal(msg, written);
+    assert.equal(msg, written);
+  });
+};
+
+exports["test ResponseBuilder send binary"] = function(beforeExit) {
+  var response    = new bogart.ResponseBuilder()
+    , filePath    = path.join(__dirname, 'fixtures', 'test.jpg')
+    , stat        = fs.statSync(filePath)
+    , fileContent = null
+    , written     = new Buffer(stat.size);
+  
+  fs.readFile(filePath, 'binary', function(err, content) {
+    fileContent = content;
+    response.send(content);
+  });
+
+  response.end();
+
+  response.then(function(resp) {
+    return resp.body.forEach(function(chunk) {
+      written.write(chunk, 'binary');
+    });
+  });
+
+  beforeExit(function() {
+    assert.equal(fileContent, written.toString('binary'), 'not equal');
   });
 };
