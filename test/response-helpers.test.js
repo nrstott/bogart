@@ -1,7 +1,9 @@
 var bogart = require('../lib/bogart')
   , assert = require('assert')
   , Q      = require('q')
-  , when   = Q.when;
+  , when   = Q.when
+  , path   = require('path')
+  , fs     = require('fs');
 
 
 exports["test json should have status 200"] = function() {
@@ -66,4 +68,50 @@ exports["test should have content-length 5"] = function() {
     , resp = bogart.html(str);
   
   assert.equal(5, resp.headers["content-length"]);
+};
+
+exports["test pipe stream"] = function(beforeExit) {
+  var readStream = fs.createReadStream(path.join(__dirname, 'fixtures', 'text.txt'))
+    , pipe       = bogart.pipe(readStream)
+    , response   = null
+    , written    = '';
+
+  pipe.then(function(resp) {
+    response = resp;
+    resp.body.forEach(function(data) {
+      written += data;
+    });
+  });
+
+  beforeExit(function() {
+    assert.isNotNull(response, 'Response should not be null');
+    assert.equal('Hello World', written);
+  });
+};
+
+exports["test pipe forEachable"] = function(beforeExit) {
+  var forEachable = {}
+    , deferred    = Q.defer()
+    , msg         = 'Hello World'
+    , resp
+    , written     = '';
+  
+  forEachable.forEach = function(callback) {
+    callback(msg);
+    return deferred.promise;
+  };
+
+  resp = bogart.pipe(forEachable);
+
+  deferred.resolve();
+
+  resp.then(function(resp) {
+    return resp.body.forEach(function(data) {
+      written += data;
+    });
+  });
+
+  beforeExit(function() {
+    assert.equal(msg, written);
+  });
 };

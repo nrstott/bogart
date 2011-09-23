@@ -1,5 +1,5 @@
 var
-  bogart = require("bogart"),
+  bogart = require("../../lib/bogart"),
   path   = require("path");
 
 /**
