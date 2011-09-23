@@ -17,4 +17,10 @@ app.get('/image.jpg', function(req) {
   });
 });
 
+app.get('/cat.jpg', function(req) {
+	var filePath = path.join(__dirname, 'static-server', 'public', 'images', 'ninja-cat.jpg');
+  
+  return bogart.file(filePath);
+});
+
 bogart.start(app);
