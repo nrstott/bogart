@@ -81,15 +81,15 @@ exports["test method override"] = function(beforeExit) {
   });
 };
 
-exports["test deflate"] = function(beforeExit) {
+exports["test gzip"] = function(beforeExit) {
   var response = null;
   
-  var app = bogart.middleware.Deflate(function(req) {
+  var app = bogart.middleware.Gzip(function(req) {
     return bogart.html('Hello World');
   });
 
   var appPromise = app({ method: 'GET', env: {} });
-  appPromise.then(function(jsgiResp) { 
+  Q.when(appPromise, function(jsgiResp) { 
     response = jsgiResp;
   });
 
