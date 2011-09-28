@@ -80,3 +80,21 @@ exports["test method override"] = function(beforeExit) {
     assert.equal('PUT', request.method, 'Should change method to PUT');
   });
 };
+
+exports["test deflate"] = function(beforeExit) {
+  var response = null;
+  
+  var app = bogart.middleware.Deflate(function(req) {
+    return bogart.html('Hello World');
+  });
+
+  var appPromise = app({ method: 'GET', env: {} });
+  appPromise.then(function(jsgiResp) { 
+    response = jsgiResp;
+  });
+
+  beforeExit(function() {
+    assert.isNotNull(response, 'Response should not be null');
+    assert.ok(response.body, 'Response should have a body');
+  });
+};
