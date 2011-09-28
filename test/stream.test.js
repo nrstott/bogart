@@ -38,3 +38,34 @@ exports["test foreachstream pipe to deflateStream"] = function(beforeExit) {
     assert.equal('Hello World', deflate.inflate(fs.readFileSync(filename)).toString('utf8'));
   });
 };
+
+exports["test pump ForEachStrean to file stream"] = function(beforeExit) {
+  var seed     = ['Hello',' ','World'].map(function(x) { return new Buffer(x); })
+    , filename = 'forEachableToFileStream.txt'
+    , src      = new ForEachStream(seed)
+    , dest     = fs.createWriteStream(filename);
+  
+  bogart.pump(src, dest);
+
+  beforeExit(function() {
+    var stat = fs.statSync(filename);
+
+    assert.ok(stat.isFile());
+    assert.equal('Hello World', fs.readFileSync(filename, 'utf-8'));
+  });
+};
+
+exports["test pump forEachable to file stream"] = function(beforeExit) {
+  var src      = ['Hello',' ','World']
+    , filename = 'forEachableToFileStream.txt'
+    , dest     = fs.createWriteStream(filename);
+  
+  bogart.pump(src, dest);
+
+  beforeExit(function() {
+    var stat = fs.statSync(filename);
+
+    assert.ok(stat.isFile());
+    assert.equal('Hello World', fs.readFileSync(filename, 'utf-8'));
+  });
+};
