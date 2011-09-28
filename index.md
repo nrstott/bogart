@@ -15,6 +15,5 @@ title: Bogart
 
 ## Learn
 
-* [Routing]() Setup Bogart routes to handle URLs.
-* [ViewEngine]() Extensible ViewEngine with partials and layout support.
-* [Middleware]() Compose responses with reusable middleware.
+* [Routing](routing.html) Setup Bogart routes to handle URLs.
+* [ViewEngine](view-engine.html) Extensible ViewEngine with partials and layout support.
