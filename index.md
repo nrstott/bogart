@@ -1,3 +1,7 @@
+---
+title: Bogart
+---
+
 # Bogart
 
 ## Features
