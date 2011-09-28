@@ -8,6 +8,6 @@ router.get('/', function() {
 var Deflate = bogart.middleware.Gzip;
 
 
-var app = Gzip(router);
+var app = Deflate(router);
 
 bogart.start(app);
