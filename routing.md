@@ -1,3 +1,7 @@
+---
+title: Bogart Routing
+---
+
 # Routing
 
 Routing in Bogart is simple and intuitive.  A route is a HTTP method paried with a

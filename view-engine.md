@@ -1,3 +1,7 @@
+---
+title: Bogart View Engine
+---
+
 # View Engine
 
 The Bogart `ViewEngine` renders view.  It handles partials and layouts as well.
