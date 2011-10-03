@@ -1,3 +1,7 @@
+## v0.3.10
+
+* Added support for mustache partials to the mustache template engine.  This is unrelated to Bogart partials.
+
 ## v0.3.9
 
 * Made view engines registerable.
