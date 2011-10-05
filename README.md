@@ -79,17 +79,13 @@ The static example demonstrates using bogarts *Directory* middleware to serve an
 Visit the application in a web browser at [http://localhost:8080/](http://localhost:8080).
 You should see the image.
 
-## Inspirations
-
-* [Sinatra](http://www.sinatrarb.com/)
-* [Rails](http://rubyonrails.org/)
-
 ## Contributors
 
-* [Nathan Stott](http://github.com/nrstott)
-* [Nick Fitzgerald](http://github.com/fitzgen)
-* [Martin Murphy](http://github.com/soitgoes)
-* [Davis Clark](http://github.com/jdc0589)
+* [Nathan Stott](https://github.com/nrstott)
+* [Nick Fitzgerald](https://github.com/fitzgen)
+* [Martin Murphy](https://github.com/soitgoes)
+* [Davis Clark](https://github.com/jdc0589)
+* [Aaron Shafovaloff](https://github.com/aaronshaf)
 
 ## License
 

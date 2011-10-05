@@ -8,11 +8,11 @@
     "main": "./lib/bogart",
     "directories": { "lib": "./lib" },
     "dependencies": {
+<<<<<<< HEAD
       "q-http": ">=v0.1.3",
       "mustache": "0.3.1-dev",
       "q": "0.7.1",
-      "q-fs": "0.1.14",
-      "node-deflate": "1.0.2"
+      "q-fs": "0.1.14"
     },
     "devDependencies": {
       "expresso": ">= 0.8.1",

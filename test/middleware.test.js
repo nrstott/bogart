@@ -1,6 +1,7 @@
 var bogart = require('../lib/bogart')
   , Q      = require("q")
-  , assert = require('assert');
+  , assert = require('assert')
+  , path   = require('path');
 
 exports["test parses JSON"] = function(beforeExit) {
   var forEachDeferred = Q.defer()
@@ -96,5 +97,29 @@ exports["test gzip"] = function(beforeExit) {
   beforeExit(function() {
     assert.isNotNull(response, 'Response should not be null');
     assert.ok(response.body, 'Response should have a body');
+  });
+};
+
+exports["test gzip downloads as text/html"] = function(beforeExit) {
+  var response = null;
+
+  var router = bogart.router();
+  var viewEngine = bogart.viewEngine('mustache', path.join(__dirname, 'fixtures'));
+
+  router.get('/', function() {
+      return viewEngine.respond('index.mustache', { layout: false }); 
+  });
+
+  var Gzip = bogart.middleware.Gzip;
+  var app = Gzip(router);
+
+  Q.when(app({ method: 'GET', env: {}, headers: {}, pathInfo: '/' }), function(resp) {
+    response = resp;
+  });
+
+  beforeExit(function() {
+    assert.isNotNull(response, 'Repsones should not be null');
+    assert.equal(200, response.status);
+    assert.equal('text/html', response.headers['content-type']);
   });
 };
