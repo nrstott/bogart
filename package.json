@@ -7,6 +7,10 @@
     "email": "nathan.stott@whiteboard-it.com",
     "main": "./lib/bogart",
     "directories": { "lib": "./lib" },
+    "bugs": {
+      "url": "https://github.com/nrstott/bogart/issues",
+      "email": "nrstott@gmail.com"
+    },
     "dependencies": {
       "promised-io": "v0.2.3",
     	"jsgi": ">=v0.2.2",
