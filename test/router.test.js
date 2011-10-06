@@ -256,3 +256,23 @@ exports['test matches empty `pathInfo` to "/" if no route is defined for ""'] = 
     assert.equal('success', response.body);
   });
 };
+
+exports['test matches empty `pathInfo` to "" if a route is defined for ""'] = function(beforeExit) {
+  var router
+    , response;
+  
+  router = bogart.router();
+  router.get('', function(req) {
+    return bogart.text('right');
+  });
+
+  router.get('/', function(req) {
+    return bogart.text('wrong');
+  });
+
+  response = router(getMock(''));
+
+  beforeExit(function() {
+    assert.equal('right', response.body);
+  });
+};
