@@ -240,3 +240,19 @@ exports['test matches a dot (".") as part of a named param'] = function(beforeEx
     assert.equal('user@example.com', foo);
   });
 };
+
+exports['test matches empty `pathInfo` to "/" if no route is defined for ""'] = function(beforeExit) {
+  var router
+    , response;
+  
+  router = bogart.router();
+  router.get('/', function(req) {
+    return bogart.text('success');
+  });
+
+  response = router(getMock(''));
+
+  beforeExit(function() {
+    assert.equal('success', response.body);
+  });
+};
