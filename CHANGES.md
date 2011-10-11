@@ -1,3 +1,7 @@
+## v0.3.12
+
+* Add `before` method to the return from `bogart.router`
+
 ## v0.3.10
 
 * Added support for mustache partials to the mustache template engine.  This is unrelated to Bogart partials.
