@@ -1,6 +1,8 @@
 ## v0.3.10
 
 * Added support for mustache partials to the mustache template engine.  This is unrelated to Bogart partials.
+* Match `pathInfo` of "" to "/" if no route found for ""
+* Support dot in named parameters
 
 ## v0.3.9
 

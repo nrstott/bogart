@@ -11,6 +11,16 @@ var bogart = require('../lib/bogart')
       env: {}
     };
  };
+
+function getMock(path) {
+  return {
+    headers: {},
+    pathInfo: path,
+    method: 'GET',
+    jsgi: { version: [0,3] },
+    env: {}
+  };
+}
   
 exports['test matches parameter'] = function(beforeExit) {
   var
@@ -216,5 +226,62 @@ exports['test should have X-Powered-By Bogart header'] = function(beforeExit) {
     assert.isDefined(response.headers['X-Powered-By'], 'X-Powered-By header should be defined');
 
     assert.equal('Bogart', response.headers['X-Powered-By']);
+  });
+};
+
+exports['test matches a dot (".") as part of a named param'] = function(beforeExit) {
+  var router
+    , foo = null;
+  
+  router = bogart.router();
+  router.get('/:foo/:bar', function(req) {
+    foo = req.params.foo;
+  });
+
+  router(getMock('/user@example.com/name'));
+
+  beforeExit(function() {
+    assert.isNotNull(foo, 'Named parameter should not be null');
+    assert.equal('user@example.com', foo);
+  });
+};
+
+exports['test matches empty `pathInfo` to "/" if no route is defined for ""'] = function(beforeExit) {
+  var router
+    , response;
+  
+  router = bogart.router();
+  router.get('/', function(req) {
+    return bogart.text('success');
+  });
+
+  when(router(getMock('')), function(resp) {
+    response = resp;
+  });
+
+  beforeExit(function() {
+    assert.equal('success', response.body);
+  });
+};
+
+exports['test matches empty `pathInfo` to "" if a route is defined for ""'] = function(beforeExit) {
+  var router
+    , response;
+  
+  router = bogart.router();
+  router.get('', function(req) {
+    return bogart.text('right');
+  });
+
+  router.get('/', function(req) {
+    return bogart.text('wrong');
+  });
+
+  when(router(getMock('')), function(resp) {
+    response = resp;
+  });
+
+  beforeExit(function() {
+    assert.equal('right', response.body);
   });
 };

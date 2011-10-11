@@ -1,3 +1,11 @@
 .idea/
 downloaded-modules/
 results/
+hello-world.txt
+*.dat
+forEachableToFileStream.txt
+*.sublime-project
+*.sublime-workspace
+lib-cov
+node_modules
+
