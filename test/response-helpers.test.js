@@ -115,3 +115,24 @@ exports["test pipe forEachable"] = function(beforeExit) {
     assert.equal(msg, written);
   });
 };
+
+exports["test bogart.redirect merges opts"] = function(beforeExit) {
+  var opts = {
+    hello: 'world'
+  };
+
+  var resp = bogart.redirect('/', opts);
+
+  assert.equal('world', resp.hello);
+};
+
+exports["test bogart.redirect merges headers"] = function(beforeExit) {
+  var opts = {
+    headers: { hello: 'world' }
+  };
+
+  var resp = bogart.redirect('/', opts);
+
+  assert.equal('world', resp.headers.hello);
+  assert.ok('location' in resp.headers);
+};
