@@ -1,7 +1,8 @@
-var bogart = require('../lib/bogart')
-  , Q      = require("promised-io/lib/promise")
-  , assert = require('assert')
-  , path   = require('path');
+var bogart    = require('../lib/bogart')
+  , Q         = require("promised-io/lib/promise")
+  , assert    = require('assert')
+  , path      = require('path')
+  , security  = require("../lib/security");
 
 exports["test parses JSON"] = function(beforeExit) {
   var forEachDeferred = Q.defer()
@@ -123,3 +124,25 @@ exports["test gzip downloads as text/html"] = function(beforeExit) {
     assert.equal('text/html', response.headers['content-type']);
   });
 };
+
+
+exports["test flash"] = function(beforeExit) {
+  var app
+    , headers = { 'content-type': 'text/plain' }
+    , request = { headers: headers, body:[] }
+    , flash;
+
+  app = bogart.middleware.Flash({}, function(req) {
+    flash = req.env.flash;
+  });
+
+  app(request);
+
+  
+
+  beforeExit(function() {
+    assert.ok(processedReq !== undefined);
+    assert.equal('1', processedReq.body.a);
+  })
+};
+
