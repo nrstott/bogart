@@ -3,10 +3,8 @@ var bogart = require('../lib/bogart');
 
 var config = function(show, create, update, destroy) {
   show('/flash/:key/:value', function(req, name) {
-    var existing  = "Existing Flash:"+ req.env.flash["foo"] +"<br />";
-    req.flash({
-      "foo": Math.random() * 10
-    });
+    var existing  = "Existing Flash:"+ req.flash("foo") +"<br />";
+    req.flash("foo", Math.random() * 10);
     return bogart.html(existing);
   });
 };

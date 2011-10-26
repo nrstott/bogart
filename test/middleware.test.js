@@ -130,32 +130,30 @@ exports["test flash"] = function(beforeExit) {
   var app
     , headers = { 'content-type': 'text/plain' }
     , request = { headers: headers, body:[] }
-    , flash;
+    , foo;
     
 
   app = bogart.middleware.Flash({}, function(req) {
-    req.flash({
-      "foo": "bar"
-    });
+    req.flash("foo", "bar");
 
-    flash = req.env.flash;
+    foo = req.flash("foo");
     return {
       status: 200,
       body: [],
     }
   });
 
-  assert.isUndefined(flash);
-
   var initialResp = app(request);
   var cookieStr = initialResp.headers["Set-Cookie"].join("").replace(/;$/, "");
+
+  // the first attempt to retrieve "foo" should have gotten undefined
+  assert.isUndefined(foo);
 
   request.headers.cookie = cookieStr;
   var secondResp = app(request);
 
   beforeExit(function() {
-    assert.isNotNull(flash);
-    assert.eql(flash.foo, "bar");
+    assert.eql(foo, "bar");
   });
 };
 
