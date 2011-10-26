@@ -131,18 +131,31 @@ exports["test flash"] = function(beforeExit) {
     , headers = { 'content-type': 'text/plain' }
     , request = { headers: headers, body:[] }
     , flash;
+    
 
   app = bogart.middleware.Flash({}, function(req) {
+    req.flash({
+      "foo": "bar"
+    });
+
     flash = req.env.flash;
+    return {
+      status: 200,
+      body: [],
+    }
   });
 
-  app(request);
+  assert.isUndefined(flash);
 
-  
+  var initialResp = app(request);
+  var cookieStr = initialResp.headers["Set-Cookie"].join("").replace(/;$/, "");
+
+  request.headers.cookie = cookieStr;
+  var secondResp = app(request);
 
   beforeExit(function() {
-    assert.ok(processedReq !== undefined);
-    assert.equal('1', processedReq.body.a);
-  })
+    assert.isNotNull(flash);
+    assert.eql(flash.foo, "bar");
+  });
 };
 
