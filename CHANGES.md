@@ -1,3 +1,7 @@
+## v0.3.14
+
+* use Buffer.byteLength to determine the value for `Content-Length` headers, resolves Issue #11
+
 ## v0.3.13
 
 * `bogart.redirect` now accepts a 2nd optional parameter which if present will be merged into the returned response object
