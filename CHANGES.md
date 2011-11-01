@@ -1,3 +1,8 @@
+## v0.3.15
+
+* Added `Parted` middleware to take advantage of the excellent streaming parsers provided by [Parted](https://github.com/chjj/parted).
+* Added multipart-form example to the examples directory to demonstrate usage of the Parted middleware.
+
 ## v0.3.14
 
 * use Buffer.byteLength to determine the value for `Content-Length` headers, resolves Issue #11

@@ -1,7 +1,8 @@
 var bogart = require('../lib/bogart')
   , Q      = require("promised-io/lib/promise")
   , assert = require('assert')
-  , path   = require('path');
+  , path   = require('path')
+  , fs     = require('fs');
 
 exports["test parses JSON"] = function(beforeExit) {
   var forEachDeferred = Q.defer()
@@ -122,4 +123,94 @@ exports["test gzip downloads as text/html"] = function(beforeExit) {
     assert.equal(200, response.status);
     assert.equal('text/html', response.headers['content-type']);
   });
+};
+
+exports["test parted json"] = function(beforeExit) {
+  var request       = null
+    , parted        = new bogart.middleware.Parted(function(req) { request = req; return {}; });
+  
+  response = parted({
+    method: 'POST',
+    env: {},
+    headers: { 'content-type': 'application/json' },
+    body: [ '{ "hello": "world" }' ]
+  });
+
+  beforeExit(function() {
+    assert.isNotNull(request);
+    assert.isNotNull(request.body);
+    assert.equal('object', typeof request.body);
+    assert.equal('world', request.body.hello);
+  });
+};
+
+exports["test parted multipart"] = function(beforeExit) {
+  var request = null
+    , parted  = new bogart.middleware.Parted(function(req) { request = req; return {}; });
+  
+  fs.readFileSync(path.join(__dirname, 'fixtures', 'chrome.part'));
+  
+  response = parted(multipartRequest(100, 'chrome'));
+
+  beforeExit(function() {
+    assert.ok(!!request.body);
+    assert.ok(!!request.body.content, 'No file path');
+  });
+};
+
+/**
+ * Create a mock request
+ * 
+ * Modified from the mock request method in Parted in compliance with the license.
+ */
+function multipartRequest(size, file) {
+  file = path.join(__dirname, 'fixtures', file + '.part');
+
+  var stream = fs.createReadStream(file, {
+    bufferSize: size
+  });
+
+  var boundary = fs
+    .readFileSync(file)
+    .toString('utf8')
+    .match(/--[^\r\n]+/)[0]
+    .slice(2);
+
+  return {
+    headers: {
+      'content-type': 'multipart/form-data; boundary="' + boundary + '"'
+    },
+    method: 'POST',
+    env: {},
+    pipe: function(dest) {
+      stream.pipe(dest);
+    },
+    emit: function(ev, err) {
+      if (ev === 'error') this.errback && this.errback(err);
+      return this;
+    },
+    on: function(ev, func) {
+      if (ev === 'error') this.errback = func;
+      return this;
+    },
+    destroy: function() {
+      stream.destroy();
+      return this;
+    },
+    body: {
+      forEach: function(fn) {
+        var deferred = Q.defer();
+
+        stream.on('data', function(data) {
+          fn(data);
+        });
+
+        stream.on('end', function() {
+          deferred.resolve();
+        });
+
+        return deferred.promise;
+      }
+    }
+  };
 };
