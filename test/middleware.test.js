@@ -2,7 +2,7 @@ var bogart    = require('../lib/bogart')
   , Q         = require("promised-io/lib/promise")
   , assert    = require('assert')
   , path      = require('path')
-  , fs     = require('fs'),
+  , fs     = require('fs')
   , security  = require("../lib/security");
 
 exports["test parses JSON"] = function(beforeExit) {
