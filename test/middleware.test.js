@@ -146,7 +146,7 @@ exports["test flash"] = function(beforeExit) {
   var initialResp = app(request);
   var cookieStr = initialResp.headers["Set-Cookie"].join("").replace(/;$/, "");
 
-  // the first attempt to retrieve "foo" should have gotten undefined
+  // the first attempt to retrieve "foo" should be undefined
   assert.isUndefined(foo);
 
   request.headers.cookie = cookieStr;
