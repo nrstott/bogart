@@ -1,3 +1,9 @@
+## v0.3.16
+
+* Added `Error` middleware to translate rejected promises and thrown errors into an error response.
+* `Error` middleware is included by default in JSGI stacks constructed with `bogart.build`.
+* `ParseForm` and `ParseJson` have been replaced with `Parted` in JSGI middleware stacks constructed with `bogart.build`.
+
 ## v0.3.15
 
 * Added `Parted` middleware to take advantage of the excellent streaming parsers provided by [Parted](https://github.com/chjj/parted).
