@@ -15,7 +15,8 @@
       "promised-io": "v0.2.3",
     	"jsgi": ">=v0.2.2",
     	"mustache": "0.3.1-dev",
-      "parted": "=0.0.7"
+      "parted": "=0.0.7",
+      "q": "=0.7.2"
     },
     "devDependencies": {
       "expresso": ">= 0.8.1",

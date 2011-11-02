@@ -125,6 +125,36 @@ exports["test gzip downloads as text/html"] = function(beforeExit) {
   });
 };
 
+exports["test error middleware has default response when error is thrown"] = function(beforeExit) {
+  var response = null
+    , app      = new bogart.middleware.Error(function(req) { throw new Error('intentional'); });
+  
+  Q.when(app({ method: 'GET', env: {}, headers: {}, pathInfo: '/' }), function(resp) {
+    response = resp;
+  });
+
+  beforeExit(function() {
+    assert.isNotNull(response);
+    assert.equal(500, response.status);
+    assert.equal('text/html', response.headers['content-type']);
+  });
+};
+
+exports["test error middleware has default response when promise is rejected"] = function(beforeExit) {
+  var response = null
+    , app      = new bogart.middleware.Error(function(req) { return require('q').reject('rejected'); });
+  
+  Q.when(app({ method: 'GET', env: {}, headers: {}, pathInfo: '/' }), function(resp) {
+    response = resp;
+  });
+
+  beforeExit(function() {
+    assert.isNotNull(response);
+    assert.equal(500, response.status);
+    assert.equal('text/html', response.headers['content-type']);
+  });
+};
+
 exports["test parted json"] = function(beforeExit) {
   var request       = null
     , parted        = new bogart.middleware.Parted(function(req) { request = req; return {}; });
