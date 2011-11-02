@@ -9,6 +9,15 @@ var config = function(show, create, update, destroy) {
   });
 };
 
+//the following config options are optional, defaults are assumed
+var flashConfig = {
+  options: {
+    dataProvider: {
+      encryptionKey:"db0031e2-04e7-11e1-86ad-000c290196f7"
+    },
+    idProvider: {}
+  }
+};
 
-var app = bogart.middleware.Flash({}, bogart.router(config));
+var app = bogart.middleware.Flash(flashConfig, bogart.router(config));
 bogart.start(app, {port:1337});
