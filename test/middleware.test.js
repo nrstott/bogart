@@ -1,8 +1,9 @@
-var bogart = require('../lib/bogart')
-  , Q      = require("promised-io/lib/promise")
-  , assert = require('assert')
-  , path   = require('path')
-  , fs     = require('fs');
+var bogart    = require('../lib/bogart')
+  , Q         = require("promised-io/lib/promise")
+  , assert    = require('assert')
+  , path      = require('path')
+  , fs     = require('fs')
+  , security  = require("../lib/security");
 
 exports["test parses JSON"] = function(beforeExit) {
   var forEachDeferred = Q.defer()
@@ -139,6 +140,38 @@ exports["test error middleware has default response when error is thrown"] = fun
     assert.equal('text/html', response.headers['content-type']);
   });
 };
+
+exports["test flash"] = function(beforeExit) {
+  var app
+    , headers = { 'content-type': 'text/plain' }
+    , request = { headers: headers, body:[] }
+    , foo;
+    
+
+  app = bogart.middleware.Flash({}, function(req) {
+    req.flash("foo", "bar");
+
+    foo = req.flash("foo");
+    return {
+      status: 200,
+      body: [],
+    }
+  });
+
+  var initialResp = app(request);
+  var cookieStr = initialResp.headers["Set-Cookie"].join("").replace(/;$/, "");
+
+  // the first attempt to retrieve "foo" should be undefined
+  assert.isUndefined(foo);
+
+  request.headers.cookie = cookieStr;
+  var secondResp = app(request);
+
+  beforeExit(function() {
+    assert.eql(foo, "bar");
+  });
+};
+
 
 exports["test error middleware has default response when promise is rejected"] = function(beforeExit) {
   var response = null

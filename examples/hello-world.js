@@ -4,7 +4,7 @@ var config = function(show, create, update, destroy) {
   show('/hello/:name', function(req, name) {
     return bogart.html('Hello '+name);
   });
-  
+
   show('/stream', function(req) {
     var streamer = bogart.stream();
     
@@ -23,4 +23,4 @@ var config = function(show, create, update, destroy) {
 
 
 
-bogart.start(bogart.router(config));
+bogart.start(bogart.router(config), {port:1337});
