@@ -69,6 +69,28 @@ The Haml sample demonstrates a haml view without a layout.
 
 Visit the application in a web browser at [http://localhost:8080/](http://localhost:8080)    
 
+## Middleware
+Bogart comes with a variety of standard JSGI middleware appliances (not enabled by default).
+
+#### ParseJson
+Parses the body of any request with an "application/json" content-type. The value of request body is reassigned with the parsed value.
+
+#### ParseForm
+Parses the body of any request with an "application/x-www-form-urlencoded" content-type. The value of request body is reassigned with the parsed value.
+
+#### Flash
+Provides Ruby-esque 'flash' variables, good only for the next request cycle. Flash session tracking and flash data is stored via encrypted cookies by default. These providers can be overriden with the Flash middleware options. An example flash data provider implementation with a Redis backend is available here: [https://github.com/jdc0589/bogart-flash-redis](https://github.com/jdc0589/bogart-flash-redis)
+
+
+#### Gzip
+Gzip compresses the response and assigns the proper content-encoding;
+
+#### MethodOverride
+Checks for the _method parameter or X-HTTP-METHOD-OVERRIDE header to override the HTTP method.
+
+#### Error
+Translates rejected promises to a JSGI error response.
+
 ### Serve Static Files
 
 The static example demonstrates using bogarts *Directory* middleware to serve an image.
