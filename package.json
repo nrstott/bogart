@@ -16,6 +16,7 @@
     	"jsgi": ">=v0.2.2",
     	"mustache": "0.3.1-dev",
       "deflate": ">=1.0.3",
+      "underscore": ">=0.0.0",
       "node-uuid": ">=1.2.0",
       "parted": "=0.0.7",
       "q": "=0.7.2"
