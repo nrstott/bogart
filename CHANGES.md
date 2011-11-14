@@ -1,3 +1,7 @@
+## v0.3.19
+
+* Updated Parted dependency to 0.8.0.
+
 ## v0.3.18
 
 * Mustache partials now work properly when using layouts.
