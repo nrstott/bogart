@@ -1,0 +1,5 @@
+*.sublime-*
+forEachableStream.txt
+npm-debug.log
+hello-world.dat
+hello-world.txt
