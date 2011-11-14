@@ -1,3 +1,7 @@
+## v0.3.18
+
+* Mustache partials now work properly when using layouts.
+
 ## v0.3.17
 
 * Routes now match in order added instead of longest-first.
