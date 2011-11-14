@@ -250,6 +250,38 @@ exports["test parted multipart"] = function(beforeExit) {
   });
 };
 
+
+exports["test session"] = function(beforeExit) {
+  var app
+    , headers = { 'content-type': 'text/plain' }
+    , request = { headers: headers, body:[] }
+    , foo
+    , firstRequest = true;
+    
+
+  app = bogart.middleware.Session({}, function(req) {
+    if(firstRequest) {
+      req.session("foo", "bar");
+      firstRequest = false;
+    }
+
+    assert.equal("bar", req.session("foo"));
+
+    return {
+      status: 200,
+      body: [],
+    }
+  });
+
+  var initialResp = app(request);
+  var cookieStr = initialResp.headers["Set-Cookie"].join("").replace(/;$/, "");
+
+  request.headers.cookie = cookieStr;
+  var secondResp = app(request);
+};
+
+
+
 /**
  * Create a mock request
  * 
