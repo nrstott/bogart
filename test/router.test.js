@@ -44,6 +44,30 @@ exports['test matches parameter'] = function(beforeExit) {
     assert.equal("nathan", name);    
   });
 };
+exports['test order of routes matching should be longest to smallest'] = function(){
+  var
+    name, req = rootRequest(),
+    router = bogart.router(function(get) {
+     get('/hello/:name', function(req) {
+       name = req.params.name;
+       assert.ok (false, "should have matched the longest route");
+       return bogart.html("hello");
+     });
+      get("/hello/:name/:something", function(req){
+         name = req.params.name;
+         return bogart.html("hello");
+         assert.ok(true, "long route matched successfully")
+      })
+    });
+
+  req.pathInfo = '/hello/nathan/';
+
+  return when(router(req), function(resp) {
+    //do nothing
+  });
+
+};
+
 
 exports['test should call notFoundApp'] = function(beforeExit) {
   var called = false
@@ -180,11 +204,11 @@ exports['test regex route'] = function(beforeExit) {
     , splat
     , response;
 
-  req.pathInfo = '/hello/world';
+  req.pathInfo = '/hello/cruel/world';
 
   router = bogart.router();
 
-  router.get(/\/hello\/(.*)/, function(req) {
+  router.get(/\/hello\/(.*)\/(.*)/, function(req) {
     splat = req.params.splat;
     return bogart.html("hello");
   });
@@ -197,7 +221,8 @@ exports['test regex route'] = function(beforeExit) {
     assert.isNotNull(response);
     assert.equal(200, response.status);
     assert.ok(splat, "Should have set 'splat'");
-    assert.equal(splat[0], 'world');
+    assert.equal(splat[0], 'cruel');
+    assert.equal(splat[1], 'world');    
   });
 };
 

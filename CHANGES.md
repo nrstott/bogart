@@ -1,3 +1,16 @@
+## v0.3.19
+
+* Updated Parted dependency to 0.8.0.
+
+## v0.3.18
+
+* Mustache partials now work properly when using layouts.
+
+## v0.3.17
+
+* Routes now match in order added instead of longest-first.
+* Added `Flash` middleware to emulate the flash method of Rails.
+
 ## v0.3.16
 
 * Added `Error` middleware to translate rejected promises and thrown errors into an error response.

@@ -1,6 +1,6 @@
 var bogart = require('../lib/bogart')
-  , Q      = require('promised-io/lib/promise')
-  , when   = Q.when
+  , q      = require('promised-io/lib/promise')
+  , when   = q.when
   , assert = require('assert')
   , jsgi   = require('jsgi')
   , rootRequest = {
@@ -11,8 +11,9 @@ var bogart = require('../lib/bogart')
     env: {}
   };
 
-exports["test should have middleware"] = function() {
-  var server = new bogart.build(function() {
+exports["test should have middleware"] = function(beforeExit) {
+  var response = null
+    , server = new bogart.build(function() {
     this.use(function(nextApp) {
       return function(req) {
         return when(nextApp(req), function(resp) {
@@ -33,8 +34,12 @@ exports["test should have middleware"] = function() {
     });
   });
   
-  var resp = server(rootRequest);
+  when(server(rootRequest), function(resp) {
+    response = resp;
+  });
   
-  assert.ok(resp.headers);
-  assert.equal("xyz", resp.headers["custom-header"]);
+  beforeExit(function() {
+    assert.ok(response.headers);
+    assert.equal("xyz", response.headers["custom-header"]);
+  });
 };
