@@ -207,6 +207,35 @@ exports["test parted json"] = function(beforeExit) {
   });
 };
 
+exports["test parted form"] = function(beforeExit) {
+  var request     = null
+    , parted      = new bogart.middleware.Parted(function(req) { request = req; return {}; })
+    , body        = {}
+    , bodyDefer   = require('q').defer();
+  
+  body.forEach = function(callback) {
+    callback('hello=one&hello=two');
+
+    return bodyDefer.promise;
+  };
+  
+  response = parted({
+    method: 'POST',
+    env: {},
+    headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    body: body
+  });
+
+  bodyDefer.resolve();
+
+  beforeExit(function() {
+    assert.isNotNull(request);
+    assert.ok(!!request.body);
+    assert.ok(!!request.body.hello);
+    assert.equal(2, request.body.hello.length);
+  });
+};
+
 exports["test parted multipart"] = function(beforeExit) {
   var request = null
     , parted  = new bogart.middleware.Parted(function(req) { request = req; return {}; });

@@ -18,7 +18,7 @@
       "deflate": ">=1.0.3",
       "underscore": ">=0.0.0",
       "node-uuid": ">=1.2.0",
-      "parted": "=0.0.7",
+      "parted": "=0.0.8",
       "q": "=0.7.2"
     },
     "devDependencies": {
