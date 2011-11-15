@@ -15,7 +15,7 @@ exports['test render mustache'] = function(beforeExit) {
   });
 
   beforeExit(function() {
-    assert.equal(renderedText, '<h1>Hello World from Mustache</h1>\n');
+    assert.equal(renderedText, '<h1>Hello World from Mustache</h1>');
   });
 };
 
@@ -28,6 +28,6 @@ exports['test render mustache with partials'] = function(beforeExit) {
   });
 
   beforeExit(function() {
-    assert.equal(renderedText, '<h1>Hello World from Mustache</h1>\n<p>With Partial</p>');
+    assert.equal(renderedText, '<h1>Hello World from Mustache</h1><p>With Partial</p>');
   });
 };

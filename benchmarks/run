@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ABFLAGS=${ABFLAGS-"-n 2000 -c 50 -k"}
+ABFLAGS=${ABFLAGS-"-n 500 -c 50 -k"}
 ADDR=${ADDR-http://0.0.0.0:8080/}
 AB=${AB-ab}
 
@@ -27,7 +27,7 @@ bm(){
   	log running $file
   	case $file in
   		*.js)
-  		  node /usr/local/bin/nodules $file &
+  		  node $file &
   		  sleep 2
   		  ;;
   		*.thin.ru)
