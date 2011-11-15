@@ -208,7 +208,7 @@ exports['test regex route'] = function(beforeExit) {
 
   router = bogart.router();
 
-  router.get(/\/hello\/(.*)/, function(req) {
+  router.get(/\/hello\/(.*)\/(.*)/, function(req) {
     splat = req.params.splat;
     return bogart.html("hello");
   });
