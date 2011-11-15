@@ -1,3 +1,8 @@
+## v0.3.20
+
+* Simplified and corrected code for `pipe` method on the request object for the `Parted` middleware.
+* Added `Session` middleware.
+
 ## v0.3.19
 
 * Updated Parted dependency to 0.8.0.
