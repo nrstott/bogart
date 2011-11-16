@@ -1,6 +1,12 @@
+## v0.3.22
+
+* `ViewEngine` is now an `EventEmitter`.
+* the built-in `Mustache` view engine now emits `beforeRender` and `afterRender` events.
+* Fixed bugs in `Flash` middleware.
+
 ## v0.3.21
 
-* `after` had been left off of the public API of router, added it
+* `after` had been left off of the public API of router, added it.
 
 ## v0.3.20
 
