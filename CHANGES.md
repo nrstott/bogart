@@ -1,3 +1,7 @@
+## v0.3.21
+
+* `after` had been left off of the public API of router, added it
+
 ## v0.3.20
 
 * Simplified and corrected code for `pipe` method on the request object for the `Parted` middleware.
