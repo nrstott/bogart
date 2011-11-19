@@ -120,7 +120,7 @@ exports["test gzip downloads as text/html"] = function(beforeExit) {
   });
 
   beforeExit(function() {
-    assert.isNotNull(response, 'Repsones should not be null');
+    assert.isNotNull(response, 'Responses should not be null');
     assert.equal(200, response.status);
     assert.equal('text/html', response.headers['content-type']);
   });
