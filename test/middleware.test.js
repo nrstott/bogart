@@ -255,7 +255,7 @@ exports["test session"] = function(beforeExit) {
   var app
     , headers = { 'content-type': 'text/plain' }
     , request = { headers: headers, body:[] }
-    , foo
+    , values = []
     , firstRequest = true;
     
 
@@ -265,7 +265,7 @@ exports["test session"] = function(beforeExit) {
       firstRequest = false;
     }
 
-    assert.equal("bar", req.session("foo"));
+    values.push(req.session("foo"));
 
     return {
       status: 200,
@@ -278,6 +278,14 @@ exports["test session"] = function(beforeExit) {
 
   request.headers.cookie = cookieStr;
   var secondResp = app(request);
+
+  beforeExit(function() {
+    assert.equal(values.length, 2);
+    values.forEach(function(val) {
+      assert.equal(val, "bar");
+    })
+  });
+
 };
 
 
