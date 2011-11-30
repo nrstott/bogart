@@ -58,8 +58,9 @@ frontRouter.get('/login', function(req) {
 });
 
 var app = bogart.middleware.Session(null, frontRouter);
+app = bogart.middleware.Flash(null,app);
 app = bogart.middleware.Directory(require("path").join(__dirname, "public"), app);
 
 bogart.start(app, {
-    port: 8085
+    port: 8089
 });
