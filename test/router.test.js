@@ -231,6 +231,21 @@ exports['test regex route'] = function(beforeExit) {
   });
 };
 
+exports['test handles encoded slashes'] = function(beforeExit) {
+  var router = bogart.router()
+    , called = false;
+
+  router.get('/:foo', function() {
+    called = true;
+  });
+
+  router(getMock('/foo%2Fbar'));
+
+  beforeExit(function() {
+    assert.ok(called);
+  });
+};
+
 exports['test matches a dot (".") as part of a named param'] = function(beforeExit) {
   var router
     , foo = null;
