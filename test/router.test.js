@@ -13,7 +13,7 @@ var bogart = require('../lib/bogart')
     };
  };
 
-function getMock(path) {
+function mockRequest(path) {
   return {
     headers: {},
     pathInfo: path,
@@ -249,7 +249,7 @@ exports['test handles encoded slashes'] = function(beforeExit) {
     called = true;
   });
 
-  router(getMock('/foo%2Fbar'));
+  router(mockRequest('/foo%2Fbar'));
 
   beforeExit(function() {
     assert.ok(called);
@@ -265,7 +265,7 @@ exports['test matches a dot (".") as part of a named param'] = function(beforeEx
     foo = req.params.foo;
   });
 
-  router(getMock('/user@example.com/name'));
+  router(mockRequest('/user@example.com/name'));
 
   beforeExit(function() {
     assert.isNotNull(foo, 'Named parameter should not be null');
@@ -282,7 +282,7 @@ exports['test matches empty `pathInfo` to "/" if no route is defined for ""'] = 
     return bogart.text('success');
   });
 
-  when(router(getMock('')), function(resp) {
+  when(router(mockRequest('')), function(resp) {
     response = resp;
   });
 
@@ -304,7 +304,7 @@ exports['test matches empty `pathInfo` to "" if a route is defined for ""'] = fu
     return bogart.text('wrong');
   });
 
-  when(router(getMock('')), function(resp) {
+  when(router(mockRequest('')), function(resp) {
     response = resp;
   });
 
@@ -321,7 +321,7 @@ exports['test matches paths that include encoded spaces'] = function(beforeExit)
     return bogart.text('spaces are cool');
   });
 
-  when(router(getMock('/path%20with%20spaces')), function(resp) {
+  when(router(mockRequest('/path%20with%20spaces')), function(resp) {
     response = resp;
   });
 
@@ -335,7 +335,7 @@ exports['test matches dot (".") literally in paths'] = function(beforeExit) {
   var router = simpleRouter('/foo.bar')
     , response;
 
-  when(router(getMock('/foo.bar')), function(resp) {
+  when(router(mockRequest('/foo.bar')), function(resp) {
     response = resp;
   });
 
@@ -355,7 +355,7 @@ exports['test calls next app when handler returns `undefined`'] = function(befor
 
   router.get('/', function(req) {});
 
-  when(router(getMock('/')), function(resp) {
+  when(router(mockRequest('/')), function(resp) {
     response = resp;
   });
 
