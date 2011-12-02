@@ -22,6 +22,18 @@ function getMock(path) {
     env: {}
   };
 }
+
+/**
+ * Define a simple router that has a route that matches `path`
+ * @param {String} path  The path to match
+ */
+function simpleRouter(path) {
+  var router = bogart.router();
+
+  router.get(path, bogart.noop);
+
+  return router;
+}
   
 exports['test matches parameter'] = function(beforeExit) {
   var
@@ -316,6 +328,19 @@ exports['test matches paths that include encoded spaces'] = function(beforeExit)
   beforeExit(function() {
     assert.ok(response);
     assert.equal('spaces are cool', response.body[0]);
+  });
+};
+
+exports['test matches dot (".") literally in paths'] = function(beforeExit) {
+  var router = simpleRouter('/foo.bar')
+    , response;
+
+  when(router(getMock('/foo.bar')), function(resp) {
+    response = resp;
+  });
+
+  beforeExit(function() {
+    assert.ok(response);
   });
 };
 
