@@ -1,3 +1,7 @@
+## v0.3.24
+
+* Bug fixes in Session middleware.
+
 ## v0.3.23
 
 * Added support for string-based paths with * for splat like /foo/*
