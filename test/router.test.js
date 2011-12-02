@@ -364,6 +364,24 @@ exports['test supports splat ("*")'] = function(beforeExit) {
   });
 };
 
+exports['test supports multiple splat params'] = function(beforeExit) {
+  var router = bogart.router()
+    , response;
+  
+  router.get('/download/*/*', function(req) {
+    return bogart.text(req.params.splat[0]+'/'+req.params.splat[1]);
+  });
+
+  when(router(mockRequest('/download/images/ninja-cat.jpg')), function(resp) {
+    response = resp;
+  });
+
+  beforeExit(function() {
+    assert.ok(response);
+    assert.equal('images/ninja-cat.jpg', response.body.join(''));
+  });
+};
+
 exports['test calls next app when handler returns `undefined`'] = function(beforeExit) {
   var str = 'Hello from next app!'
     , router
