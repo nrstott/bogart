@@ -109,6 +109,7 @@ Translates rejected promises to a JSGI error response.
 * [Martin Murphy](https://github.com/soitgoes)
 * [Davis Clark](https://github.com/jdc0589)
 * [Aaron Shafovaloff](https://github.com/aaronshaf)
+* [Lewis Patterson](https://github.com/lpatters)
 
 ## License
 
