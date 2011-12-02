@@ -43,19 +43,19 @@ exports['test matches parameter'] = function(beforeExit) {
     assert.equal("nathan", name);    
   });
 };
-exports['test order of routes matching should be longest to smallest'] = function(){
+exports['test order of routes matching should be in order defined'] = function(){
   var
     name, req = rootRequest(),
     router = bogart.router(function(get) {
      get('/hello/:name', function(req) {
        name = req.params.name;
-       assert.ok (false, "should have matched the longest route");
+       assert.ok (true, "first route matched successfully");
        return bogart.html("hello");
      });
       get("/hello/:name/:something", function(req){
          name = req.params.name;
          return bogart.html("hello");
-         assert.ok(true, "long route matched successfully")
+         assert.ok(false, "second route matched incorrectly")
       })
     });
 
@@ -120,7 +120,7 @@ exports['test should reject promise if body is not forEachable'] = function(befo
 
   when(router(rootRequest()), function(resp) {
     response = resp;
-  }, function(err) {
+  }, function() {
     rejected = true;
   });
 
@@ -231,29 +231,6 @@ exports['test regex route'] = function(beforeExit) {
   });
 };
 
-exports['test should have X-Powered-By Bogart header'] = function(beforeExit) {
-  var router
-    , response;
-
-  router = bogart.router(function(get) {
-    get('/', function(req) {
-      return bogart.html('hello world');
-    });
-  });
-
-  when(router(rootRequest()), function(resp) {
-    response = resp;
-  });
-
-  beforeExit(function() {
-    assert.isDefined(response);
-    assert.isDefined(response.headers);
-    assert.isDefined(response.headers['X-Powered-By'], 'X-Powered-By header should be defined');
-
-    assert.equal('Bogart', response.headers['X-Powered-By']);
-  });
-};
-
 exports['test matches a dot (".") as part of a named param'] = function(beforeExit) {
   var router
     , foo = null;
@@ -308,5 +285,26 @@ exports['test matches empty `pathInfo` to "" if a route is defined for ""'] = fu
 
   beforeExit(function() {
     assert.equal('right', response.body);
+  });
+};
+
+exports['test calls next app when handler returns `undefined`'] = function(beforeExit) {
+  var str = 'Hello from next app!'
+    , router
+    , response;
+  
+  router = bogart.router(null, function(req) {
+    return bogart.text(str);
+  });
+
+  router.get('/', function(req) {});
+
+  when(router(getMock('/')), function(resp) {
+    response = resp;
+  });
+
+  beforeExit(function() {
+    assert.ok(response);
+    assert.equal(str, response.body[0]);
   });
 };

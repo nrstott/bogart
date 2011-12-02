@@ -12,14 +12,16 @@
       "email": "nrstott@gmail.com"
     },
     "dependencies": {
-      "q-http": ">=v0.1.3",
       "mustache": "0.3.1-dev",
-      "q": "0.7.2",
-      "q-fs": "0.1.14",
       "deflate": ">=1.0.3",
       "underscore": ">=0.0.0",
       "node-uuid": ">=1.2.0",
-      "parted": "=0.0.8"
+      "parted": "=0.0.8",
+      "q": "=0.7.2",
+      "q-fs": "0.1.14",
+      "q-http": ">=v0.1.3",
+      "node-proxy": "=0.5.2",
+      "oauth": "=0.9.5"
     },
     "devDependencies": {
       "expresso": ">= 0.8.1",

@@ -120,7 +120,7 @@ exports["test gzip downloads as text/html"] = function(beforeExit) {
   });
 
   beforeExit(function() {
-    assert.isNotNull(response, 'Repsones should not be null');
+    assert.isNotNull(response, 'Responses should not be null');
     assert.equal(200, response.status);
     assert.equal('text/html', response.headers['content-type']);
   });
@@ -251,6 +251,46 @@ exports["test parted multipart"] = function(beforeExit) {
     assert.ok(!!request.body.content, 'No file path');
   });
 };
+
+
+exports["test session"] = function(beforeExit) {
+  var app
+    , headers = { 'content-type': 'text/plain' }
+    , request = { headers: headers, body:[] }
+    , values = []
+    , firstRequest = true;
+    
+
+  app = bogart.middleware.Session({}, function(req) {
+    if(firstRequest) {
+      req.session("foo", "bar");
+      firstRequest = false;
+    }
+
+    values.push(req.session("foo"));
+
+    return {
+      status: 200,
+      body: [],
+    }
+  });
+
+  var initialResp = app(request);
+  var cookieStr = initialResp.headers["Set-Cookie"].join("").replace(/;$/, "");
+
+  request.headers.cookie = cookieStr;
+  var secondResp = app(request);
+
+  beforeExit(function() {
+    assert.equal(values.length, 2);
+    values.forEach(function(val) {
+      assert.equal(val, "bar");
+    })
+  });
+
+};
+
+
 
 /**
  * Create a mock request
