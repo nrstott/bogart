@@ -103,9 +103,10 @@ exports['test should have default notFoundApp behavior of returning 404'] = func
   });
 };
 
-exports['test should have status 500 if body is not a forEachable'] = function(beforeExit) {
+exports['test should "reject" if body is not forEachable'] = function(beforeExit) {
   var response
-    , router;
+    , router
+    , rejected = false;
     
   router = bogart.router(function(get) {
     get('/', function(req) {
@@ -118,10 +119,12 @@ exports['test should have status 500 if body is not a forEachable'] = function(b
 
   when(router(rootRequest()), function(resp) {
     response = resp;
+  }, function() {
+    rejected = true;
   });
 
   beforeExit(function() {
-    assert.equal(500, response.status);
+    assert.ok(rejected);
   });
 };
 
@@ -226,29 +229,6 @@ exports['test regex route'] = function(beforeExit) {
   });
 };
 
-exports['test should have X-Powered-By Bogart header'] = function(beforeExit) {
-  var router
-    , response;
-
-  router = bogart.router(function(get) {
-    get('/', function(req) {
-      return bogart.html('hello world');
-    });
-  });
-
-  when(router(rootRequest()), function(resp) {
-    response = resp;
-  });
-
-  beforeExit(function() {
-    assert.isDefined(response);
-    assert.isDefined(response.headers);
-    assert.isDefined(response.headers['X-Powered-By'], 'X-Powered-By header should be defined');
-
-    assert.equal('Bogart', response.headers['X-Powered-By']);
-  });
-};
-
 exports['test matches a dot (".") as part of a named param'] = function(beforeExit) {
   var router
     , foo = null;
@@ -275,7 +255,9 @@ exports['test matches empty `pathInfo` to "/" if no route is defined for ""'] = 
     return bogart.text('success');
   });
 
-  response = router(getMock(''));
+  when(router(getMock('')), function(resp) {
+    response = resp;
+  });
 
   beforeExit(function() {
     assert.equal('success', response.body);
@@ -295,9 +277,32 @@ exports['test matches empty `pathInfo` to "" if a route is defined for ""'] = fu
     return bogart.text('wrong');
   });
 
-  response = router(getMock(''));
+  when(router(getMock('')), function(resp) {
+    response = resp;
+  });
 
   beforeExit(function() {
     assert.equal('right', response.body);
+  });
+};
+
+exports['test calls next app when handler returns `undefined`'] = function(beforeExit) {
+  var str = 'Hello from next app!'
+    , router
+    , response;
+  
+  router = bogart.router(null, function(req) {
+    return bogart.text(str);
+  });
+
+  router.get('/', function(req) {});
+
+  when(router(getMock('/')), function(resp) {
+    response = resp;
+  });
+
+  beforeExit(function() {
+    assert.ok(response);
+    assert.equal(str, response.body[0]);
   });
 };
