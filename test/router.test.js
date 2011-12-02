@@ -12,7 +12,7 @@ var bogart = require('../lib/bogart')
     };
  };
 
-function getMock(path) {
+function mockRequest(path) {
   return {
     headers: {},
     pathInfo: path,
@@ -20,6 +20,18 @@ function getMock(path) {
     jsgi: { version: [0,3] },
     env: {}
   };
+}
+
+/**
+ * Define a simple router that has a route that matches `path`
+ * @param {String} path  The path to match
+ */
+function simpleRouter(path) {
+  var router = bogart.router();
+
+  router.get(path, bogart.noop);
+
+  return router;
 }
   
 exports['test matches parameter'] = function(beforeExit) {
@@ -239,7 +251,7 @@ exports['test handles encoded slashes'] = function(beforeExit) {
     called = true;
   });
 
-  router(getMock('/foo%2Fbar'));
+  router(mockRequest('/foo%2Fbar'));
 
   beforeExit(function() {
     assert.ok(called);
@@ -255,7 +267,7 @@ exports['test matches a dot (".") as part of a named param'] = function(beforeEx
     foo = req.params.foo;
   });
 
-  router(getMock('/user@example.com/name'));
+  router(mockRequest('/user@example.com/name'));
 
   beforeExit(function() {
     assert.isNotNull(foo, 'Named parameter should not be null');
@@ -272,7 +284,7 @@ exports['test matches empty `pathInfo` to "/" if no route is defined for ""'] = 
     return bogart.text('success');
   });
 
-  when(router(getMock('')), function(resp) {
+  when(router(mockRequest('')), function(resp) {
     response = resp;
   });
 
@@ -294,12 +306,43 @@ exports['test matches empty `pathInfo` to "" if a route is defined for ""'] = fu
     return bogart.text('wrong');
   });
 
-  when(router(getMock('')), function(resp) {
+  when(router(mockRequest('')), function(resp) {
     response = resp;
   });
 
   beforeExit(function() {
     assert.equal('right', response.body);
+  });
+};
+
+exports['test matches paths that include encoded spaces'] = function(beforeExit) {
+  var router = bogart.router()
+    , response;
+
+  router.get('/path with spaces', function(req) {
+    return bogart.text('spaces are cool');
+  });
+
+  when(router(mockRequest('/path%20with%20spaces')), function(resp) {
+    response = resp;
+  });
+
+  beforeExit(function() {
+    assert.ok(response);
+    assert.equal('spaces are cool', response.body[0]);
+  });
+};
+
+exports['test matches dot (".") literally in paths'] = function(beforeExit) {
+  var router = simpleRouter('/foo.bar')
+    , response;
+
+  when(router(mockRequest('/foo.bar')), function(resp) {
+    response = resp;
+  });
+
+  beforeExit(function() {
+    assert.ok(response);
   });
 };
 
@@ -314,7 +357,7 @@ exports['test calls next app when handler returns `undefined`'] = function(befor
 
   router.get('/', function(req) {});
 
-  when(router(getMock('/')), function(resp) {
+  when(router(mockRequest('/')), function(resp) {
     response = resp;
   });
 
