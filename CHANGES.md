@@ -1,3 +1,9 @@
+## v0.3.23
+
+* Added support for string-based paths with * for splat like /foo/*
+* Before callbacks may now return promises that must be resolved before the route handler is executed.
+* After callbacks may now return promises that must be resolved before the response from the route handler is returned.
+
 ## v0.3.22
 
 * `ViewEngine` is now an `EventEmitter`.
