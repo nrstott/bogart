@@ -301,6 +301,24 @@ exports['test matches empty `pathInfo` to "" if a route is defined for ""'] = fu
   });
 };
 
+exports['test matches paths that include encoded spaces'] = function(beforeExit) {
+  var router = bogart.router()
+    , response;
+
+  router.get('/path with spaces', function(req) {
+    return bogart.text('spaces are cool');
+  });
+
+  when(router(getMock('/path%20with%20spaces')), function(resp) {
+    response = resp;
+  });
+
+  beforeExit(function() {
+    assert.ok(response);
+    assert.equal('spaces are cool', response.body[0]);
+  });
+};
+
 exports['test calls next app when handler returns `undefined`'] = function(beforeExit) {
   var str = 'Hello from next app!'
     , router
