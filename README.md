@@ -142,7 +142,7 @@ Standard flash middleware for bogart. Session id and data are stored in encrypte
 * Use [EventEmitter](http://nodejs.org/docs/latest/api/events.html#events.EventEmitter) for signals that can fire any number of times.
 * Prefer composition to inheritance.
 * Avoid manipulating prototypes of Node.JS constructors. Manipulating prototypes makes for harder to understand code.
-  Also, Bogart is expected to be cross-platform in the future with other JS engines.
+  Also, Bogart is expected to be cross-platform in the future.
 
 ## Contributors
 
