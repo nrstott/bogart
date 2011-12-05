@@ -1,9 +1,7 @@
 var bogart = require('../lib/bogart');
 
 var router = bogart.router();
-
 router.get('/', function(req) {
-	console.log("ROOT ROUTE");
 	return 'Hello Root';
 });
 
