@@ -131,7 +131,7 @@ Standard flash middleware for bogart. Session id and data are stored in encrypte
 
 ## Design Philosophy
 
-* Public APIs should be terse. Prefer `bogart.app()` to `new bogart.App()`.
+* Public APIs should be terse. Prefer `bogart.app()` to `new bogart.Application()`.
 * Be verbose when it does not increase typing for the API user.
   A good example of this would be in naming of function parameters. The parameter
   name does not affect the user of the API, so making it more verbose makes for
