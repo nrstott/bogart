@@ -87,7 +87,8 @@ want to use them.
 The batteries middleware creates the following JSGI chain where `nextApp` is the JSGI appliance passed as the first parameter
 to `batteries`:
 
-    error - directory - parted - methodOverride - session - flash - bodyAdapter - stringReturnAdapter - nextApp
+    error -> validateResponse -> directory -> parted -> methodOverride 
+          -> session -> flash -> bodyAdapter -> stringReturnAdapter -> nextApp
 
 The binary middleware is configured to check the path of the request and if it corresponds to a potential directory in the 'public' directory,
 the request is routed to the `directory` middleware to serve a static file.
