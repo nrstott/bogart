@@ -145,9 +145,9 @@ exports["test flash"] = function(beforeExit) {
   var app
     , headers = { 'content-type': 'text/plain' }
     , request = { headers: headers, body:[] }
-    , foo;
+    , foo
+    , cookieStr;
     
-
   app = bogart.middleware.Flash({}, function(req) {
     req.flash("foo", "bar");
 
@@ -158,15 +158,17 @@ exports["test flash"] = function(beforeExit) {
     }
   });
 
-  var initialResp = app(request);
-  var cookieStr = initialResp.headers["Set-Cookie"].join("").replace(/;$/, "");
+  Q.when(app(request), function(resp) {
+    initialResp = resp;
+    cookieStr = initialResp.headers["Set-Cookie"].join("").replace(/;$/, "");
 
-  // the first attempt to retrieve "foo" should be undefined
-  assert.isUndefined(foo);
+    // the first attempt to retrieve "foo" should be undefined
+    assert.isUndefined(foo);
 
-  request.headers.cookie = cookieStr;
-  var secondResp = app(request);
-
+    request.headers.cookie = cookieStr;
+    var secondResp = app(request);
+  });
+  
   beforeExit(function() {
     assert.eql(foo, "bar");
   });
@@ -288,7 +290,74 @@ exports["test session"] = function(beforeExit) {
 
 };
 
+exports["test validate response"] = function(beforeExit) {
+  var noResponse, noBody, notForEachable, forEachNotFunction, noStatus, statusNotNumber;
+  
+  bogart.middleware.validateResponse(function(req) {
+    return null;
+  })().then(bogart.noop, function(err) {
+    noResponse = err;
+  });
 
+  bogart.middleware.validateResponse(function(req) {
+    return {
+      status: 200,
+      headers: {}
+    };
+  })().then(bogart.noop, function(err) {
+    noBody = err;
+  });
+
+  bogart.middleware.validateResponse(function(req) {
+    return {
+      status: 200,
+      headers: {},
+      body: {}
+    };
+  })().then(bogart.noop, function(err) {
+    notForEachable = err;
+  });
+
+  bogart.middleware.validateResponse(function(req) {
+    return {
+      status: 200,
+      headers: {},
+      body: {
+        forEach: 'not a function'
+      }
+    };
+  })().then(bogart.noop, function(err) {
+    forEachNotFunction = err;
+  });
+
+  bogart.middleware.validateResponse(function(req) {
+    return {
+      headers: {},
+      body: []
+    };
+  })().then(bogart.noop, function(err) {
+    noStatus = err;
+  });
+
+  bogart.middleware.validateResponse(function(req) {
+    return {
+      status: '200',
+      body: [],
+      headers: {}
+    };
+  })().then(bogart.noop, function(err) {
+    statusNotNumber = err;
+  });
+
+  beforeExit(function() {
+    assert.equal('Response must be an object.', noResponse);
+    assert.equal('Response must have a body property.', noBody);
+    assert.equal('Response body must have a forEach method.', notForEachable);
+    assert.equal('Response body has a forEach method but the forEach method is not a function.', forEachNotFunction);
+    assert.equal('Response must have a status property.', noStatus);
+    assert.equal('Response has a status property but the status property must be a number.', statusNotNumber);
+  });
+};
 
 /**
  * Create a mock request
