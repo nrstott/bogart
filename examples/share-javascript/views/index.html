@@ -1,0 +1,30 @@
+<html>
+	<head>
+		<title>{{title}}</title>
+	</head>
+	<body>
+		<h1>{{title}}</h1>
+		<table>
+			<tr>
+				<th>Server Time</th>
+				<td><span id='serverTime'></span></td>
+			</tr>
+			<tr>
+				<th>Server Object</th>
+				<td><span id='serverObject'></span></td>
+			</tr>
+			<tr>
+				<th>Calling a Server-Provided Function</th>
+				<td><span	id='serverFunction'></span></td>
+		</table>
+	</body>
+	{{{javascript}}}
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			$('#serverTime').text(bogart.now.toString());
+			$('#serverObject').text(JSON.stringify(bogart.settings));
+			$('#serverFunction').text(bogart.fn());
+		});
+	</script>
+</html>

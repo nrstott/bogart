@@ -4,7 +4,11 @@ The Bogart `ViewEngine` renders view.  It handles partials and layouts as well.
 The `ViewEngine` ships with support for [Mustache](http://mustache.github.com/), 
 [Jade](http://jade-lang.com/), and [Haml](http://haml-lang.com/).
 
-## Rendering
+## view.viewEngine(engine)
+
+Creates a `view.ViewEngine`.
+
+## ViewEngine.render(template, [options])
 
 The `render` method uses the selected templating engine to render the specified view
 with options specified in the options `locals` object.
@@ -14,7 +18,7 @@ Rendering a view with mustache and replacement variables:
     var viewEngine = bogart.viewEngine('mustache');
     viewEngine.render('index.html', { locals: { title: 'Hello Mustache' } });
 
-## Respond
+## ViewEngine.respond(template, [options])
 
 The `respond` method returns a promise for a JSGI response that will render the 
 specified view.
@@ -22,7 +26,14 @@ specified view.
     var viewEngine = bogart.viewEngine('mustache');
     viewEngine.respond('index.html', { locals: { title: 'Hello Mustache' } });
 
-## Layout
+## view.RenderOptions
+
+Options passed to `viewEngine.render` and `viewEngine.respond` should quack like view.RenderOptions.
+
+* opts.layout  The name of the layout or a boolean. If `true` then the name is defaulted to 'layout.html'. If `false` then no layout should be used.
+* opts.locals  Context in which to render the template. This should contain the replacement values of variables in your templates.
+
+## Layouts
 
 Layouts are supported.  By default, if there is a file named 'layout.{ext}' where
 `ext` is the extension of the view (haml, jade, mustache, html, etc...) then this file
@@ -35,6 +46,8 @@ matches the default file extension associated with the template type.  For examp
 using Jade then `viewEngine.render('index')` is equivalent to `viewEngine.render('index.jade')`.
 
 ### Mustache Example
+
+Mustache is the default template engine of Bogart.
 
 View (index.html):
 
@@ -56,18 +69,21 @@ App (app.js):
 
     var bogart = require('bogart');
     var viewEngine = bogart.viewEngine('mustache');
-    var app = bogart.router();
-    app.get('/hello/:firstName', function(req) {
+    var router = bogart.router();
+
+    router.get('/hello/:firstName', function(req) {
       return viewEngine.respond('index.html', {
         locals: { title: 'Hello', firstName: req.params.firstName }
       });
     });
 
-    bogart.start(app);
+    bogart.start(router);
 
 Execute `node app.js` and visit [http://localhost:8080/hello/bogart](http://localhost:8080/hello/bogart).
 
 ### Jade Example
+
+Make sure to install bogart-jade from npm before running these examples.
 
 View (index.jade):
 
@@ -86,12 +102,15 @@ App (app.js):
 
     var bogart = require('bogart');
     var viewEngine = bogart.viewEngine('jade');
-    var app = bogart.router();
-    app.get('/hello/:firstName', function(req) {
+    var router = bogart.router();
+    
+    router.get('/hello/:firstName', function(req) {
       return viewEngine.respond('index', {
         locals: { title: 'Hello', firstName: req.params.firstName }
       });
     });
+
+    bogart.start(router);
 
 Execute `node app.js` and visit [http://localhost:8080/hello/bogart](http://localhost:8080/hello/bogart).
 

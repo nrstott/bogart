@@ -1,13 +1,16 @@
 var bogart = require('../lib/bogart');
 
-var app = bogart.router();
-
-app.get('/', function(req) {
-  return bogart.html('Hello World<br /><br /><a href="/hello/bogart">Hello Bogart</a>');
+var router = bogart.router();
+router.get('/', function(req) {
+	return 'Hello Root';
 });
 
-app.get('/hello/:name', function(req, name) {
-  return bogart.html('Hello '+name);
+router.get('/:name', function(req) {
+	return 'Hello '+req.params.name;
 });
 
-bogart.start(app);
+var app = bogart.app();
+app.use(bogart.batteries);
+app.use(router);
+
+app.start();

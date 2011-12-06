@@ -1,3 +1,14 @@
+## v0.3.25
+
+* No longer reject a return that does not include all properties of a valid JSGI response.
+  This change facilitates Bogart as a middleware platform.
+* Added `bogart.middleware.batteries`, a batteries included JSGI stack for rapid application development.
+* The deprecated `bogart.app` has been reclaimed for the purpose of creating application stacks more easily than chaining
+  JSGI middleware manually or using `bogart.build`.
+* `bogart.build` is deprecated.
+* Added `bogart.q` which exposes the promise implementation used by Bogart.
+* Added `bogart.promisify` which adapts node-style asynchronous functions to promises.
+
 ## v0.3.24
 
 * Bug fixes in Session middleware.

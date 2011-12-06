@@ -30,3 +30,41 @@ exports["security"] = function(beforeExit) {
     var dec4 = security.decrypt(decodeURIComponent(enc4), key2);
     assert.equal(dec4, plain);
 };
+
+exports['bogart.promisify handles success'] = function(beforeExit) {
+  var p, asyncFn, actualVal, expectedVal = 1;
+
+  asyncFn = function(cb) {
+    process.nextTick(function() {
+      cb(null, expectedVal);
+    });
+  };
+
+  p = bogart.promisify(asyncFn)();
+  p.then(function(val) {
+    actualVal = val;
+  });
+
+  beforeExit(function() {
+    assert.equal(expectedVal, actualVal);
+  });
+};
+
+exports['bogart.promisify handles rejection'] = function(beforeExit) {
+  var p, asyncFn, expected, actual;
+
+  asyncFn = function(cb) {
+    process.nextTick(function() {
+      cb(expected);
+    });
+  };
+
+  p = bogart.promisify(asyncFn)();
+  p.then(bogart.noop, function(err) {
+    actual = err;
+  });
+
+  beforeExit(function() {
+    assert.equal(expected, actual);
+  });
+};
