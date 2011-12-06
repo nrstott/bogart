@@ -4,7 +4,7 @@ The Bogart `ViewEngine` renders view.  It handles partials and layouts as well.
 The `ViewEngine` ships with support for [Mustache](http://mustache.github.com/), 
 [Jade](http://jade-lang.com/), and [Haml](http://haml-lang.com/).
 
-## Rendering
+## viewEngine.render(template, [options])
 
 The `render` method uses the selected templating engine to render the specified view
 with options specified in the options `locals` object.
@@ -14,7 +14,7 @@ Rendering a view with mustache and replacement variables:
     var viewEngine = bogart.viewEngine('mustache');
     viewEngine.render('index.html', { locals: { title: 'Hello Mustache' } });
 
-## Respond
+## viewEngine.respond(template, [options])
 
 The `respond` method returns a promise for a JSGI response that will render the 
 specified view.
@@ -22,7 +22,14 @@ specified view.
     var viewEngine = bogart.viewEngine('mustache');
     viewEngine.respond('index.html', { locals: { title: 'Hello Mustache' } });
 
-## Layout
+## view.RenderOptions
+
+Options passed to `viewEngine.render` and `viewEngine.respond` should quack like view.RenderOptions.
+
+* opts.layout  The name of the layout or a boolean. If `true` then the name is defaulted to 'layout.html'. If `false` then no layout should be used.
+* opts.locals  Context in which to render the template. This should contain the replacement values of variables in your templates.
+
+## Layouts
 
 Layouts are supported.  By default, if there is a file named 'layout.{ext}' where
 `ext` is the extension of the view (haml, jade, mustache, html, etc...) then this file
