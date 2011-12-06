@@ -92,7 +92,7 @@ to `batteries`:
 The binary middleware is configured to check the path of the request and if it corresponds to a potential directory in the 'public' directory,
 the request is routed to the `directory` middleware to serve a static file.
 
-### Binary Split
+#### Binary Split
 Choose between two JSGI appliances based upon the request.
 
 #### Serve Static Files
