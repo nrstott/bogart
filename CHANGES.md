@@ -8,6 +8,7 @@
 * `bogart.build` is deprecated.
 * Added `bogart.q` which exposes the promise implementation used by Bogart.
 * Added `bogart.promisify` which adapts node-style asynchronous functions to promises.
+* Added `bogart.proxy`, a helper to create a JSGI response that proxies a URL.
 
 ## v0.3.24
 
