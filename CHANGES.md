@@ -6,6 +6,8 @@
 * The deprecated `bogart.app` has been reclaimed for the purpose of creating application stacks more easily than chaining
   JSGI middleware manually or using `bogart.build`.
 * `bogart.build` is deprecated.
+* Added `bogart.q` which exposes the promise implementation used by Bogart.
+* Added `bogart.promisify` which adapts node-style asynchronous functions to promises.
 
 ## v0.3.24
 
