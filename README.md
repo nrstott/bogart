@@ -80,7 +80,7 @@ Visit the application in a web browser at [http://localhost:8080/](http://localh
 Bogart comes with a variety of JSGI middleware appliances. The `batteries` appliance includes a recommended JSGI application chain for
 normal usage.
 
-### Batteries
+#### Batteries
 Frameworks are better when they come batteries included. Bogart ships with the batteries, it's just up to you to put them in if you
 want to use them.
 
