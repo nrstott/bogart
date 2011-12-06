@@ -1,5 +1,5 @@
 var bogart = require('../lib/bogart'),
-    Q = require("promised-io/lib/promise"),
+    Q = require('q'),
     assert = require('assert'),
     path = require('path'),
     security = require("../lib/security");

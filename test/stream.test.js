@@ -1,5 +1,5 @@
 var bogart        = require('../lib/bogart')
-  , Q             = require('promised-io/lib/promise')
+  , Q             = require('q')
   , assert        = require('assert')
   , fs            = require('fs')
   , ForEachStream = require('../lib/forEachStream')

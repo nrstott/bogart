@@ -276,11 +276,14 @@ exports["test session"] = function(beforeExit) {
     }
   });
 
-  var initialResp = app(request);
-  var cookieStr = initialResp.headers["Set-Cookie"].join("").replace(/;$/, "");
+  Q.when(app(request), function(resp) {
+    initialResp = resp;
+    var cookieStr = initialResp.headers["Set-Cookie"].join("").replace(/;$/, "");
 
-  request.headers.cookie = cookieStr;
-  var secondResp = app(request);
+    request.headers.cookie = cookieStr;
+    var secondResp = app(request);
+  });
+
 
   beforeExit(function() {
     assert.equal(values.length, 2);
