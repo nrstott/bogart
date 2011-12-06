@@ -3,8 +3,8 @@
 Routing in Bogart is simple and intuitive.  A route is a HTTP method paried with a
 URL matching pattern and a function to call to handle requests to the route.
 
-    var app = bogart.router();
-    app.get('/', function(req) {
+    var router = bogart.router();
+    router.get('/', function(req) {
     	return bogart.html('Hello World');
     });
 
@@ -17,8 +17,8 @@ pattern routes.
 Route patterns are matched vs URLs.  They may include named parameters that will
 be accessible via the `params` object of the `req` object passed to the route handler.
 
-    var app = bogart.router();
-    app.get('/hello/:name', function(req) {
+    var router = bogart.router();
+    router.get('/hello/:name', function(req) {
     	var greeting = 'Hello '+req.params.name;
     	return bogart.html(greeting);
     });
@@ -26,9 +26,17 @@ be accessible via the `params` object of the `req` object passed to the route ha
 It is also possible to access named parameters via arguments passed to the handler function.
 Named parameters will be passed in the order they are speicifed in the route pattern.
 
-    var app = bogart.router();
-    app.get('/hello/:name', function(req, name) {
+    var router = bogart.router();
+    router.get('/hello/:name', function(req, name) {
     	return bogart.html('Hello '+name);
+    });
+
+Route patterns support wildcards. Wildcards will match anything whereas regular named parameters
+will not match beyond a path separator ("/").
+
+    var router = bogart.router();
+    router.get('/hello/*', function(req, name) {
+        return bogart.html('Hello '+req.params.splat[0]);
     });
 
 ## Regex Routes
@@ -50,4 +58,3 @@ are put in an `Array` in `req.params.splat` of the `req` object passed to the ro
     	var name = req.params.splat[0];
     	return bogart.html('Hello '+name);
     });
-
