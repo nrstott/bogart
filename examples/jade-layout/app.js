@@ -6,7 +6,9 @@
  */
 
 var bogart = require('../../lib/bogart')
-  , path   = require('path')
+  , path   = require('path');
+
+require('bogart-jade');
 
 // Construct a Bogart ViewEngine using the Jade.
 var viewEngine = bogart.viewEngine('jade');
@@ -27,7 +29,3 @@ app.use(bogart.middleware.error);
 app.use(router);
 
 app.start(9091, '127.0.0.1');
-
-process.on('uncaughtException', function(err) {
-  console.log('UNCAUGHT', err.message, err.stack);
-});
