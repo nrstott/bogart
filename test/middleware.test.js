@@ -296,6 +296,7 @@ exports["test validate response"] = function(beforeExit) {
   bogart.middleware.validateResponse(function(req) {
     return null;
   })().then(bogart.noop, function(err) {
+    console.log('err', err);
     noResponse = err;
   });
 
