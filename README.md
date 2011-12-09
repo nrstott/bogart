@@ -40,6 +40,89 @@ Visit the route that says hello to you by name at [http://localhost:8080/bob](ht
 
 If you can't run on 8080, change the `app.start` call e.g. `app.start(9090, '127.0.0.1')`
 
+## Routing
+
+Routing in Bogart is simple and intuitive.  A route is a HTTP method paried with a
+URL matching pattern and a function to call to handle requests to the route.
+
+    var router = bogart.router();
+    router.get('/', function(req) {
+      return bogart.html('Hello World');
+    });
+
+Routes are matched first based upon the length of the match and second based upon the
+order in which they were defined.  Regular expression routes are matched before string
+pattern routes.
+
+### Route Patterns
+
+Route patterns are matched vs URLs.  They may include named parameters that will
+be accessible via the `params` object of the `req` object passed to the route handler.
+
+    var router = bogart.router();
+    router.get('/hello/:name', function(req) {
+      var greeting = 'Hello '+req.params.name;
+      return bogart.html(greeting);
+    });
+
+It is also possible to access named parameters via arguments passed to the handler function.
+Named parameters will be passed in the order they are speicifed in the route pattern.
+
+    var router = bogart.router();
+    router.get('/hello/:name', function(req, name) {
+      return bogart.html('Hello '+name);
+    });
+
+Route patterns support wildcards. Wildcards will match anything whereas regular named parameters
+will not match beyond a path separator ("/").
+
+    var router = bogart.router();
+    router.get('/hello/*', function(req, name) {
+        return bogart.html('Hello '+req.params.splat[0]);
+    });
+
+### Regex Routes
+
+When a route pattern is not powerful enough, regular expressions may be used to specify which
+URLs are to be matched.
+
+    var router = bogart.router();
+    router.get(/\/posts?/, function(req) {
+      // Matches 'post' or 'posts'
+      return bogart.html('Regex Route');
+    });
+
+Parameters are via regular expression groups in regular expression routes.  The parameter values
+are put in an `Array` in `req.params.splat` of the `req` object passed to the route handler.
+
+    var router = bogart.router();
+    router.get(/hello-(.*)/, function(req) {
+      var name = req.params.splat[0];
+      return bogart.html('Hello '+name);
+    });
+
+## Bogart Application
+
+`bogart.app` makes it easy to setup a middleware chain and start coding. Combined with 
+`bogart.batteries` (See Below), you can setup a full-stack JSGI application in two lines of code.
+
+    var app = bogart.app();
+    app.use(bogart.batteries);
+
+After adding `bogart.batteries`, you will normally want to add a Router. This is also done
+with `app.use`. To start the application, use the `start` method.
+
+    var app = bogart.app();
+    app.use(bogart.batteries);
+
+    var router = bogart.router();
+    // Setup Routes
+
+    app.use(router);
+    app.start();
+
+[Read more about the `bogart.App` class](/docs/app.md).
+
 ## Running the Examples
 
 In the 'examples' directory of the cloned source, there are several examples of bogart applications.
