@@ -14,15 +14,15 @@ Create the following file:
 
 ### app.js
 
-    var bogart = require("bogart");
+    var bogart = require('bogart');
 
     var router = bogart.router();
     router.get('/', function(req) { 
       return "hello world"; 
     });
 
-    router.get("/:name", function(req) {
-      return "hello "+req.params.name;
+    router.get('/:name', function(req) {
+      return 'hello '+req.params.name;
     });
     
     var app = bogart.app();
