@@ -248,6 +248,92 @@ Standard flash middleware for bogart. Session id and data are stored in encrypte
 * Avoid manipulating prototypes of Node.JS constructors. Manipulating prototypes makes for harder to understand code.
   Also, Bogart is expected to be cross-platform in the future.
 
+## Promises
+
+Promises provide a well-defined interface for interacting with an object that represents the result of an action that is performed
+asynchronously. Why does Bogart use Promises instead of Callbacks for an interface? Because it's prettier and easier to reason about!
+
+In all seriousness, I don't want to get into large arguments about the merits of Promises. Node.JS uses callbacks for its API; however,
+user-land applications and frameworks are free to employ higher-level abstractions and Bogart uses Promises.
+
+### Terminology
+
+* Listener: A function listening for the resolution or rejection of a Promise.
+* Resolve: A successful Promise is 'resolved' which invokes the success listeners that are waiting and remembers the value that was resolved for future success listeners that are attached.
+* Reject: When an error condition is encountered, a Promise is 'rejected' which invokes the error listeners that are waiting and remembers the value that was rejected for future error listeners that are attached.
+
+### How Promises Work
+
+Promises may only be resolved one time. In the future, when success listeners are added to a 
+promise that has already been resolved, the success listener will be invoked with the
+previously resolved value. Each success listener or error listener is invoked one time and
+one time only.
+
+Promises are not EventEmitters. Many times when describing promises, other coder's ask why 
+not just use an EventEmitter. Promises have a different contarct. The fact that promises
+are resolved or rejected only one time is powerful. EventEmitters have their place; however,
+they do not take the place of Promises and Promises do not take the place of EventEmitters.
+
+    function helloWorld() {
+
+      // Retrieve the q promise utility
+      var q = require('bogart').q;
+
+      // Create a deferred, a wrapper around a Promise.
+      var deferred = q.defer();
+
+      // Do something async
+      setTimeout(function() {
+        // Resolve the promise, this will cause success listeners to be invoked.
+        deferred.resolve('hello world');
+      }, 100);
+
+      // Return the promise that the deferred wraps to the client.
+      return deferred.promise;
+    }
+
+    // Consuming the helloWorld function
+    var p = helloWorld();
+    p.then(function(msg) {
+      // This function will be invoked on success
+      console.log(msg);
+    }, function(err) {
+      // This function will be invoked on error.
+      console.log(err);
+    });
+
+### The `then` Method
+`promise.then(callback, errback, progress)`
+
+A promise will have a `then` method which takes up to three parameters.
+
+### The `when` Function
+`bogart.q.when(promiseOrValue, callback, errback, progress)`
+
+The `when` function in the `bogart.q` namespace is helpful when you do not know if what you have is a value or a promise for a 
+value. The callback will be executed for success for a resoled promise or for the value passed if it is a value and not a promise.
+
+## JSGI
+
+JSGI stands for JavaScript Gateway Interface. It is an interface between web applications and web servers. It is similar to
+Ruby's Rack and Python's WSGI.
+
+### Entities
+
+* Application: A JavaScript Function that takes one argument, the Request as a JavaScript Object, and returns its Response as a JavaScript Object containing three required attributes: status, headers, and body.
+* Middleware: JSGI Applications that can call other JSGI Applications. Middleware can be orgonized into a call chain to provide useful services or perform useful business logic.
+* Request: A JavaScript Object that contains the state of the HTTP request.  JSGI Applications and Middleware are free to modify the request object.
+
+### Bogart Relationship to JSGI
+
+Bogart makes it easy to create JSGI Applications and Middleware. Bogart is a high-level wrapper around JSGI.
+
+Valid JSGI responses are always valid returns from Bogart. Bogart, via its helpful Middleware, also allows you to return
+Node.JS Streams, Node.JS Buffers, and JavaScript Strings as responses that will be translated into valid JSGI responses.
+
+Bogart also provides helper functions to make creating JSGI responses easier. Prime examples of this are `bogart.file` which
+returns a JSGI response that serves a file and `bogart.proxy` which returns a response that proxies another URL.
+
 ## Supporting Modules
 
 * [Jade View Engine](https://github.com/nrstott/bogart-jade): `npm install bogart-jade`
