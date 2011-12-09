@@ -54,7 +54,7 @@ Routes are tested for matches in the order in which they are defined.
 
 ### Route Patterns
 
-Route patterns are matched vs URLs.  They may include named parameters that will
+Route patterns are matched against URLs.  They may include named parameters that will
 be accessible via the `params` object of the `req` object passed to the route handler.
 
     var router = bogart.router();
