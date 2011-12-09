@@ -3,7 +3,8 @@ var bogart    = require('../lib/bogart')
   , assert    = require('assert')
   , path      = require('path')
   , fs     = require('fs')
-  , security  = require("../lib/security");
+  , security  = require("../lib/security")
+  , util      = require('util');
 
 exports["test parses JSON"] = function(beforeExit) {
   var forEachDeferred = Q.defer()
@@ -296,7 +297,6 @@ exports["test validate response"] = function(beforeExit) {
   bogart.middleware.validateResponse(function(req) {
     return null;
   })().then(bogart.noop, function(err) {
-    console.log('err', err);
     noResponse = err;
   });
 
@@ -357,6 +357,54 @@ exports["test validate response"] = function(beforeExit) {
     assert.equal('Response body has a forEach method but the forEach method is not a function.', forEachNotFunction);
     assert.equal('Response must have a status property.', noStatus);
     assert.equal('Response has a status property but the status property must be a number.', statusNotNumber);
+  });
+};
+
+exports["test bodyAdapter adapts Stream"] = function(beforeExit) {
+  var Stream = require('stream').Stream
+    , response;
+
+  function TestReadStream() {
+    Stream.call(this);
+
+    var args = Array.prototype.slice.call(arguments)
+      , self = this;
+
+    process.nextTick(function emitData() {
+      var x = args.pop();
+      if (!x) { return; }
+
+      self.emit('data', x);
+
+      process.nextTick(function() {
+        emitData();
+      });
+    });
+
+    this.readable = true;
+  }
+
+  util.inherits(TestReadStream, Stream);
+
+  var streamAdapter = bogart.middleware.bodyAdapter(function(req) {
+    return new TestReadStream('hello', ' ', 'world');
+  });
+
+  Q.when(streamAdapter(), function(resp) {
+    response = resp;
+  });
+
+  beforeExit(function() {
+    assert.ok(response);
+    assert.ok(response.body);
+    assert.ok(response.body.forEach);
+
+    var str = '';
+    response.body.forEach(function(x) {
+      str += x;
+    });
+
+    assert.equal('hello world', str);
   });
 };
 
