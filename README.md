@@ -351,8 +351,8 @@ Bubbling errbacks is paralell to having a try/catch at a higher level handle err
 
 ### Working with Node.JS Callbacks
 
-Node.JS uses a style of callback with the following signuare: `function(err, result)`. Bogart includes a utility function
-to adapt these Node.JS-style functions to return a Promise.
+Node.JS uses a style of callback with the following signuare: `function(err, result)`. Bogart includes a utility function,
+`bogart.promisify`, to adapt these Node.JS-style functions to return a Promise.
 
     var fs = require('fs'); // Node File System Module
     var bogart = require('bogart'); // Include Bogart
@@ -363,6 +363,10 @@ to adapt these Node.JS-style functions to return a Promise.
     readFile('test.txt').then(function(data) {
       console.log(data);
     });
+
+*NOTE*: A Node.JS-style function which calls its callback multiple times is not compatible with promises. 
+A Promise may be resolved only once. Node.JS style functions that call their callback multiple times are  
+uncommon. The vast majority of Node.JS style functions can be safely translated using `bogart.promisify`.
 
 ### Promises are 'A Good Thing'
 
