@@ -121,8 +121,6 @@ with `app.use`. To start the application, use the `start` method.
     app.use(router);
     app.start();
 
-[Read more about the `bogart.App` class](/docs/app.md).
-
 ## Running the Examples
 
 In the 'examples' directory of the cloned source, there are several examples of bogart applications.
