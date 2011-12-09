@@ -114,7 +114,7 @@ with `app.use`. To start the application, use the `start` method.
     app.use(bogart.batteries);
 
     var router = bogart.router();
-    // Setup Routes
+    // NOTE: Here you would normally add some routes.
 
     app.use(router);
     app.start();
