@@ -1,3 +1,7 @@
+# Bogart
+
+A blazing fast rapid application development web framework using JSGI for [node](http://nodejs.org/).
+
 ## Getting Started
 
 Bogart can be installed via [npm](https://github.com/isaacs/npm).
