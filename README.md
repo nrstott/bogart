@@ -43,14 +43,14 @@ If you can't run on 8080, change the `app.start` call e.g. `app.start(9090, '127
 ## Routing
 
 Routing in Bogart is simple and intuitive.  A route is a HTTP method paried with a
-URL matching pattern and a function to call to handle requests to the route.
+URL matching pattern and a handler function.
 
     var router = bogart.router();
     router.get('/', function(req) {
       return bogart.html('Hello World');
     });
 
-Routes are tested for matches in the order in which they were defined.
+Routes are tested for matches in the order in which they are defined.
 
 ### Route Patterns
 
