@@ -261,6 +261,9 @@ user-land applications and frameworks are free to employ higher-level abstractio
 * Listener: A function listening for the resolution or rejection of a Promise.
 * Resolve: A successful Promise is 'resolved' which invokes the success listeners that are waiting and remembers the value that was resolved for future success listeners that are attached.
 * Reject: When an error condition is encountered, a Promise is 'rejected' which invokes the error listeners that are waiting and remembers the value that was rejected for future error listeners that are attached.
+* Callback: A function executed upon successful resolution of a Promise.
+* Errback: A function executed when a Promise is rejected
+* Progressback: A function executed to provide intermediate results of a Promise.
 
 ### How Promises Work
 
@@ -320,6 +323,29 @@ value. The callback will be executed for success for a resoled promise or for th
     // handle values that are not promises.
     q.when(p, function() { console.log('Success'); });
     p.then(function() { console.log('Success'); });
+
+### Bubbling
+
+Promises can be 'bubbled'. The return value of a callback becomes the value of an external promise. The same is true of errbacks.
+
+    function bubble(p) {
+      return p.then(function() {
+        // Assume makePromise is a function that returns a promise for an asyncronous operation.
+        // The value of makePromise when resolved becomes the resolution of the `bubble` function as well.
+        return makePromise();
+      });
+    }
+
+Bubbling errbacks is paralell to having a try/catch at a higher level handle errors at a lower level.
+
+    p.then(function(url) {
+      return request(url).then(function() {
+        throw 'error';
+      });
+    }, function(err) {
+      // Will handle the error that occurs in the callback of `request.then`.
+      console.log(err);
+    });
 
 ## JSGI
 
