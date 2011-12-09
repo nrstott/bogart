@@ -306,6 +306,7 @@ they do not take the place of Promises and Promises do not take the place of Eve
     });
 
 ### The `then` Method
+
 `promise.then(callback, errback, progress)`
 
 A promise will have a `then` method which takes up to three parameters. The three parameters are all optional.
@@ -314,6 +315,7 @@ executed if the Promise is rejected. The third parameter, `progress`, is used to
 asynchronous operation. This parameter is rarely used. Most promises do not report progress.
 
 ### The `when` Function
+
 `bogart.q.when(promiseOrValue, callback, errback, progress)`
 
 The `when` function in the `bogart.q` namespace is helpful when you do not know if what you have is a value or a promise for a 
@@ -346,6 +348,28 @@ Bubbling errbacks is paralell to having a try/catch at a higher level handle err
       // Will handle the error that occurs in the callback of `request.then`.
       console.log(err);
     });
+
+### Working with Node.JS Callbacks
+
+Node.JS uses a style of callback with the following signuare: `function(err, result)`. Bogart includes a utility function
+to adapt these Node.JS-style functions to return a Promise.
+
+    var fs = require('fs'); // Node File System Module
+    var bogart = require('bogart'); // Include Bogart
+
+    // A promise-based version of fs.readFile.
+    var readFile = bogart.promisify(fs.readFile);
+
+    readFile('test.txt').then(function(data) {
+      console.log(data);
+    });
+
+### Promises are 'A Good Thing'
+
+There are a lot of critiques of Promises. These usually come from programmers who have not used a proper Promise library.
+Turst me, promises are 'A Good Thing'. Your code will be more composable, readable, and maintainable if you choose to use
+Promises instead of Callbacks for your API. It is also quite easy to transalate Node.JS style callbacks into promises using
+`bogart.promisify` so working wtih callback based APIs is still simple.
 
 ## JSGI
 
