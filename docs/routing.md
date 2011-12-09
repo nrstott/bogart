@@ -8,9 +8,7 @@ URL matching pattern and a function to call to handle requests to the route.
     	return bogart.html('Hello World');
     });
 
-Routes are matched first based upon the length of the match and second based upon the
-order in which they were defined.  Regular expression routes are matched before string
-pattern routes.
+Routes are tested for matches in the order in which they were defined.
 
 ## Route Patterns
 
