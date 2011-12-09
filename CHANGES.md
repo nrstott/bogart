@@ -1,3 +1,8 @@
+## v0.3.26
+
+* `bogart.middleware.bodyAdapter` now adapts responses that are of type Buffer or Stream to JSGI responses.
+* Fixed a bug in `bogart.middleware.bodyAdatper` where Stream returns were not being handled properly.
+
 ## v0.3.25
 
 * No longer reject a return that does not include all properties of a valid JSGI response.
