@@ -145,17 +145,11 @@ to hold other templates to avoid duplication of content.
 
 Visit the application in a web browser at [http://localhost:8080/](http://localhost:8080)    
 
-### Haml
+### Jade
 
-Haml is an optional dependency of bogart.  Please install it via `npm install haml` if you wish to use this templating
-engine.
-
-The Haml sample demonstrates a haml view without a layout.
-
-    > cd examples/haml-view
-    > node app.js
-
-Visit the application in a web browser at [http://localhost:8080/](http://localhost:8080)    
+If you would like to use Jade instead of Mustache, please `npm install bogart-jade`. Then in 
+your application add `require('bogart-jade')` and the Jade ViewEngine will be available via
+`bogart.viewEngine('jade')`. See [the github repository](https://github.com/nrstott/bogart-jade) for more information.
 
 ## Middleware
 Bogart comes with a variety of JSGI middleware appliances. The `batteries` appliance includes a recommended JSGI application chain for
@@ -224,6 +218,10 @@ Standard flash middleware for bogart. Session id and data are stored in encrypte
 * Prefer composition to inheritance.
 * Avoid manipulating prototypes of Node.JS constructors. Manipulating prototypes makes for harder to understand code.
   Also, Bogart is expected to be cross-platform in the future.
+
+## Supporting Modules
+
+* [Jade View Engine](https://github.com/nrstott/bogart-jade): `npm install bogart-jade`
 
 ## Contributors
 
