@@ -119,6 +119,37 @@ with `app.use`. To start the application, use the `start` method.
     app.use(router);
     app.start();
 
+## Using Session
+
+The session middleware can be included individually with `app.use(bogart.middleware.session)` or
+by using batteries `app.use(bogart.batteries)` which includes a default stack of JSGI middleware.
+
+A `session` function will be available on the request object passed to your route handlers. This
+function follows the jQuery style of arity determining if it is getting or setting a key/value pair.
+A call to session with one argument is a get to the value of the key referenced by the argument.
+
+    req.session('name'); // => value associated with 'name'
+
+A call to session with two arguments is a set.
+
+    req.session('name', 'Nathan'); // sets the value of 'name' to 'Nathan'
+
+### Contrived Example
+
+A set of two routes that use session:
+
+    router.get('/:name', function(req) {
+      req.session('name', req.params.name);
+      return bogart.redirect('/');
+    });
+
+    router.get('/', function(req) {
+      return bogart.html('Hello ' +req.session('name'));
+    });
+
+Visiting '/:name' ('/Nathan', '/Bob', etc...) will set a session key that will 
+be displayed by the root route '/', after the redirect.
+
 ## Running the Examples
 
 In the 'examples' directory of the cloned source, there are several examples of bogart applications.
