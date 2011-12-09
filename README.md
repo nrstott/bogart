@@ -305,13 +305,21 @@ they do not take the place of Promises and Promises do not take the place of Eve
 ### The `then` Method
 `promise.then(callback, errback, progress)`
 
-A promise will have a `then` method which takes up to three parameters.
+A promise will have a `then` method which takes up to three parameters. The three parameters are all optional.
+The first parameter, `callback`, is executed if the Promise is successfully resolved. The second parameter, `errback`, is 
+executed if the Promise is rejected. The third parameter, `progress`, is used to provide intermediate feedback on the 
+asynchronous operation. This parameter is rarely used. Most promises do not report progress.
 
 ### The `when` Function
 `bogart.q.when(promiseOrValue, callback, errback, progress)`
 
 The `when` function in the `bogart.q` namespace is helpful when you do not know if what you have is a value or a promise for a 
 value. The callback will be executed for success for a resoled promise or for the value passed if it is a value and not a promise.
+
+    // The following two lines are equivalent with the exception that the `when` can 
+    // handle values that are not promises.
+    q.when(p, function() { console.log('Success'); });
+    p.then(function() { console.log('Success'); });
 
 ## JSGI
 
