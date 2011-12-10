@@ -5,9 +5,11 @@ A blazing fast rapid application development web framework using JSGI for [node]
 ## Getting Started
 
 Bogart can be installed via [npm](https://github.com/isaacs/npm).
+
     npm install bogart
 
 Alternatively, clone the git repository.
+
     git clone git://github.com/nrstott/bogart.git
 
 ## Hello World in Bogart
@@ -122,6 +124,151 @@ with `app.use`. To start the application, use the `start` method.
 
     app.use(router);
     app.start();
+
+## Response Helpers
+
+Bogart includes helpers for creating JSGI Responses. The helpers, by convention, take a final
+parameter of an options object that allows the caller to override defaults. The options object 
+is merged with the default JSGI Response values of the helper before the JSGI Response is returned.
+
+### Respond with JSON
+
+Helper to create a HTTP 200 Success response with a Content-Type of application/json.
+
+Sample Route:
+
+    var router = bogart.router();
+    router.get('/', function(req) {
+      return bogart.json({ framework: 'Bogart' });
+    });
+
+This route yields the following JSGI Response:
+
+    {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: [ '{ "framework": "Bogart" }' ]
+    }
+
+### Redirect
+
+Helper to create a HTTP 302 Temporary Redirect response.
+
+Sample Route:
+
+    var router = bogart.router();
+    router.get('/', function(req) {
+      return bogart.redirect('/some/other/url');
+    });
+
+This route yields the following JSGI Response:
+
+    {
+      status: 302,
+      headers: { 'Location': '/some/other/url' },
+      body: []
+    }
+
+### Error
+
+Helper to create a HTTP 500 Internal Server Error response.
+
+Sample Route:
+
+    var router = bogart.router();
+    router.get('/', function(req) {
+      return bogart.error('<html>...</html>');
+    });
+
+This route yeilds the following JSGI Response:
+
+    {
+      status: 500,
+      headers: { 'Content-Type': 'text/html' },
+      body: [ '<html>...</html>' ]
+    }
+
+### Not Modified
+
+Helper to create a HTTP 304 Not Modified response.
+
+Sample Route:
+
+    var router = bogart.router();
+    router.get('/', function(req) {
+      return bogart.notModified();
+    });
+
+This route yeilds the following JSGI Response:
+
+    {
+      status: 304,
+      headers: {},
+      body: []
+    }
+
+### File (Streaming!)
+
+Helper to create a HTTP 200 Success response with a body streamed from the contents of a file. The
+Content-Type of the response is determined by the mime type of the file.
+
+Sample Route:
+
+    var path = require('path');
+
+    var router = bogart.router();
+    router.get('/download/*', function(req) {
+      var filePath = path.join(__dirname, 'public', req.params.splat[0]);
+
+      return bogart.file(filePath);
+    });
+
+This route yeilds the following JSGI Response:
+
+    {
+      status: 200,
+      headers: { 'Content-Type': '<mimetype of the file>' },
+      body: fileStream // <-- A file stream
+    }
+
+### Proxy (Streaming!)
+
+Helper to create a response that proxies the response from a URL.
+
+Sample Route:
+
+    var router = bogart.router();
+    router.get('/google', function(req) {
+      return bogart.proxy('http://www.google.com');
+    });
+
+This route yeilds a JSGI Response that matches the response from the proxied URL.
+
+## Imperative Response Builder
+
+Bogart includes a ResponseBuidler to allow an imperative style of constructing a response where
+desired.
+
+    var router = bogart.router();
+    router.get('/', function(req) {
+      var res = bogart.response();
+
+      doSomethingAsync(function(err, messageStr) {
+        res.setHeader('Content-Type', 'text/plain');
+
+        if (err) {
+          res.status(500);
+          res.send('Error');
+          return res.end(); // We use return to break out of the function, do not want to continue executing after res.end()
+        }
+
+        res.status(200);
+        res.send(messageStr);
+        res.end(); // End the Response.  This is analagous to resolving a promise for a JSGI Response.
+      });
+
+      return res;
+    });
 
 ## Using Session
 
@@ -277,7 +424,7 @@ previously resolved value. Each success listener or error listener is invoked on
 one time only.
 
 Promises are not EventEmitters. Many times when describing promises, other coder's ask why 
-not just use an EventEmitter. Promises have a different contarct. The fact that promises
+not just use an EventEmitter. Promises have a different contract. The fact that promises
 are resolved or rejected only one time is powerful. EventEmitters have their place; however,
 they do not take the place of Promises and Promises do not take the place of EventEmitters.
 
