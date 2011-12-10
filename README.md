@@ -246,8 +246,10 @@ This route yeilds a JSGI Response that matches the response from the proxied URL
 
 ## Imperative Response Builder
 
-Bogart includes a ResponseBuidler to allow an imperative style of constructing a response where
-desired.
+Bogart includes the ResponseBuidler helper to provide an imperative interface. While not
+recommended as a goto style of programming in Bogart, there are times when buiding a 
+response imperatively makes for cleaner, better code. This is true especially
+when working with callback based functions that cannot be wrapped by `bogart.promisify`.
 
     var router = bogart.router();
     router.get('/', function(req) {
