@@ -1,5 +1,5 @@
 /**
- * Bogart `app.config` example.
+ * Bogart `config` example.
  *
  * Environment is determined by the OS environment variable BOGART_ENV.
  * The default value for environment if BOGART_ENV is not set is 'development'. 
