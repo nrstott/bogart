@@ -21,16 +21,16 @@ function productionApp() {
 
 var app = bogart.app();
 
-app.config(function() {
+bogart.config(function() {
   // Executed in all environments.
   app.use(bogart.batteries);
 });
 
-app.config('development', function() {
+bogart.config('development', function() {
   app.use(developmentApp);
 });
 
-app.config('production', function() {
+bogart.config('production', function() {
   app.use(productionApp);
 });
 
