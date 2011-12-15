@@ -3,6 +3,7 @@
 * `bogart.middleware.bodyAdapter` now adapts responses that are of type Buffer or Stream to JSGI responses.
 * Fixed a bug in `bogart.middleware.bodyAdatper` where Stream returns were not being handled properly.
 * Added `bogart.config`. The default environment is 'development' and may be overridden with the BOGART_ENV environment variable.
+* Expose `DefaultIdProvider` and `DefaultDataProvider` as properties of `bogart.middleware.session`.
 
 ## v0.3.25
 
