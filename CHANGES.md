@@ -1,3 +1,7 @@
+## v0.3.27
+
+* `bogart.middleware.session` assumed that `req.env` would be unique per request; however, it is not. Corrected issues caused by this.
+
 ## v0.3.26
 
 * `bogart.middleware.bodyAdapter` now adapts responses that are of type Buffer or Stream to JSGI responses.
