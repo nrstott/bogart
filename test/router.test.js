@@ -393,3 +393,24 @@ exports['test calls next app when handler returns `undefined`'] = function(befor
     assert.equal(str, response.body[0]);
   });
 };
+
+exports['test middleware in routes'] = function(beforeExit) {
+  var router = bogart.router()
+    , response = null;
+
+  router.get('/', function(req, next) {
+    req.hello = 'world';
+    return next(req);
+  }, function(req) {
+    return bogart.text(req.hello);
+  });
+
+  router(mockRequest('/')).then(function(resp) {
+    response = resp;
+  });
+
+  beforeExit(function() {
+    assert.ok(response);
+    assert.equal('world', response.body[0]);
+  });
+};
