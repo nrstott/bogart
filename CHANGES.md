@@ -1,3 +1,9 @@
+## v0.3.28
+
+* Added dependency on request 2.2.9.
+* Removed dependency on Deflate as Node.JS 0.6.x includes zlib.
+* Added gzip middleware to `bogart.batteries`
+
 ## v0.3.27
 
 * `bogart.middleware.session` assumed that `req.env` would be unique per request; however, it is not. Corrected issues caused by this.
