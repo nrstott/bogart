@@ -5,8 +5,13 @@
     "keywords": ["bogart", "framework", "sinatra", "REST"],
     "author": "Nathan Stott",
     "email": "nathan.stott@whiteboard-it.com",
+    "homepage": "https://github.com/nrstott/bogart",
     "main": "./lib/bogart",
     "directories": { "lib": "./lib" },
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/nrstott/bogart"
+    },
     "bugs": {
       "url": "https://github.com/nrstott/bogart/issues",
       "email": "nrstott@gmail.com"
