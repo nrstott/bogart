@@ -1,3 +1,7 @@
+## v0.3.29
+
+* Missed a whenCall, same issue from v0.3.28
+
 ## v0.3.28
 
 * Added dependency on request 2.2.9.
