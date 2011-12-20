@@ -3,6 +3,7 @@
 * Added dependency on request 2.2.9.
 * Removed dependency on Deflate as Node.JS 0.6.x includes zlib.
 * Added gzip middleware to `bogart.batteries`
+* Added reject callbacks for all cases where whenCall is invoked as it tries to invoke the rejectCallback even if one is not provided.
 
 ## v0.3.27
 
