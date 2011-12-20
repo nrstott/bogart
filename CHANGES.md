@@ -1,6 +1,10 @@
+## v0.3.30
+
+* Fixed a bug causing before callbacks to cause errors.
+
 ## v0.3.29
 
-* Missed a whenCall, same issue from v0.3.28
+* Missed a whenCall, same issue from v0.3.28.
 
 ## v0.3.28
 
