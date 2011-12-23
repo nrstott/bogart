@@ -1,3 +1,7 @@
+## v0.3.31
+
+* Fixed a bug where Parted middleware was not bubbling rejections.
+
 ## v0.3.30
 
 * Fixed a bug causing before callbacks to cause errors.
