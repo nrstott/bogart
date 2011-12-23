@@ -1,3 +1,7 @@
+## v0.3.32
+
+* Did not update package.json in my tag of 0.3.31, went to 0.3.32 for consistency.
+
 ## v0.3.31
 
 * Fixed a bug where Parted middleware was not bubbling rejections.
