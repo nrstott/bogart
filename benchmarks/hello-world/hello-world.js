@@ -1,9 +1,8 @@
 var bogart = require('../../lib/bogart');
 
-var config = function(show, create, update, destroy) {
-  show('/hello/:name', function(req, name) {
-    return bogart.html('Hello '+name);
-  });
-};
+var router = bogart.router();
+router.get('/', function(req) {
+  return bogart.html('Hello World');
+});
 
-bogart.start(bogart.router(config));
+bogart.start(router);

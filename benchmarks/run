@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ABFLAGS=${ABFLAGS-"-n 500 -c 50 -k"}
+ABFLAGS=${ABFLAGS-"-n 5000 -c 500 -k"}
 ADDR=${ADDR-http://0.0.0.0:8080/}
 AB=${AB-ab}
 
