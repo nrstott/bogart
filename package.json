@@ -3,7 +3,7 @@
     "description": "Fast JSGI web framework taking inspiration from Sinatra",
     "version": "0.3.32",
     "keywords": ["bogart", "framework", "sinatra", "REST"],
-    "author": "Nathan Stott",
+    "author": "Nathan Stott <nrstott@gmail.com>",
     "email": "nathan.stott@whiteboard-it.com",
     "homepage": "https://github.com/nrstott/bogart",
     "main": "./lib/bogart",
@@ -25,7 +25,8 @@
       "parted": "=0.0.8",
       "q": "=0.7.2",
       "oauth": "=0.9.5",
-      "request": "=2.2.9"
+      "request": "=2.2.9",
+      "commander": "*"
     },
     "devDependencies": {
       "expresso": ">= 0.8.1",
