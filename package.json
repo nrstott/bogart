@@ -16,6 +16,9 @@
       "url": "https://github.com/nrstott/bogart/issues",
       "email": "nrstott@gmail.com"
     },
+    "bin": {
+      "bogart": "./bin/bogart"
+    },
     "dependencies": {
       "promised-io": "v0.2.3",
     	"jsgi": ">=v0.2.2",
@@ -26,7 +29,8 @@
       "q": "=0.7.2",
       "oauth": "=0.9.5",
       "request": "=2.2.9",
-      "commander": "*"
+      "commander": "*",
+      "mkdirp": "*"
     },
     "devDependencies": {
       "expresso": ">= 0.8.1",
