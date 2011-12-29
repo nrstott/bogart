@@ -2,41 +2,37 @@ var bogart = require('../lib/bogart')
   , assert = require('assert')
   , Q      = require('promised-io/lib/promise')
   , fs     = require('fs')
-  , path   = require('path');
+  , path   = require('path')
+  , test   = require('tap').test
+  , plan   = require('tap').plan;
 
 function identity(){};
  
-exports["test ResponseBuilder can be resolved"] = function(beforeExit) {
-  var resolved = false
-    , response = new bogart.ResponseBuilder();
+test("test ResponseBuilder can be resolved", function(t) {
+  var response = new bogart.ResponseBuilder();
 
   response.then(function() {
-    resolved = true;
+    t.ok(true);
   });
 
   response.resolve();
 
-  beforeExit(function() {
-    assert.ok(resolved, 'Should have resolved');
-  });
-};
+  t.plan(1);
+});
 
-exports["test ResponseBuilder can be rejected"] = function(beforeExit) {
-  var rejected = false
-    ,  response = new bogart.ResponseBuilder();
+test("test ResponseBuilder can be rejected", function(t) {
+  var response = new bogart.ResponseBuilder();
   
-  response.then(identity, function() {
-    rejected = true;
+  response.then(null, function() {
+    t.ok(true);
   });
 
   response.reject();
 
-  beforeExit(function() {
-    assert.ok(rejected, 'Should have rejected');
-  });
-};
+  t.plan(1);
+});
 
-exports["test ResponseBuilder send string"] = function(beforeExit) {
+test("test ResponseBuilder send string", function(t) {
   var response = new bogart.ResponseBuilder()
     , msg      = 'Hello World'
     , written  = '';
@@ -47,16 +43,16 @@ exports["test ResponseBuilder send string"] = function(beforeExit) {
     return resp.body.forEach(function(data) {
       written += data;
     });
+  }).then(function() {
+    t.equal(written, msg);
   });
 
   response.end();
 
-  beforeExit(function() {
-    assert.equal(msg, written);
-  });
-};
+  t.plan(1);
+});
 
-exports["test ResponseBuilder send buffer"] = function(beforeExit) {
+exports["test ResponseBuilder send buffer"] = function(t) {
   var response = new bogart.ResponseBuilder()
     , msg      = 'Hello World'
     , buf      = new Buffer(msg.length)
@@ -70,14 +66,14 @@ exports["test ResponseBuilder send buffer"] = function(beforeExit) {
     return resp.body.forEach(function(data) {
       written += data;
     });
+  }).then(function() {
+    t.equal(written, msg);
   });
 
-  beforeExit(function() {
-    assert.equal(msg, written);
-  });
+  t.plan(1);
 };
 
-exports["test ResponseBuilder send binary"] = function(beforeExit) {
+test("test ResponseBuilder send binary", function(t) {
   var response    = new bogart.ResponseBuilder()
     , filePath    = path.join(__dirname, 'fixtures', 'test.jpg')
     , stat        = fs.statSync(filePath)
@@ -85,19 +81,23 @@ exports["test ResponseBuilder send binary"] = function(beforeExit) {
     , written     = new Buffer(stat.size);
   
   fs.readFile(filePath, 'binary', function(err, content) {
+    if (err) {
+      t.fail(err);
+      return;
+    }
     fileContent = content;
     response.send(content);
+    response.end();
   });
-
-  response.end();
 
   response.then(function(resp) {
     return resp.body.forEach(function(chunk) {
       written.write(chunk, 'binary');
     });
+  }).then(function() {
+    t.ok(fileContent !== null, 'fileContent should not be null');
+    t.equal(written.toString('binary'), fileContent);
   });
 
-  beforeExit(function() {
-    assert.equal(fileContent, written.toString('binary'), 'not equal');
-  });
-};
+  t.plan(2);
+});
