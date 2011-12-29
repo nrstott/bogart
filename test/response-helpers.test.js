@@ -1,95 +1,102 @@
 var bogart = require('../lib/bogart')
-  , assert = require('assert')
   , Q      = require('promised-io/lib/promise')
   , when   = Q.when
   , path   = require('path')
-  , fs     = require('fs');
+  , fs     = require('fs')
+  , test   = require('tap').test
+  , plan   = require('tap').plan;
 
-
-exports["test json should have status 200"] = function() {
+test("test json should have status 200", function(t) {
   var resp = bogart.json({});
   
-  assert.equal(200, resp.status);
-};
+  t.equal(resp.status, 200);
+  t.end();
+});
 
-exports["test json should have status 403"] = function() {
+test("test json should have status 403", function(t) {
   var status = 403
     , resp = bogart.json({}, { status: status });
   
-  assert.equal(status, resp.status);
-};
+  t.equal(resp.status, status);
+  t.end();
+});
 
-exports["test json should have body"] = function() {
+test("test json should have body", function(t) {
   var bodyObj = { hello: "world" }
     , resp = bogart.json(bodyObj);
   
-  assert.equal(JSON.stringify(bodyObj), resp.body.join());
-};
+  t.equal(resp.body.join(), JSON.stringify(bodyObj));
+  t.end();
+});
 
-exports["test error should have status 500"] = function() {
+test("test error should have status 500", function(t) {
   var resp = bogart.error();
     
-  assert.equal(500, resp.status);
-};
+  t.equal(resp.status, 500);
+  t.end();
+});
 
-exports["test error should have status 403"] = function() {
+test("test error should have status 403", function(t) {
   var resp = bogart.error("", { status: 403 });
   
-  assert.equal(403, resp.status);
-};
+  t.equal(resp.status, 403);
+  t.end();
+});
 
-exports["test should have status 200"] = function() {
+test("test should have status 200", function(t) {
   var resp = bogart.html();
     
-   assert.equal(200, resp.status);
-};
+  t.equal(resp.status, 200);
+  t.end();
+});
 
-exports["test html should have status 404"] = function() {
+test("test html should have status 404", function(t) {
   var resp = bogart.html("", { status: 404 });
   
-  assert.equal(404, resp.status);
-};
+  t.equal(resp.status, 404);
+  t.end();
+});
 
-exports["test html should have HTML"] = function() {
-var str = "Hello World"
-  , resp = bogart.html(str);
+test("test html should have HTML", function(t) {
+  var str = "Hello World"
+    , resp = bogart.html(str);
   
-  assert.equal(str, resp.body.join());
-};
+  t.equal(str, resp.body.join());
+  t.end();
+});
 
-exports["test should be text/html"] = function() {
+test("test should be text/html", function(t) {
   var resp = bogart.html();
   
-  assert.equal("text/html", resp.headers["content-type"])
-};
+  t.equal(resp.headers["content-type"], "text/html");
+  t.end();
+});
 
-exports["test should have content-length 5"] = function() {
+test("test should have content-length 5", function(t) {
   var str = "hello"
     , resp = bogart.html(str);
   
-  assert.equal(5, resp.headers["content-length"]);
-};
+  t.equal(resp.headers["content-length"], 5);
+  t.end();
+});
 
-exports["test pipe stream"] = function(beforeExit) {
+test("test pipe stream", function(t) {
   var readStream = fs.createReadStream(path.join(__dirname, 'fixtures', 'text.txt'))
     , pipe       = bogart.pipe(readStream)
-    , response   = null
     , written    = '';
 
   pipe.then(function(resp) {
-    response = resp;
-    resp.body.forEach(function(data) {
+    Q.when(resp.body.forEach(function(data) {
       written += data;
+    }), function() {
+      t.equal(written, 'Hello World');
     });
   });
 
-  beforeExit(function() {
-    assert.isNotNull(response, 'Response should not be null');
-    assert.equal('Hello World', written);
-  });
-};
+  t.plan(1);
+});
 
-exports["test pipe forEachable"] = function(beforeExit) {
+test("test pipe forEachable", function(t) {
   var forEachable = {}
     , deferred    = Q.defer()
     , msg         = 'Hello World'
@@ -109,30 +116,32 @@ exports["test pipe forEachable"] = function(beforeExit) {
     return resp.body.forEach(function(data) {
       written += data;
     });
+  }).then(function() {
+    t.equal(written, msg);
   });
 
-  beforeExit(function() {
-    assert.equal(msg, written);
-  });
-};
+  t.plan(1);
+});
 
-exports["test bogart.redirect merges opts"] = function(beforeExit) {
+test("test bogart.redirect merges opts", function(t) {
   var opts = {
     hello: 'world'
   };
 
   var resp = bogart.redirect('/', opts);
 
-  assert.equal('world', resp.hello);
-};
+  t.equal(resp.hello, 'world');
+  t.end();
+});
 
-exports["test bogart.redirect merges headers"] = function(beforeExit) {
+test("test bogart.redirect merges headers", function(t) {
   var opts = {
     headers: { hello: 'world' }
   };
 
   var resp = bogart.redirect('/', opts);
 
-  assert.equal('world', resp.headers.hello);
-  assert.ok('location' in resp.headers);
-};
+  t.equal(resp.headers.hello, 'world');
+  t.ok('location' in resp.headers);
+  t.end();
+});
