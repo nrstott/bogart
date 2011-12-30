@@ -2,7 +2,6 @@ var bogart        = require('../lib/bogart')
   , test          = require('tap').test
   , plan          = require('tap').plan
   , Q             = require('promised-io/lib/promise')
-  , assert        = require('assert')
   , fs            = require('fs')
   , ForEachStream = require('../lib/forEachStream')
   , zlib          = require('zlib');
@@ -25,29 +24,42 @@ test("test foreachstream pipe to file stream", function(t) {
 });
 
 test("test foreachstream pipe to deflateStream", function(t) {
-  var source    = ['Hello',' ','World'].map(function(x) { return new Buffer(x); })
+  var source    = [ 'Hello', ' ', 'World' ]
     , srcStream = new ForEachStream(source)
     , stream    = zlib.createDeflateRaw()
     , filename  = 'hello-world.dat';
 
-  srcStream.pipe(stream);
-  stream.pipe(fs.createWriteStream(filename));
+  srcStream.pipe(stream).pipe(fs.createWriteStream(filename));
 
-  srcStream.on('end', function() {
+  stream.on('end', function() {
     var stat = fs.statSync(filename);
 
     t.ok(stat);
     t.ok(stat.isFile(), 'Should be a file');
 
     process.nextTick(function() {
-      zlib.inflateRaw(fs.readFileSync(filename, 'binary'), function(err, val) {
-        if (err) {
-          t.fail(err);
-          return t.end();
-        }
-        t.equal(val.toString('utf-8'), 'Hello World');
+      var readStream = fs.createReadStream(filename)
+        , inflateStream = zlib.createInflateRaw()
+        , buf = new Buffer(0);
+
+      readStream.pipe(inflateStream);
+
+      inflateStream.on('data', function(data) {
+        var oldBuf = buf;
+
+        buf = new Buffer(oldBuf.length + data.length);
+        oldBuf.copy(buf, 0, 0);
+        data.copy(buf, oldBuf.length, 0);
+      });
+
+      inflateStream.on('error', function(err) {
+        t.fail(err);
+      });
+
+      inflateStream.on('end', function() {
+        t.equal(buf.toString('utf-8'), 'Hello World');
         t.end();
-      });      
+      });
     });
   });
 });
