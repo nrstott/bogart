@@ -1,3 +1,7 @@
+## v0.3.35
+
+* Back out change to package.json to add new CLI.
+
 ## v0.3.34
 
 * Removed dependency on Q library.

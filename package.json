@@ -1,7 +1,7 @@
 {
     "name": "bogart",
     "description": "Fast JSGI web framework taking inspiration from Sinatra",
-    "version": "0.3.34",
+    "version": "0.3.35",
     "keywords": ["bogart", "framework", "sinatra", "REST"],
     "author": "Nathan Stott <nrstott@gmail.com>",
     "email": "nathan.stott@whiteboard-it.com",
@@ -15,9 +15,6 @@
     "bugs": {
       "url": "https://github.com/nrstott/bogart/issues",
       "email": "nrstott@gmail.com"
-    },
-    "bin": {
-      "bogart": "./bin/bogart"
     },
     "dependencies": {
       "promised-io": "v0.2.3",
