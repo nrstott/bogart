@@ -1,3 +1,7 @@
+## v0.3.33
+
+* Changed the unit tests in the project from Expresso to Tap.
+
 ## v0.3.32
 
 * Did not update package.json in my tag of 0.3.31, went to 0.3.32 for consistency.
