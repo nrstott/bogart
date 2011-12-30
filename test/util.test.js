@@ -1,9 +1,9 @@
-var bogart = require('../lib/bogart'),
-    Q = require("promised-io/lib/promise"),
-    path = require('path'),
-    security = require("../lib/security"),
-    test = require('tap').test,
-    plan = require('tap').plan;
+var bogart = require('../lib/bogart')
+  , Q = require("promised-io/lib/promise")
+  , path = require('path')
+  , security = require("../lib/security")
+  , test = require('tap').test
+  , plan = require('tap').plan;
 
 test("security", function(t) {
   var key = "667016c4-1a2e-11e1-8db4-836d74549718";
