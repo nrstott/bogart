@@ -1,8 +1,52 @@
+## v0.3.36
+
+* Publishing v0.3.35 from windows seemed to cause issues when installing on unix. Therefore; I am republishing with only a version bump from linux.
+
+## v0.3.35
+
+* Back out change to package.json to add new CLI.
+
+## v0.3.34
+
+* Removed dependency on Q library.
+
+## v0.3.33
+
+* Changed the unit tests in the project from Expresso to Tap.
+
+## v0.3.32
+
+* Did not update package.json in my tag of 0.3.31, went to 0.3.32 for consistency.
+
+## v0.3.31
+
+* Fixed a bug where Parted middleware was not bubbling rejections.
+
+## v0.3.30
+
+* Fixed a bug causing before callbacks to cause errors.
+
+## v0.3.29
+
+* Missed a whenCall, same issue from v0.3.28.
+
+## v0.3.28
+
+* Added dependency on request 2.2.9.
+* Removed dependency on Deflate as Node.JS 0.6.x includes zlib.
+* Added gzip middleware to `bogart.batteries`
+* Added reject callbacks for all cases where whenCall is invoked as it tries to invoke the rejectCallback even if one is not provided.
+
+## v0.3.27
+
+* `bogart.middleware.session` assumed that `req.env` would be unique per request; however, it is not. Corrected issues caused by this.
+
 ## v0.3.26
 
 * `bogart.middleware.bodyAdapter` now adapts responses that are of type Buffer or Stream to JSGI responses.
 * Fixed a bug in `bogart.middleware.bodyAdatper` where Stream returns were not being handled properly.
 * Added `bogart.config`. The default environment is 'development' and may be overridden with the BOGART_ENV environment variable.
+* Expose `DefaultIdProvider` and `DefaultDataProvider` as properties of `bogart.middleware.session`.
 
 ## v0.3.25
 

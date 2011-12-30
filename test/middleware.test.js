@@ -1,12 +1,13 @@
 var bogart    = require('../lib/bogart')
   , Q         = require("promised-io/lib/promise")
-  , assert    = require('assert')
   , path      = require('path')
-  , fs     = require('fs')
+  , fs        = require('fs')
   , security  = require("../lib/security")
-  , util      = require('util');
+  , util      = require('util')
+  , test      = require('tap').test
+  , plan      = require('tap').plan;
 
-exports["test parses JSON"] = function(beforeExit) {
+test("test parses JSON", function(t) {
   var forEachDeferred = Q.defer()
     , app
     , body
@@ -24,20 +25,20 @@ exports["test parses JSON"] = function(beforeExit) {
   request.body = body;
 
   app = bogart.middleware.ParseJson(function(req) {
-    processedReq = req;
+    t.ok(req !== undefined);
+    t.equal('1', req.body.a, 'req.body.a should equal "1"');
   });
 
-  app(request);
-
+  process.nextTick(function() {
+    app(request);
+  });
+  
   forEachDeferred.resolve();
 
-  beforeExit(function() {
-    assert.ok(processedReq !== undefined);
-    assert.equal('1', processedReq.body.a);
-  })
-};
+  t.plan(2);
+});
 
-exports["test parses form"] = function(beforeExit) {
+test("test parses form", function(t) {
   var forEachDeferred = Q.defer()
     , app
     , body
@@ -55,21 +56,21 @@ exports["test parses form"] = function(beforeExit) {
   request.body = body;
 
   app = bogart.middleware.ParseForm(function(req) {
-    processedReq = req;
+    t.ok(req, 'req should not be falsey');
+    t.type(req.body, 'object', 'Body should be an object');
+    t.equal('1', req.body.a);
   });
 
-  app(request);
-
+  process.nextTick(function() {
+    app(request);
+  });
+  
   forEachDeferred.resolve();
 
-  beforeExit(function() {
-    assert.ok(processedReq !== undefined);
-    assert.equal('object', typeof processedReq.body, 'Body should be an object');
-    assert.equal('1', processedReq.body.a);
-  });
-};
+  t.plan(3);
+});
 
-exports["test method override"] = function(beforeExit) {
+test("test method override", function(t) {
   var request = { method: 'POST', env: {} }
     , headers = { 'content-type': 'text/html' }
     , app;
@@ -78,34 +79,34 @@ exports["test method override"] = function(beforeExit) {
   request.headers = headers;
 
   app = bogart.middleware.MethodOverride(function(req) {});
-  app(request);
-
-  beforeExit(function() {
-    assert.equal('PUT', request.method, 'Should change method to PUT');
+  Q.when(app(request), function() {
+    t.equal('PUT', request.method, 'Should change method to PUT');
+  }, function(err) {
+    console.log('error', err);
+    t.end();
   });
-};
 
-exports["test gzip"] = function(beforeExit) {
-  var response = null;
-  
+  t.plan(1);
+});
+
+test("test gzip", function(t) {
   var app = bogart.middleware.Gzip(function(req) {
     return bogart.html('Hello World');
   });
 
   var appPromise = app({ method: 'GET', env: {} });
-  Q.when(appPromise, function(jsgiResp) { 
-    response = jsgiResp;
+  Q.when(appPromise, function(resp) { 
+    t.ok(resp, 'Response should not be falsey');
+    t.ok(resp.body, 'Response should have a body');
+  }, function(err) {
+    console.log('error', err);
+    t.end();
   });
 
-  beforeExit(function() {
-    assert.isNotNull(response, 'Response should not be null');
-    assert.ok(response.body, 'Response should have a body');
-  });
-};
+  t.plan(2);
+});
 
-exports["test gzip downloads as text/html"] = function(beforeExit) {
-  var response = null;
-
+test("test gzip downloads as text/html", function(t) {
   var router = bogart.router();
   var viewEngine = bogart.viewEngine('mustache', path.join(__dirname, 'fixtures'));
 
@@ -117,32 +118,33 @@ exports["test gzip downloads as text/html"] = function(beforeExit) {
   var app = Gzip(router);
 
   Q.when(app({ method: 'GET', env: {}, headers: {}, pathInfo: '/' }), function(resp) {
-    response = resp;
+    t.ok(resp, 'Response should not be falsey');
+    t.equal(resp.status, 200);
+    t.equal(resp.headers['content-type'], 'text/html');
+  }, function(err) {
+    console.log('error', err);
+    t.end();
   });
 
-  beforeExit(function() {
-    assert.isNotNull(response, 'Responses should not be null');
-    assert.equal(200, response.status);
-    assert.equal('text/html', response.headers['content-type']);
-  });
-};
+  t.plan(3);
+});
 
-exports["test error middleware has default response when error is thrown"] = function(beforeExit) {
-  var response = null
-    , app      = new bogart.middleware.Error(function(req) { throw new Error('intentional'); });
+test("test error middleware has default response when error is thrown", function(t) {
+  var app      = new bogart.middleware.Error(function(req) { throw new Error('intentional'); });
   
   Q.when(app({ method: 'GET', env: {}, headers: {}, pathInfo: '/' }), function(resp) {
-    response = resp;
+    t.ok(resp, 'Response should not be falsey');
+    t.equal(resp.status, 500);
+    t.equal(resp.headers['content-type'], 'text/html');
+  }, function(err) {
+    console.log('error', err);
+    t.end();
   });
 
-  beforeExit(function() {
-    assert.isNotNull(response);
-    assert.equal(500, response.status);
-    assert.equal('text/html', response.headers['content-type']);
-  });
-};
+  t.plan(3);
+});
 
-exports["test flash"] = function(beforeExit) {
+test("test flash", function(t) {
   var app
     , headers = { 'content-type': 'text/plain' }
     , request = { headers: headers, body:[] }
@@ -164,104 +166,102 @@ exports["test flash"] = function(beforeExit) {
     cookieStr = initialResp.headers["Set-Cookie"].join("").replace(/;$/, "");
 
     // the first attempt to retrieve "foo" should be undefined
-    assert.isUndefined(foo);
+    t.type(foo, 'undefined', 'Foo should be undefined');
 
     request.headers.cookie = cookieStr;
-    var secondResp = app(request);
+    Q.when(app(request), function() {
+      t.equal(foo, 'bar', 'foo should equal bar');
+    });
   });
-  
-  beforeExit(function() {
-    assert.eql(foo, "bar");
-  });
-};
+
+  t.plan(2);
+});
 
 
-exports["test error middleware has default response when promise is rejected"] = function(beforeExit) {
-  var response = null
-    , app      = new bogart.middleware.Error(function(req) { return require('q').reject('rejected'); });
+test("test error middleware has default response when promise is rejected", function(t) {
+  var app = new bogart.middleware.Error(function(req) { return bogart.Q.reject('rejected'); });
   
   Q.when(app({ method: 'GET', env: {}, headers: {}, pathInfo: '/' }), function(resp) {
-    response = resp;
+    t.ok(resp, 'Response should not be falsey');
+    t.equal(resp.status, 500);
+    t.equal(resp.headers['content-type'], 'text/html', 'Content-Type should be text/html');
   });
 
-  beforeExit(function() {
-    assert.isNotNull(response);
-    assert.equal(500, response.status);
-    assert.equal('text/html', response.headers['content-type']);
-  });
-};
+  t.plan(3);
+});
 
-exports["test parted json"] = function(beforeExit) {
-  var request       = null
-    , parted        = new bogart.middleware.Parted(function(req) { request = req; return {}; });
-  
-  response = parted({
+test("test parted json", function(t) {
+  var request = null
+    , parted = new bogart.middleware.Parted(function(req) { request = req; return {}; });
+
+  bogart.middleware.parted(function(req) {
+    t.ok(req, 'Request should not be falsey');
+    t.type(req.body, 'object', 'Request body should be an object');
+    t.equal(req.body.hello, 'world', 'req.body.hello should equal "world"');
+  })({
     method: 'POST',
     env: {},
     headers: { 'content-type': 'application/json' },
     body: [ '{ "hello": "world" }' ]
   });
 
-  beforeExit(function() {
-    assert.isNotNull(request);
-    assert.isNotNull(request.body);
-    assert.equal('object', typeof request.body);
-    assert.equal('world', request.body.hello);
-  });
-};
+  t.plan(3);
+});
 
-exports["test parted form"] = function(beforeExit) {
-  var request     = null
-    , parted      = new bogart.middleware.Parted(function(req) { request = req; return {}; })
-    , body        = {}
-    , bodyDefer   = require('q').defer();
-  
+test("test parted form", function(t) {
+  var body        = {}
+    , bodyDefer   = Q.defer()
+    , parted;
+
   body.forEach = function(callback) {
     callback('hello=one&hello=two');
 
     return bodyDefer.promise;
-  };
+  };    
+
+  parted = new bogart.middleware.Parted(function(req) {
+    t.ok(req, 'Request should not be falsey');
+    t.ok(!!req.body);
+    t.ok(!!req.body.hello);
+    t.equal(req.body.hello.length, 2);
+  });
   
-  response = parted({
+  parted({
     method: 'POST',
     env: {},
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
     body: body
   });
 
-  bodyDefer.resolve();
-
-  beforeExit(function() {
-    assert.isNotNull(request);
-    assert.ok(!!request.body);
-    assert.ok(!!request.body.hello);
-    assert.equal(2, request.body.hello.length);
+  process.nextTick(function() {
+    bodyDefer.resolve();
   });
-};
 
-exports["test parted multipart"] = function(beforeExit) {
-  var request = null
-    , parted  = new bogart.middleware.Parted(function(req) { request = req; return {}; });
-  
-  fs.readFileSync(path.join(__dirname, 'fixtures', 'chrome.part'));
-  
-  response = parted(multipartRequest(100, 'chrome'));
+  t.plan(4);
+});
 
-  beforeExit(function() {
-    assert.ok(!!request.body);
-    assert.ok(!!request.body.content, 'No file path');
+test("test parted multipart", function(t) {
+  var parted;
+  
+  parted = new bogart.middleware.Parted(function(req) {
+    t.ok(!!req.body);
+    t.ok(!!req.body.content, 'No file path');
   });
-};
+  
+  process.nextTick(function() {
+    parted(multipartRequest(100, 'chrome'));
+  });
 
+  t.plan(2);
+});
 
-exports["test session"] = function(beforeExit) {
+test("test session", function(t) {
   var app
     , headers = { 'content-type': 'text/plain' }
     , request = { headers: headers, body:[] }
     , values = []
     , firstRequest = true;
     
-
   app = bogart.middleware.Session({}, function(req) {
     if(firstRequest) {
       req.session("foo", "bar");
@@ -276,28 +276,27 @@ exports["test session"] = function(beforeExit) {
     }
   });
 
-  var initialResp = app(request);
-  var cookieStr = initialResp.headers["Set-Cookie"].join("").replace(/;$/, "");
+  Q.when(app(request), function(initialResp) {
+    var cookieStr = initialResp.headers["Set-Cookie"].join("").replace(/;$/, "");
 
-  request.headers.cookie = cookieStr;
-  var secondResp = app(request);
+    request.headers.cookie = cookieStr;
 
-  beforeExit(function() {
-    assert.equal(values.length, 2);
-    values.forEach(function(val) {
-      assert.equal(val, "bar");
-    })
+    Q.when(app(request), function(resp) {
+      t.equal(values.length, 2);
+      values.forEach(function(val) {
+        t.ok(val, 'bar');
+      });
+    });
   });
-
-};
-
-exports["test validate response"] = function(beforeExit) {
-  var noResponse, noBody, notForEachable, forEachNotFunction, noStatus, statusNotNumber;
   
+  t.plan(3);
+});
+
+test("test validate response", function(t) {  
   bogart.middleware.validateResponse(function(req) {
     return null;
-  })().then(bogart.noop, function(err) {
-    noResponse = err;
+  })().then(null, function(err) {
+    t.equal(err, 'Response must be an object.');
   });
 
   bogart.middleware.validateResponse(function(req) {
@@ -305,8 +304,8 @@ exports["test validate response"] = function(beforeExit) {
       status: 200,
       headers: {}
     };
-  })().then(bogart.noop, function(err) {
-    noBody = err;
+  })().then(null, function(err) {
+    t.equal(err, 'Response must have a body property.');
   });
 
   bogart.middleware.validateResponse(function(req) {
@@ -315,8 +314,8 @@ exports["test validate response"] = function(beforeExit) {
       headers: {},
       body: {}
     };
-  })().then(bogart.noop, function(err) {
-    notForEachable = err;
+  })().then(null, function(err) {
+    t.equal(err, 'Response body must have a forEach method.');
   });
 
   bogart.middleware.validateResponse(function(req) {
@@ -327,8 +326,8 @@ exports["test validate response"] = function(beforeExit) {
         forEach: 'not a function'
       }
     };
-  })().then(bogart.noop, function(err) {
-    forEachNotFunction = err;
+  })().then(null, function(err) {
+    t.equal(err, 'Response body has a forEach method but the forEach method is not a function.');
   });
 
   bogart.middleware.validateResponse(function(req) {
@@ -336,8 +335,8 @@ exports["test validate response"] = function(beforeExit) {
       headers: {},
       body: []
     };
-  })().then(bogart.noop, function(err) {
-    noStatus = err;
+  })().then(null, function(err) {
+    t.equal(err, 'Response must have a status property.');
   });
 
   bogart.middleware.validateResponse(function(req) {
@@ -346,23 +345,15 @@ exports["test validate response"] = function(beforeExit) {
       body: [],
       headers: {}
     };
-  })().then(bogart.noop, function(err) {
-    statusNotNumber = err;
+  })().then(null, function(err) {
+    t.equal(err, 'Response has a status property but the status property must be a number.');
   });
 
-  beforeExit(function() {
-    assert.equal('Response must be an object.', noResponse);
-    assert.equal('Response must have a body property.', noBody);
-    assert.equal('Response body must have a forEach method.', notForEachable);
-    assert.equal('Response body has a forEach method but the forEach method is not a function.', forEachNotFunction);
-    assert.equal('Response must have a status property.', noStatus);
-    assert.equal('Response has a status property but the status property must be a number.', statusNotNumber);
-  });
-};
+  t.plan(6);
+});
 
-exports["test bodyAdapter adapts Stream"] = function(beforeExit) {
-  var Stream = require('stream').Stream
-    , response;
+test("test bodyAdapter adapts Stream", function(t) {
+  var Stream = require('stream').Stream;
 
   function TestReadStream() {
     Stream.call(this);
@@ -371,14 +362,17 @@ exports["test bodyAdapter adapts Stream"] = function(beforeExit) {
       , self = this;
 
     process.nextTick(function emitData() {
-      var x = args.pop();
-      if (!x) { return; }
+      var x = args.shift();
+      if (x === undefined) {
+        self.emit('end');
+        return;
+      }
 
       self.emit('data', x);
 
-      process.nextTick(function() {
+      //process.nextTick(function() {
         emitData();
-      });
+      //});
     });
 
     this.readable = true;
@@ -391,22 +385,23 @@ exports["test bodyAdapter adapts Stream"] = function(beforeExit) {
   });
 
   Q.when(streamAdapter(), function(resp) {
-    response = resp;
-  });
-
-  beforeExit(function() {
-    assert.ok(response);
-    assert.ok(response.body);
-    assert.ok(response.body.forEach);
-
     var str = '';
-    response.body.forEach(function(x) {
-      str += x;
-    });
 
-    assert.equal('hello world', str);
+    t.ok(resp, 'Response should not be falsey');
+    t.ok(resp.body, 'Response should have a body');
+    t.ok(resp.body.forEach, 'Response body should be forEachable');
+
+    return resp.body.forEach(function(x) {
+      str += x;
+    }).then(function() {
+      t.equal(str, 'hello world', 'should equal hello world');
+      t.end();
+    }, function(err) {
+      t.ok(false, err, 'found error');
+      t.end();
+    });
   });
-};
+});
 
 /**
  * Create a mock request

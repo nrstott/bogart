@@ -1,17 +1,9 @@
 var bogart = require('../lib/bogart')
-  , assert = require('assert')
   , Q      = require('promised-io/lib/promise')
   , when   = Q.when
   , jsgi   = require('jsgi')
-  , rootRequest = function() {
-    return {
-      headers: {},
-      pathInfo: '/',
-      method: 'GET',
-      jsgi: { version: [0, 3] },
-      env: {}
-    };
- };
+  , test   = require('tap').test
+  , plan   = require('tap').plan;
 
 function mockRequest(path) {
   return {
@@ -21,6 +13,10 @@ function mockRequest(path) {
     jsgi: { version: [0,3] },
     env: {}
   };
+}
+
+function rootRequest() {
+  return mockRequest('/');
 }
 
 /**
@@ -35,87 +31,74 @@ function simpleRouter(path) {
   return router;
 }
   
-exports['test matches parameter'] = function(beforeExit) {
-  var
-    name, req = rootRequest(), response,
-    router = bogart.router(function(get) {
-     get('/hello/:name', function(req) {
-       name = req.params.name;
-       return bogart.html("hello");
-     });
-    });
+test('matches parameter', function(t) {
+  var name
+    , req = rootRequest()
+    , router = bogart.router(function(get) {
+        get('/hello/:name', function(req) {
+          name = req.params.name;
+          return bogart.html("hello");
+        });
+      });
 
   req.pathInfo = '/hello/nathan';
 
   when(router(req), function(resp) {
-    response = resp;
+    t.equal(resp.status, 200);
+    t.equal(name, 'nathan');
   });
 
-  beforeExit(function() {
-    assert.equal(200, response.status);
-    assert.equal("nathan", name);    
-  });
-};
-exports['test order of routes matching should be in order defined'] = function(){
-  var
-    name, req = rootRequest(),
-    router = bogart.router(function(get) {
-     get('/hello/:name', function(req) {
-       name = req.params.name;
-       assert.ok (true, "first route matched successfully");
-       return bogart.html("hello");
-     });
-      get("/hello/:name/:something", function(req){
-         name = req.params.name;
-         return bogart.html("hello");
-         assert.ok(false, "second route matched incorrectly")
-      })
-    });
+  t.plan(2);
+});
 
-  req.pathInfo = '/hello/nathan/';
+test('order of routes matching should be in order defined', function(t) {
+  var name
+    , req     = mockRequest('/hello/nathan')
+    , router  = bogart.router(function(get) {
+                  get('/hello/:name', function(req) {
+                    t.ok(true);
+                  });
+                  get("/hello/:name/:something", function(req){
+                    t.fail("second route matched incorrectly");
+                  })
+                });
 
-  return when(router(req), function(resp) {
-    //do nothing
-  });
+  router(req);
 
-};
+  t.plan(1);
+});
 
 
-exports['test should call notFoundApp'] = function(beforeExit) {
+test('should call notFoundApp', function(t) {
   var called = false
     , notFoundApp = function(req) {
         called = true;
         return { status: 409, body: [ '' ] };
       }
     , router = bogart.router(function() {}, notFoundApp)
-    , respPromise = router(rootRequest())
-    , response;
+    , respPromise = router(rootRequest());
   
   when(respPromise, function(resp) {
-    response = resp;
+    t.equal(resp.status, 409);
+  }, function() {
+    t.fail('Promise should not be rejected');
   });
-    
-  beforeExit(function() {
-    assert.equal(409, response.status);
-    assert.ok(called);    
-  });
-};
+  
+  t.plan(1);
+});
 
-exports['test should have default notFoundApp behavior of returning 404'] = function(beforeExit) {
+test('should have default notFoundApp behavior of returning 404', function(t) {
   var router = bogart.router(function(){})
-    , respPromise = router(rootRequest())
-    , response;
+    , respPromise = router(rootRequest());
   
   when(respPromise, function(resp) {
-    response = resp;
+    t.equal(resp.status, 404);
   });
 
-  beforeExit(function() {
-    assert.equal(404, response.status);
-  });
-};
+  t.plan(1);
+});
 
-exports['test should not partially match route'] = function(beforeExit) {
+test('should not partially match route', function(t) {
   var router = bogart.router(function(get) {
       get('/partial', function(req) {
         return {
@@ -124,24 +107,20 @@ exports['test should not partially match route'] = function(beforeExit) {
         }
       })
     })
-    , req = rootRequest()
-    , response;
+    , req = rootRequest();
 
   req.pathInfo = '/partial/path';
   
   when(router(req), function(resp) {
-    response = resp;
+    t.equal(resp.status, 404, 'Status should be 404');
   });
 
-  beforeExit(function() {
-    assert.equal(404, response.status);
-  })
-};
+  t.plan(1);
+});
 
-exports['test should not partially match route from beginning'] = function(beforeExit) {
+test('should not partially match route from beginning', function(t) {
   var req = rootRequest()
-    , router
-    , response;
+    , router;
 
   router = bogart.router(function(get) {
     get('/:foo', function(req) {
@@ -155,18 +134,15 @@ exports['test should not partially match route from beginning'] = function(befor
   req.pathInfo = '/hello/world';
 
   when(router(req), function(resp) {
-    response = resp;
+    t.equal(resp.status, 404, 'Status should be 404');
   });
 
-  beforeExit(function() {
-    assert.equal(404, response.status);
-  });
-};
+  t.plan(1);
+});
 
-exports['test should match route with querystring'] = function(beforeExit) {
+test('should match route with querystring', function(t) {
   var req = rootRequest()
-    , router
-    , response;
+    , router;
 
   router = bogart.router(function(get) {
     get('/home', function(req) {
@@ -180,19 +156,19 @@ exports['test should match route with querystring'] = function(beforeExit) {
   req.pathInfo = '/home';
   req.queryString = "hello=world";
 
-  when(router(req), function(resp) { response = resp; });
-
-  beforeExit(function() {
-    assert.isNotNull(response);
-    assert.equal(200, response.status);
+  when(router(req), function(resp) {
+    t.equal(resp.status, 200, 'Status should be 200');
+  }, function(err) {
+    t.fail('Promise should not have been rejected');
   });
-};
 
-exports['test regex route'] = function(beforeExit) {
+  t.plan(1);
+});
+
+test('regex route', function(t) {
   var router
     , req = rootRequest()
-    , splat
-    , response;
+    , splat;
 
   req.pathInfo = '/hello/cruel/world';
 
@@ -204,53 +180,46 @@ exports['test regex route'] = function(beforeExit) {
   });
 
   when(router(req), function(resp) {
-    response = resp;
+    t.equal(resp.status, 200, 'Status should be 200');
+    t.ok(splat, 'Should have set \'splat\'');
+    t.equal(splat[0], 'cruel', 'Should have correct value for splat[0]');
+    t.equal(splat[1], 'world', 'Should have correct value for splat[1]');
+  }, function() {
+    t.fail('Promise should not have been rejected');
   });
 
-  beforeExit(function() {
-    assert.isNotNull(response);
-    assert.equal(200, response.status);
-    assert.ok(splat, "Should have set 'splat'");
-    assert.equal(splat[0], 'cruel');
-    assert.equal(splat[1], 'world');    
-  });
-};
+  t.plan(4);
+});
 
-exports['test handles encoded slashes'] = function(beforeExit) {
+test('handles encoded slashes', function(t) {
   var router = bogart.router()
     , called = false;
 
   router.get('/:foo', function() {
-    called = true;
+    t.ok(true, 'Should call route handler');
   });
 
   router(mockRequest('/foo%2Fbar'));
 
-  beforeExit(function() {
-    assert.ok(called);
-  });
-};
+  t.plan(1);
+});
 
-exports['test matches a dot (".") as part of a named param'] = function(beforeExit) {
+test('matches a dot (".") as part of a named param', function(t) {
   var router
     , foo = null;
   
   router = bogart.router();
   router.get('/:foo/:bar', function(req) {
-    foo = req.params.foo;
+    t.equal(req.params.foo, 'user@example.com', 'Named parameter should be matched correctly');
   });
 
   router(mockRequest('/user@example.com/name'));
 
-  beforeExit(function() {
-    assert.isNotNull(foo, 'Named parameter should not be null');
-    assert.equal('user@example.com', foo);
-  });
-};
+  t.plan(1);
+});
 
-exports['test matches empty `pathInfo` to "/" if no route is defined for ""'] = function(beforeExit) {
-  var router
-    , response;
+test('matches empty `pathInfo` to "/" if no route is defined for ""', function(t) {
+  var router;
   
   router = bogart.router();
   router.get('/', function(req) {
@@ -258,19 +227,15 @@ exports['test matches empty `pathInfo` to "/" if no route is defined for ""'] = 
   });
 
   when(router(mockRequest('')), function(resp) {
-    response = resp;
+    t.equal(resp.body.join(''), 'success', 'Should have matched "/" route');
   });
 
-  beforeExit(function() {
-    assert.equal('success', response.body);
-  });
-};
+  t.plan(1);
+});
 
-exports['test matches empty `pathInfo` to "" if a route is defined for ""'] = function(beforeExit) {
-  var router
-    , response;
-  
-  router = bogart.router();
+test('matches empty `pathInfo` to "" if a route is defined for ""', function(t) {
+  var router = bogart.router();
+
   router.get('', function(req) {
     return bogart.text('right');
   });
@@ -280,103 +245,87 @@ exports['test matches empty `pathInfo` to "" if a route is defined for ""'] = fu
   });
 
   when(router(mockRequest('')), function(resp) {
-    response = resp;
+    t.equal(resp.body.join(''), 'right');
   });
 
-  beforeExit(function() {
-    assert.equal('right', response.body);
-  });
-};
+  t.plan(1);
+});
 
-exports['test matches paths that include encoded spaces'] = function(beforeExit) {
-  var router = bogart.router()
-    , response;
+test('matches paths that include encoded spaces', function(t) {
+  var router = bogart.router();
 
   router.get('/path with spaces', function(req) {
     return bogart.text('spaces are cool');
   });
 
   when(router(mockRequest('/path%20with%20spaces')), function(resp) {
-    response = resp;
+    t.equal(resp.body[0], 'spaces are cool');
+  }, function() {
+    t.fail('Promise should not have been rejected');
   });
 
-  beforeExit(function() {
-    assert.ok(response);
-    assert.equal('spaces are cool', response.body[0]);
-  });
-};
+  t.plan(1);
+});
 
-exports['test matches dot (".") literally in paths'] = function(beforeExit) {
-  var router = simpleRouter('/foo.bar')
-    , response;
+test('matches dot (".") literally in paths', function(t) {
+  var router = simpleRouter('/foo.bar');
 
   when(router(mockRequest('/foo.bar')), function(resp) {
-    response = resp;
+    t.ok(resp);
+  }, function() {
+    t.fail('Promise should not have been rejected');
   });
 
-  beforeExit(function() {
-    assert.ok(response);
-  });
-};
+  t.plan(1);
+});
 
-exports['test supports splat ("*")'] = function(beforeExit) {
-  var router = bogart.router()
-    , response;
+test('supports splat ("*")', function(t) {
+  var router = bogart.router();
   
   router.get('/foo/*', function(req) {
     return bogart.text('splatted '+req.params.splat[0]);
   });
   
   when(router(mockRequest('/foo/hello/there')), function(resp) {
-    response = resp;
+    t.equal(resp.body.join(''), 'splatted hello/there');
   });
 
-  beforeExit(function() {
-    assert.ok(response);
-    assert.equal('splatted hello/there', response.body.join(''));
-  });
-};
+  t.plan(1);
+});
 
-exports['test supports multiple splat params'] = function(beforeExit) {
-  var router = bogart.router()
-    , response;
+test('supports multiple splat params', function(t) {
+  var router = bogart.router();
   
   router.get('/download/*/*', function(req) {
     return bogart.text(req.params.splat[0]+'/'+req.params.splat[1]);
   });
 
   when(router(mockRequest('/download/images/ninja-cat.jpg')), function(resp) {
-    response = resp;
+    t.equal(resp.body.join(''), 'images/ninja-cat.jpg');
   });
 
-  beforeExit(function() {
-    assert.ok(response);
-    assert.equal('images/ninja-cat.jpg', response.body.join(''));
-  });
-};
+  t.plan(1);
+});
 
-exports['test supports mixing named and splat parameters'] = function(beforeExit) {
-  var router = bogart.router()
-    , response;
+test('supports mixing named and splat parameters', function(t) {
+  var router = bogart.router();
   
   router.get('/:foo/*', function(req) {
     return bogart.text(req.params.foo+' '+req.params.splat[0]);
   });
 
   when(router(mockRequest('/foo/bar/baz')), function(resp) {
-    response = resp;
+    t.equal(resp.body.join(''), 'foo bar/baz');
+  }, function() {
+    t.fail('Promise should not have been rejected');
   });
 
-  beforeExit(function() {
-    assert.ok(response);
-    assert.equal('foo bar/baz', response.body.join(''));
-  });
-};
+  t.plan(1);
+});
 
-exports['test calls next app when handler returns `undefined`'] = function(beforeExit) {
+test('calls next app when handler returns `undefined`', function(t) {
   var str = 'Hello from next app!'
-    , router
-    , response;
+    , router;
   
   router = bogart.router(null, function(req) {
     return bogart.text(str);
@@ -385,11 +334,29 @@ exports['test calls next app when handler returns `undefined`'] = function(befor
   router.get('/', function(req) {});
 
   when(router(mockRequest('/')), function(resp) {
-    response = resp;
+    t.equal(resp.body[0], str);
+  }, function() {
+    t.fail('Promise should not have been rejected');
   });
 
-  beforeExit(function() {
-    assert.ok(response);
-    assert.equal(str, response.body[0]);
+  t.plan(1);
+});
+
+test('middleware in routes', function(t) {
+  var router = bogart.router();
+
+  router.get('/', function(req, next) {
+    req.hello = 'world';
+    return next(req);
+  }, function(req) {
+    return bogart.text(req.hello);
   });
-};
+
+  router(mockRequest('/')).then(function(resp) {
+    t.equal(resp.body[0], 'world');
+  }, function() {
+    t.fail('Promise should not have been rejected');
+  });
+
+  t.plan(1);
+});

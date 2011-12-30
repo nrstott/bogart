@@ -1,12 +1,17 @@
 {
     "name": "bogart",
     "description": "Fast JSGI web framework taking inspiration from Sinatra",
-    "version": "0.3.25",
+    "version": "0.3.36",
     "keywords": ["bogart", "framework", "sinatra", "REST"],
-    "author": "Nathan Stott",
+    "author": "Nathan Stott <nrstott@gmail.com>",
     "email": "nathan.stott@whiteboard-it.com",
+    "homepage": "https://github.com/nrstott/bogart",
     "main": "./lib/bogart",
     "directories": { "lib": "./lib" },
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/nrstott/bogart"
+    },
     "bugs": {
       "url": "https://github.com/nrstott/bogart/issues",
       "email": "nrstott@gmail.com"
@@ -15,19 +20,20 @@
       "promised-io": "v0.2.3",
     	"jsgi": ">=v0.2.2",
     	"mustache": "0.3.1-dev",
-      "deflate": ">=1.0.3",
       "underscore": ">=0.0.0",
       "node-uuid": ">=1.2.0",
       "parted": "=0.0.8",
-      "q": "=0.7.2",
-      "oauth": "=0.9.5"
+      "oauth": "=0.9.5",
+      "request": "=2.2.9",
+      "commander": "*",
+      "mkdirp": "*"
     },
     "devDependencies": {
-      "expresso": ">= 0.8.1",
       "haml": ">=0.4.2",
-      "jade": ">=0.15.4"
+      "jade": ">=0.15.4",
+      "tap": "*"
     },
     "scripts": {
-      "test": "expresso"
+      "test": "tap ./test/middleware.test.js ./test/response-builder.test.js ./test/response-helpers.test.js ./test/router.test.js ./test/stream.test.js ./test/util.test.js ./test/view.test.js"
     }
 }
