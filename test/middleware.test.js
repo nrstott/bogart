@@ -179,7 +179,7 @@ test("test flash", function(t) {
 
 
 test("test error middleware has default response when promise is rejected", function(t) {
-  var app = new bogart.middleware.Error(function(req) { return require('q').reject('rejected'); });
+  var app = new bogart.middleware.Error(function(req) { return bogart.Q.reject('rejected'); });
   
   Q.when(app({ method: 'GET', env: {}, headers: {}, pathInfo: '/' }), function(resp) {
     t.ok(resp, 'Response should not be falsey');
@@ -210,7 +210,7 @@ test("test parted json", function(t) {
 
 test("test parted form", function(t) {
   var body        = {}
-    , bodyDefer   = require('q').defer()
+    , bodyDefer   = Q.defer()
     , parted;
 
   body.forEach = function(callback) {

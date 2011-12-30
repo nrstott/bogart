@@ -1,3 +1,7 @@
+## v0.3.34
+
+* Removed dependency on Q library.
+
 ## v0.3.33
 
 * Changed the unit tests in the project from Expresso to Tap.
