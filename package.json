@@ -33,11 +33,11 @@
       "mkdirp": "*"
     },
     "devDependencies": {
-      "expresso": ">= 0.8.1",
       "haml": ">=0.4.2",
-      "jade": ">=0.15.4"
+      "jade": ">=0.15.4",
+      "tap": "*"
     },
     "scripts": {
-      "test": "expresso"
+      "test": "tap ./test/middleware.test.js ./test/response-builder.test.js ./test/response-helpers.test.js ./test/router.test.js ./test/stream.test.js ./test/util.test.js ./test/view.test.js"
     }
 }
