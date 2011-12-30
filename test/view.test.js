@@ -2,32 +2,29 @@ var bogart       = require('../lib/bogart')
   , view         = require('../lib/view')
   , jsgi         = require('jsgi')
   , when         = require('promised-io/lib/promise').when
-  , assert       = require('assert')
   , path         = require('path')
+  , test         = require('tap').test
+  , plan         = require('tap').plan
   , fixturesPath = path.join(__dirname, 'fixtures');
 
-exports['test render mustache'] = function(beforeExit) {
-  var viewEngine = bogart.viewEngine('mustache', fixturesPath)
-    , renderedText;
+test('test render mustache', function(t) {
+  var viewEngine = bogart.viewEngine('mustache', fixturesPath);
   
   when(viewEngine.render('index.mustache', { layout: false }), function(str) {
-    renderedText = str;
+    t.equal(str, '<h1>Hello World from Mustache</h1>');;
+    t.end();
+  }, function(err) {
+    t.fail(err);
   });
+});
 
-  beforeExit(function() {
-    assert.equal(renderedText, '<h1>Hello World from Mustache</h1>');
-  });
-};
-
-exports['test render mustache with partials'] = function(beforeExit) {
-  var viewEngine = bogart.viewEngine('mustache', fixturesPath)
-    , renderedText;
+test('test render mustache with partials', function(t) {
+  var viewEngine = bogart.viewEngine('mustache', fixturesPath);
   
   when(viewEngine.render('partial-test.mustache', { layout: false, locals: { greeting: {} }, partials: { greeting: 'greeting.mustache' } }), function(str) {
-    renderedText = str;
+    t.equal(renderedText, '<h1>Hello World from Mustache</h1>');
+    t.end();
+  }, function(err) {
+    t.fail(err);
   });
-
-  beforeExit(function() {
-    assert.equal(renderedText, '<h1>Hello World from Mustache</h1><p>With Partial</p>');
-  });
-};
+});
