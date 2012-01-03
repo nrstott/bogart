@@ -221,9 +221,10 @@ test("test parted form", function(t) {
 
   parted = new bogart.middleware.Parted(function(req) {
     t.ok(req, 'Request should not be falsey');
-    t.ok(!!req.body);
-    t.ok(!!req.body.hello);
+    t.ok(req.body, 'Body should not be falsey');
+    t.ok(req.body.hello, 'Hello should not be falsey');
     t.equal(req.body.hello.length, 2);
+    t.end();
   });
   
   parted({
@@ -236,8 +237,6 @@ test("test parted form", function(t) {
   process.nextTick(function() {
     bodyDefer.resolve();
   });
-
-  t.plan(4);
 });
 
 test("test parted multipart", function(t) {
