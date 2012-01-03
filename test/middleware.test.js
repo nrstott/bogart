@@ -217,7 +217,7 @@ test("test parted form", function(t) {
     callback('hello=one&hello=two');
 
     return bodyDefer.promise;
-  };    
+  };
 
   parted = new bogart.middleware.Parted(function(req) {
     t.ok(req, 'Request should not be falsey');
