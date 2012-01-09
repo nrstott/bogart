@@ -7,9 +7,18 @@ var bogart    = require('../lib/bogart')
   , test      = require('tap').test
   , plan      = require('tap').plan;
 
+function mockRequest(path) {
+  return {
+    headers: {},
+    pathInfo: path,
+    method: 'GET',
+    jsgi: { version: [0,3] },
+    env: {}
+  };
+}
+
 test("test parses JSON", function(t) {
   var forEachDeferred = Q.defer()
-    , app
     , body
     , headers = { 'content-type': 'application/json' }
     , request = { headers: headers }
@@ -24,18 +33,15 @@ test("test parses JSON", function(t) {
 
   request.body = body;
 
-  app = bogart.middleware.ParseJson(function(req) {
-    t.ok(req !== undefined);
-    t.equal('1', req.body.a, 'req.body.a should equal "1"');
-  });
-
   process.nextTick(function() {
-    app(request);
+    bogart.middleware.parseJson(request, function(req) {
+        t.ok(!!req);
+        t.equal('1', req.body.a, 'req.body.a should equal "1"');
+        t.end();
+    });
   });
   
   forEachDeferred.resolve();
-
-  t.plan(2);
 });
 
 test("test parses form", function(t) {
@@ -55,31 +61,32 @@ test("test parses form", function(t) {
 
   request.body = body;
 
-  app = bogart.middleware.ParseForm(function(req) {
+
+  bogart.middleware.parseForm()(request, function(req) {
     t.ok(req, 'req should not be falsey');
     t.type(req.body, 'object', 'Body should be an object');
-    t.equal('1', req.body.a);
+    t.equal(req.body.a, '1');
   });
-
-  process.nextTick(function() {
-    app(request);
-  });
-  
-  forEachDeferred.resolve();
 
   t.plan(3);
+  
+  process.nextTick(function() {
+    forEachDeferred.resolve();
+  });
 });
 
 test("test method override", function(t) {
   var request = { method: 'POST', env: {} }
     , headers = { 'content-type': 'text/html' }
-    , app;
+    , app
+    , methodOverride;
 
   request.body    = { _method: 'PUT' };
   request.headers = headers;
 
-  app = bogart.middleware.MethodOverride(function(req) {});
-  Q.when(app(request), function() {
+  methodOverride = bogart.middleware.methodOverride();
+
+  Q.when(methodOverride(request, function(req) { return bogart.html('Hello World') }), function() {
     t.equal('PUT', request.method, 'Should change method to PUT');
   }, function(err) {
     console.log('error', err);
@@ -90,11 +97,11 @@ test("test method override", function(t) {
 });
 
 test("test gzip", function(t) {
-  var app = bogart.middleware.Gzip(function(req) {
-    return bogart.html('Hello World');
-  });
+  var gzip = bogart.middleware.gzip()
+    , appPromise;
+  
+  appPromise = gzip(mockRequest('/'), function(req) { return bogart.html('Hello World'); });
 
-  var appPromise = app({ method: 'GET', env: {} });
   Q.when(appPromise, function(resp) { 
     t.ok(resp, 'Response should not be falsey');
     t.ok(resp.body, 'Response should have a body');
@@ -114,10 +121,15 @@ test("test gzip downloads as text/html", function(t) {
       return viewEngine.respond('index.mustache', { layout: false }); 
   });
 
-  var Gzip = bogart.middleware.Gzip;
-  var app = Gzip(router);
+  var gzip = bogart.middleware.gzip();
 
-  Q.when(app({ method: 'GET', env: {}, headers: {}, pathInfo: '/' }), function(resp) {
+  Q.when(gzip(mockRequest('/'), function(req) {
+    return {
+      status: 200,
+      headers: { 'content-type': 'text/html' },
+      body: [ 'Hello World' ]
+    };
+  }), function(resp) {
     t.ok(resp, 'Response should not be falsey');
     t.equal(resp.status, 200);
     t.equal(resp.headers['content-type'], 'text/html');
@@ -130,9 +142,10 @@ test("test gzip downloads as text/html", function(t) {
 });
 
 test("test error middleware has default response when error is thrown", function(t) {
-  var app      = new bogart.middleware.Error(function(req) { throw new Error('intentional'); });
+  var error = bogart.middleware.error()
+    , app = function(req) { throw new Error('intentional'); };
   
-  Q.when(app({ method: 'GET', env: {}, headers: {}, pathInfo: '/' }), function(resp) {
+  Q.when(error(mockRequest('/'), app), function(resp) {
     t.ok(resp, 'Response should not be falsey');
     t.equal(resp.status, 500);
     t.equal(resp.headers['content-type'], 'text/html');
@@ -147,11 +160,15 @@ test("test error middleware has default response when error is thrown", function
 test("test flash", function(t) {
   var app
     , headers = { 'content-type': 'text/plain' }
-    , request = { headers: headers, body:[] }
+    , request = mockRequest('/')
     , foo
-    , cookieStr;
-    
-  app = bogart.middleware.Flash({}, function(req) {
+    , cookieStr
+    , flash;
+  
+
+  flash = bogart.middleware.flash();
+
+  app = function(req) {
     req.flash("foo", "bar");
 
     foo = req.flash("foo");
@@ -159,17 +176,17 @@ test("test flash", function(t) {
       status: 200,
       body: [],
     }
-  });
+  };
 
-  Q.when(app(request), function(resp) {
+  Q.when(flash(request, app), function(resp) {
     initialResp = resp;
     cookieStr = initialResp.headers["Set-Cookie"].join("").replace(/;$/, "");
 
     // the first attempt to retrieve "foo" should be undefined
-    t.type(foo, 'undefined', 'Foo should be undefined');
+    t.equal(typeof foo, 'undefined', 'Foo should be undefined');
 
     request.headers.cookie = cookieStr;
-    Q.when(app(request), function() {
+    Q.when(flash(request, app), function() {
       t.equal(foo, 'bar', 'foo should equal bar');
     });
   });
@@ -177,11 +194,11 @@ test("test flash", function(t) {
   t.plan(2);
 });
 
-
 test("test error middleware has default response when promise is rejected", function(t) {
-  var app = new bogart.middleware.Error(function(req) { return bogart.Q.reject('rejected'); });
-  
-  Q.when(app({ method: 'GET', env: {}, headers: {}, pathInfo: '/' }), function(resp) {
+  var error = new bogart.middleware.error()
+    , app = function(req) { return bogart.q.reject('rejected'); };
+
+  Q.when(error(mockRequest('/'), app), function(resp) {
     t.ok(resp, 'Response should not be falsey');
     t.equal(resp.status, 500);
     t.equal(resp.headers['content-type'], 'text/html', 'Content-Type should be text/html');
@@ -194,15 +211,15 @@ test("test parted json", function(t) {
   var request = null
     , parted = new bogart.middleware.Parted(function(req) { request = req; return {}; });
 
-  bogart.middleware.parted(function(req) {
-    t.ok(req, 'Request should not be falsey');
-    t.type(req.body, 'object', 'Request body should be an object');
-    t.equal(req.body.hello, 'world', 'req.body.hello should equal "world"');
-  })({
+  bogart.middleware.parted({
     method: 'POST',
     env: {},
     headers: { 'content-type': 'application/json' },
     body: [ '{ "hello": "world" }' ]
+  }, function(req) {
+    t.ok(req, 'Request should not be falsey');
+    t.type(req.body, 'object', 'Request body should be an object');
+    t.equal(req.body.hello, 'world', 'req.body.hello should equal "world"');
   });
 
   t.plan(3);
@@ -219,19 +236,19 @@ test("test parted form", function(t) {
     return bodyDefer.promise;
   };
 
-  parted = new bogart.middleware.Parted(function(req) {
-    t.ok(req, 'Request should not be falsey');
-    t.ok(req.body, 'Body should not be falsey');
-    t.ok(req.body.hello, 'Hello should not be falsey');
-    t.equal(req.body.hello.length, 2);
-    t.end();
-  });
+  parted = bogart.middleware.parted();
   
   parted({
     method: 'POST',
     env: {},
     headers: { 'content-type': 'application/x-www-form-urlencoded' },
     body: body
+  }, function(req) {
+    t.ok(req, 'Request should not be falsey');
+    t.ok(req.body, 'Body should not be falsey');
+    t.ok(req.body.hello, 'Hello should not be falsey');
+    t.equal(req.body.hello.length, 2);
+    t.end();
   });
 
   process.nextTick(function() {
@@ -240,15 +257,13 @@ test("test parted form", function(t) {
 });
 
 test("test parted multipart", function(t) {
-  var parted;
-  
-  parted = new bogart.middleware.Parted(function(req) {
-    t.ok(!!req.body);
-    t.ok(!!req.body.content, 'No file path');
-  });
-  
+  var parted = bogart.middleware.parted();
+
   process.nextTick(function() {
-    parted(multipartRequest(100, 'chrome'));
+    parted(multipartRequest(100, 'chrome'), function(req) {
+      t.ok(!!req.body);
+      t.ok(!!req.body.content, 'No file path');
+    });
   });
 
   t.plan(2);
@@ -259,9 +274,12 @@ test("test session", function(t) {
     , headers = { 'content-type': 'text/plain' }
     , request = { headers: headers, body:[] }
     , values = []
-    , firstRequest = true;
-    
-  app = bogart.middleware.Session({}, function(req) {
+    , firstRequest = true
+    , sessionMiddleware;
+  
+  sessionMiddleware = bogart.middleware.session();
+
+  app = function(req) {
     if(firstRequest) {
       req.session("foo", "bar");
       firstRequest = false;
@@ -273,14 +291,14 @@ test("test session", function(t) {
       status: 200,
       body: [],
     }
-  });
+  };
 
-  Q.when(app(request), function(initialResp) {
+  Q.when(sessionMiddleware(request, app), function(initialResp) {
     var cookieStr = initialResp.headers["Set-Cookie"].join("").replace(/;$/, "");
 
     request.headers.cookie = cookieStr;
 
-    Q.when(app(request), function(resp) {
+    Q.when(sessionMiddleware(request, app), function(resp) {
       t.equal(values.length, 2);
       values.forEach(function(val) {
         t.ok(val, 'bar');
@@ -291,33 +309,33 @@ test("test session", function(t) {
   t.plan(3);
 });
 
-test("test validate response", function(t) {  
-  bogart.middleware.validateResponse(function(req) {
+test("test validate response", function(t) {
+  bogart.middleware.validateResponse(mockRequest('/'), function(req) {
     return null;
-  })().then(null, function(err) {
+  }).then(null, function(err) {
     t.equal(err, 'Response must be an object.');
   });
 
-  bogart.middleware.validateResponse(function(req) {
+  bogart.middleware.validateResponse(mockRequest('/'), function(req) {
     return {
       status: 200,
       headers: {}
     };
-  })().then(null, function(err) {
+  }).then(null, function(err) {
     t.equal(err, 'Response must have a body property.');
   });
 
-  bogart.middleware.validateResponse(function(req) {
+  bogart.middleware.validateResponse(mockRequest('/'), function(req) {
     return {
       status: 200,
       headers: {},
       body: {}
     };
-  })().then(null, function(err) {
+  }).then(null, function(err) {
     t.equal(err, 'Response body must have a forEach method.');
   });
 
-  bogart.middleware.validateResponse(function(req) {
+  bogart.middleware.validateResponse(mockRequest('/'), function(req) {
     return {
       status: 200,
       headers: {},
@@ -325,26 +343,26 @@ test("test validate response", function(t) {
         forEach: 'not a function'
       }
     };
-  })().then(null, function(err) {
+  }).then(null, function(err) {
     t.equal(err, 'Response body has a forEach method but the forEach method is not a function.');
   });
 
-  bogart.middleware.validateResponse(function(req) {
+  bogart.middleware.validateResponse(mockRequest('/'), function(req) {
     return {
       headers: {},
       body: []
     };
-  })().then(null, function(err) {
+  }).then(null, function(err) {
     t.equal(err, 'Response must have a status property.');
   });
 
-  bogart.middleware.validateResponse(function(req) {
+  bogart.middleware.validateResponse(mockRequest('/'), function(req) {
     return {
       status: '200',
       body: [],
       headers: {}
     };
-  })().then(null, function(err) {
+  }).then(null, function(err) {
     t.equal(err, 'Response has a status property but the status property must be a number.');
   });
 
@@ -352,7 +370,8 @@ test("test validate response", function(t) {
 });
 
 test("test bodyAdapter adapts Stream", function(t) {
-  var Stream = require('stream').Stream;
+  var Stream = require('stream').Stream
+    , req    = mockRequest('/');
 
   function TestReadStream() {
     Stream.call(this);
@@ -379,11 +398,9 @@ test("test bodyAdapter adapts Stream", function(t) {
 
   util.inherits(TestReadStream, Stream);
 
-  var streamAdapter = bogart.middleware.bodyAdapter(function(req) {
+  Q.when(bogart.middleware.bodyAdapter(req, function(req) {
     return new TestReadStream('hello', ' ', 'world');
-  });
-
-  Q.when(streamAdapter(), function(resp) {
+  }), function(resp) {
     var str = '';
 
     t.ok(resp, 'Response should not be falsey');
