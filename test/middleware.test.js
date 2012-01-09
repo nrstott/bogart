@@ -397,7 +397,7 @@ test("test bodyAdapter adapts Stream", function(t) {
 
   util.inherits(TestReadStream, Stream);
 
-  Q.when(bogart.middleware.bodyAdapter(req, function(req) {
+  Q.when(bogart.middleware.bodyAdapter()(req, function(req) {
     return new TestReadStream('hello', ' ', 'world');
   }), function(resp) {
     var str = '';
