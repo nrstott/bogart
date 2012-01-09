@@ -23,15 +23,15 @@ var app = bogart.app();
 
 bogart.config(function() {
   // Executed in all environments.
-  app.use(bogart.batteries);
+  app.use(bogart.batteries());
 });
 
 bogart.config('development', function() {
-  app.use(developmentApp);
+  app.use(developmentApp());
 });
 
 bogart.config('production', function() {
-  app.use(productionApp);
+  app.use(productionApp());
 });
 
 app.start();
