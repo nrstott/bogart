@@ -8,7 +8,7 @@ var bogart = require('../lib/bogart')
 function mockRequest(path) {
   return {
     headers: {},
-    pathInfo: path,
+    pathname: path,
     method: 'GET',
     jsgi: { version: [0,3] },
     env: {}
@@ -33,15 +33,13 @@ function simpleRouter(path) {
   
 test('matches parameter', function(t) {
   var name
-    , req = rootRequest()
-    , router = bogart.router(function(get) {
-        get('/hello/:name', function(req) {
-          name = req.params.name;
-          return bogart.html("hello");
-        });
-      });
+    , req = mockRequest('/hello/nathan')
+    , router = bogart.router();
 
-  req.pathInfo = '/hello/nathan';
+  router.get('/hello/:name', function(req) {
+    name = req.params.name;
+    return bogart.html("hello");
+  });
 
   when(router(req), function(resp) {
     t.equal(resp.status, 200);
@@ -54,14 +52,15 @@ test('matches parameter', function(t) {
 test('order of routes matching should be in order defined', function(t) {
   var name
     , req     = mockRequest('/hello/nathan')
-    , router  = bogart.router(function(get) {
-                  get('/hello/:name', function(req) {
-                    t.ok(true);
-                  });
-                  get("/hello/:name/:something", function(req){
-                    t.fail("second route matched incorrectly");
-                  })
-                });
+    , router  = bogart.router();
+  
+  router.get('/hello/:name', function(req) {
+    t.ok(true);
+  });
+
+  router.get("/hello/:name/:something", function(req){
+    t.fail("second route matched incorrectly");
+  });
 
   router(req);
 
@@ -75,8 +74,8 @@ test('should call notFoundApp', function(t) {
         called = true;
         return { status: 409, body: [ '' ] };
       }
-    , router = bogart.router(function() {}, notFoundApp)
-    , respPromise = router(rootRequest());
+    , router = bogart.router()
+    , respPromise = router(rootRequest(), notFoundApp);
   
   when(respPromise, function(resp) {
     t.equal(resp.status, 409);
@@ -141,25 +140,22 @@ test('should not partially match route from beginning', function(t) {
 });
 
 test('should match route with querystring', function(t) {
-  var req = rootRequest()
-    , router;
+  var req = mockRequest('/home')
+    , router = bogart.router();
 
-  router = bogart.router(function(get) {
-    get('/home', function(req) {
-      return {
-        status: 200,
-        body: ['home']
-      }
-    });
+  router.get('/home', function(req) {
+    return {
+      status: 200,
+      body: ['home']
+    }
   });
 
-  req.pathInfo = '/home';
-  req.queryString = "hello=world";
+  req.search = "?hello=world";
 
   when(router(req), function(resp) {
     t.equal(resp.status, 200, 'Status should be 200');
   }, function(err) {
-    t.fail('Promise should not have been rejected');
+    t.fail('Promise should not have been rejected '+err.message ? err.message : '');
   });
 
   t.plan(1);
@@ -167,10 +163,8 @@ test('should match route with querystring', function(t) {
 
 test('regex route', function(t) {
   var router
-    , req = rootRequest()
+    , req = mockRequest('/hello/cruel/world')
     , splat;
-
-  req.pathInfo = '/hello/cruel/world';
 
   router = bogart.router();
 
@@ -325,15 +319,13 @@ test('supports mixing named and splat parameters', function(t) {
 
 test('calls next app when handler returns `undefined`', function(t) {
   var str = 'Hello from next app!'
-    , router;
-  
-  router = bogart.router(null, function(req) {
-    return bogart.text(str);
-  });
+    , router = bogart.router();
 
   router.get('/', function(req) {});
 
-  when(router(mockRequest('/')), function(resp) {
+  when(router(mockRequest('/'), function(req) {
+    return bogart.text(str);
+  }), function(resp) {
     t.equal(resp.body[0], str);
   }, function() {
     t.fail('Promise should not have been rejected');

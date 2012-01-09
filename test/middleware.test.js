@@ -10,7 +10,7 @@ var bogart    = require('../lib/bogart')
 function mockRequest(path) {
   return {
     headers: {},
-    pathInfo: path,
+    pathname: path,
     method: 'GET',
     jsgi: { version: [0,3] },
     env: {}
