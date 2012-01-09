@@ -61,7 +61,6 @@ test("test parses form", function(t) {
 
   request.body = body;
 
-
   bogart.middleware.parseForm()(request, function(req) {
     t.ok(req, 'req should not be falsey');
     t.type(req.body, 'object', 'Body should be an object');
