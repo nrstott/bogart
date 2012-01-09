@@ -1,14 +1,14 @@
-var bogart = require('../lib/bogart');
-var fs     = require('fs');
-var path   = require('path');
+var bogart = require('../lib/bogart')
+  , fs     = require('fs')
+  , path   = require('path');
 
-var app = bogart.router();
+var router = bogart.router();
 
-app.get('/', function(req) {
+router.get('/', function(req) {
   return bogart.html('<html><body><img src="/image.jpg" /></body></html>');
 });
 
-app.get('/image.jpg', function(req) {
+router.get('/image.jpg', function(req) {
   var filePath = path.join(__dirname, 'static-server', 'public', 'images', 'ninja-cat.jpg')
     ,  stat     = fs.statSync(filePath);
 
@@ -17,10 +17,10 @@ app.get('/image.jpg', function(req) {
   });
 });
 
-app.get('/cat.jpg', function(req) {
+router.get('/cat.jpg', function(req) {
 	var filePath = path.join(__dirname, 'static-server', 'public', 'images', 'ninja-cat.jpg');
   
   return bogart.file(filePath);
 });
 
-bogart.start(app);
+bogart.start(router);
