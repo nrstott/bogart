@@ -34,7 +34,7 @@ test("test parses JSON", function(t) {
   request.body = body;
 
   process.nextTick(function() {
-    bogart.middleware.parseJson(request, function(req) {
+    bogart.middleware.parseJson()(request, function(req) {
         t.ok(!!req);
         t.equal('1', req.body.a, 'req.body.a should equal "1"');
         t.end();
