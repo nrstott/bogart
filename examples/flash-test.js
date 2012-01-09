@@ -2,7 +2,7 @@ var bogart = require('../lib/bogart');
 
 var router = bogart.router();
 
-router.get('/flash', function(req) {
+router.get('/', function(req) {
   var existing = 'Existing Flash:'+req.flash('foo')+'<br />';
 
   req.flash('foo', Math.random() * 10);
