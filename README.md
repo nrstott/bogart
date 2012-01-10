@@ -32,7 +32,7 @@ Create the following file:
     });
     
     var app = bogart.app();
-    app.use(bogart.batteries); // A batteries included JSGI stack including streaming request body parsing, session, flash, and much more.
+    app.use(bogart.batteries()); // A batteries included JSGI stack including streaming request body parsing, session, flash, and much more.
     app.use(router); // Our router
 
     app.start();
@@ -44,7 +44,7 @@ Visit the route that says hello to you by name at [http://localhost:8080/bob](ht
 
 ## Changing the port
 
-If you can't run on 8080, change the `app.start` call e.g. `app.start(9090, '127.0.0.1')`
+If something else is using port 8080, change the `app.start` call e.g. `app.start(9090, '127.0.0.1')`
 
 ## Routing
 
@@ -111,13 +111,13 @@ are put in an `Array` in `req.params.splat` of the `req` object passed to the ro
 `bogart.batteries` (See Below), you can setup a full-stack JSGI application in two lines of code.
 
     var app = bogart.app();
-    app.use(bogart.batteries);
+    app.use(bogart.batteries());
 
 After adding `bogart.batteries`, you will normally want to add a Router. This is also done
 with `app.use`. To start the application, use the `start` method.
 
     var app = bogart.app();
-    app.use(bogart.batteries);
+    app.use(bogart.batteries());
 
     var router = bogart.router();
     // NOTE: Here you would normally add some routes.
@@ -274,8 +274,8 @@ when working with callback based functions that cannot be wrapped by `bogart.pro
 
 ## Using Session
 
-The session middleware can be included individually with `app.use(bogart.middleware.session)` or
-by using batteries `app.use(bogart.batteries)` which includes a default stack of JSGI middleware.
+The session middleware can be included individually with `app.use(bogart.middleware.session())` or
+by using batteries `app.use(bogart.batteries())` which includes a default stack of JSGI middleware.
 
 A `session` function will be available on the request object passed to your route handlers. This
 function follows the jQuery style of arity determining if it is getting or setting a key/value pair.
