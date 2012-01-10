@@ -12,9 +12,8 @@ var tasks = {};
 var router = bogart.router();
 
 router.get("/", function(req) {
-  var
-    errors = req.params.errors,
-    taskList = [];
+  var errors = req.params.errors
+    , taskList = [];
   
   // The template needs the tasks as an array, transform the tasks into an array
   for (var taskName in tasks) {
@@ -26,9 +25,8 @@ router.get("/", function(req) {
 });
   
 router.post("/", function(req) {
-  var
-      task = { name: req.params.name, description: req.params.description },
-    errors = [];
+  var task = { name: req.params.name, description: req.params.description }
+    , errors = [];
   
   if (!task.name || task.name.trim() === "") {
     errors.push("name is required");
@@ -48,10 +46,8 @@ router.post("/", function(req) {
   return bogart.redirect("/");
 });
 
-router.del("/:name", function(req, name) {
-  console.log('deleting '+req.params.name);
-  console.log(tasks);
-  delete tasks[name];
+router.del("/:name", function(req) {
+  delete tasks[req.params.name];
   
   return bogart.redirect("/");
 });
