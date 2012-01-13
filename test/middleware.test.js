@@ -5,17 +5,8 @@ var bogart    = require('../lib/bogart')
   , security  = require("../lib/security")
   , util      = require('util')
   , test      = require('tap').test
-  , plan      = require('tap').plan;
-
-function mockRequest(path) {
-  return {
-    headers: {},
-    pathname: path,
-    method: 'GET',
-    jsgi: { version: [0,3] },
-    env: {}
-  };
-}
+  , plan      = require('tap').plan
+  , mockRequest = require('./helpers').mockRequest;
 
 test("test parses JSON", function(t) {
   var forEachDeferred = Q.defer()
