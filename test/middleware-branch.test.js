@@ -7,7 +7,7 @@ var bogart      = require('../lib/bogart')
   , mockRequest = require('./helpers').mockRequest;
 
 test('rejects with error "Empty chain" when called with an empty chain', function(t) {
-  var binary = bogart.middleware.binary(function(req) {
+  var binary = bogart.middleware.branch(function(req) {
     t.ok(req, 'Should have request');
   });
 
@@ -19,7 +19,7 @@ test('rejects with error "Empty chain" when called with an empty chain', functio
 });
 
 test('should have ifTrue', function(t) {
-  var binary = bogart.middleware.binary(function(req) {
+  var binary = bogart.middleware.branch(function(req) {
     return true;
   });
 
@@ -28,7 +28,7 @@ test('should have ifTrue', function(t) {
 });
 
 test('should have ifFalse', function(t) {
-  var binary = bogart.middleware.binary(function(req) {
+  var binary = bogart.middleware.branch(function(req) {
     return true;
   });
 
@@ -37,7 +37,7 @@ test('should have ifFalse', function(t) {
 });
 
 test('should follow ifTrue path', function(t) {
-  var binary = bogart.middleware.binary(function(req) {
+  var binary = bogart.middleware.branch(function(req) {
     return true;
   });
 
@@ -51,7 +51,7 @@ test('should follow ifTrue path', function(t) {
 });
 
 test('should follow ifFalse path', function(t) {
-  var binary = bogart.middleware.binary(function(req) {
+  var binary = bogart.middleware.branch(function(req) {
     return false;
   });
 
