@@ -253,7 +253,9 @@ when working with callback based functions that cannot be wrapped by `bogart.pro
 
     var router = bogart.router();
     router.get('/', function(req) {
-      var res = bogart.response();
+      
+      // Get a ResponseBuilder
+      var res = bogart.res();
 
       doSomethingAsync(function(err, messageStr) {
         res.setHeader('Content-Type', 'text/plain');

@@ -1,3 +1,8 @@
+## v0.3.37
+
+* Changed signature of view engine renderer function so that the caching mechanism is readily available for view engine implementations.
+* ResponseBuilder helper, `bogart.response()`, can now be piped to successfully.
+
 ## v0.3.36
 
 * Publishing v0.3.35 from windows seemed to cause issues when installing on unix. Therefore; I am republishing with only a version bump from linux.
