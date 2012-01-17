@@ -34,6 +34,6 @@
       "tap": "*"
     },
     "scripts": {
-      "test": "tap ./test/middleware.test.js ./test/response-builder.test.js ./test/response-helpers.test.js ./test/router.test.js ./test/stream.test.js ./test/util.test.js ./test/view.test.js ./test/middleware-branch.test.js"
+      "test": "tap ./test/middleware.test.js ./test/response-builder.test.js ./test/response-helpers.test.js ./test/router.test.js ./test/stream.test.js ./test/util.test.js ./test/view.test.js ./test/middleware-branch.test.js ./test/chain.test.js"
     }
 }
