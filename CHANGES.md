@@ -1,3 +1,7 @@
+## v0.3.38
+
+* Changed `bogart.response()` to `bogart.res()` to better fit design philosophy and Node conventions.
+
 ## v0.3.37
 
 * Changed signature of view engine renderer function so that the caching mechanism is readily available for view engine implementations.
