@@ -7,12 +7,12 @@ var bogart      = require('../lib/bogart')
   , mockRequest = require('./helpers').mockRequest;
 
 test('rejects with error "Empty chain" when called with an empty chain', function(t) {
-  var binary = bogart.middleware.branch(function(req) {
+  var branch = bogart.middleware.branch(function(req) {
     t.ok(req, 'Should have request');
   });
 
-  q.when(binary(mockRequest('/')), null, function(err) {
-    t.equal(err, 'Empty chain');
+  q.when(branch(mockRequest('/')), null, function(err) {
+    t.equal(err.message, 'Empty chain');
   });
 
   t.plan(2);
