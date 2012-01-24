@@ -28,3 +28,4 @@ app.use(bogart.middleware.parted());
 app.use(router);
 
 app.start();
+console.log('application started at http://localhost:8080');
