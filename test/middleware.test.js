@@ -1,5 +1,5 @@
 var bogart    = require('../lib/bogart')
-  , Q         = require("promised-io/lib/promise")
+  , Q         = bogart.q
   , path      = require('path')
   , fs        = require('fs')
   , security  = require("../lib/security")
@@ -79,7 +79,7 @@ test("test method override", function(t) {
   Q.when(methodOverride(request, function(req) { return bogart.html('Hello World') }), function() {
     t.equal('PUT', request.method, 'Should change method to PUT');
   }, function(err) {
-    console.log('error', err);
+    t.fail(err);
     t.end();
   });
 
@@ -96,7 +96,7 @@ test("test gzip", function(t) {
     t.ok(resp, 'Response should not be falsey');
     t.ok(resp.body, 'Response should have a body');
   }, function(err) {
-    console.log('error', err);
+    t.fail(err);
     t.end();
   });
 
@@ -124,7 +124,7 @@ test("test gzip downloads as text/html", function(t) {
     t.equal(resp.status, 200);
     t.equal(resp.headers['content-type'], 'text/html');
   }, function(err) {
-    console.log('error', err);
+    t.fail(err);
     t.end();
   });
 
@@ -140,7 +140,7 @@ test("test error middleware has default response when error is thrown", function
     t.equal(resp.status, 500);
     t.equal(resp.headers['content-type'], 'text/html');
   }, function(err) {
-    console.log('error', err);
+    t.fail(err);
     t.end();
   });
 
@@ -192,7 +192,9 @@ test("test error middleware has default response when promise is rejected", func
     t.ok(resp, 'Response should not be falsey');
     t.equal(resp.status, 500);
     t.equal(resp.headers['content-type'], 'text/html', 'Content-Type should be text/html');
-  });
+  }).fail(function(err) {
+    t.fail(err);
+  }).end();
 
   t.plan(3);
 });
@@ -237,9 +239,11 @@ test("test parted form", function(t) {
     t.ok(req, 'Request should not be falsey');
     t.ok(req.body, 'Body should not be falsey');
     t.ok(req.body.hello, 'Hello should not be falsey');
-    t.equal(req.body.hello.length, 2);
+    t.equal(req.body.hello.length, 2, 'Hello should have length of 2');
     t.end();
-  });
+  }).fail(function(err) {
+    t.fail(err);
+  }).end();
 
   process.nextTick(function() {
     bodyDefer.resolve();
@@ -249,14 +253,13 @@ test("test parted form", function(t) {
 test("test parted multipart", function(t) {
   var parted = bogart.middleware.parted();
 
-  process.nextTick(function() {
-    parted(multipartRequest(100, 'chrome'), function(req) {
-      t.ok(!!req.body);
-      t.ok(!!req.body.content, 'No file path');
-    });
-  });
-
-  t.plan(2);
+  parted(multipartRequest(100, 'chrome'), function(req) {
+    t.ok(!!req.body, 'No body');
+    t.ok(!!req.body.content, 'No file path');
+    t.end();
+  }).fail(function(err) {
+    t.fail(err);
+  }).end();
 });
 
 test("test session", function(t) {
@@ -302,18 +305,18 @@ test("test session", function(t) {
 test("test validate response", function(t) {
   bogart.middleware.validateResponse(mockRequest('/'), function(req) {
     return null;
-  }).then(null, function(err) {
+  }).fail(function(err) {
     t.equal(err, 'Response must be an object.');
-  });
+  }).end();
 
   bogart.middleware.validateResponse(mockRequest('/'), function(req) {
     return {
       status: 200,
       headers: {}
     };
-  }).then(null, function(err) {
+  }).fail(function(err) {
     t.equal(err, 'Response must have a body property.');
-  });
+  }).end();
 
   bogart.middleware.validateResponse(mockRequest('/'), function(req) {
     return {
@@ -321,9 +324,9 @@ test("test validate response", function(t) {
       headers: {},
       body: {}
     };
-  }).then(null, function(err) {
+  }).fail(function(err) {
     t.equal(err, 'Response body must have a forEach method.');
-  });
+  }).end();
 
   bogart.middleware.validateResponse(mockRequest('/'), function(req) {
     return {
@@ -333,18 +336,18 @@ test("test validate response", function(t) {
         forEach: 'not a function'
       }
     };
-  }).then(null, function(err) {
+  }).fail(function(err) {
     t.equal(err, 'Response body has a forEach method but the forEach method is not a function.');
-  });
+  }).end();
 
   bogart.middleware.validateResponse(mockRequest('/'), function(req) {
     return {
       headers: {},
       body: []
     };
-  }).then(null, function(err) {
-    t.equal(err, 'Response must have a status property.');
-  });
+  }).fail(function(err) {
+    t.equal(err, 'Response must have a status property.', 'Must have a status property');
+  }).end();
 
   bogart.middleware.validateResponse(mockRequest('/'), function(req) {
     return {
@@ -352,9 +355,9 @@ test("test validate response", function(t) {
       body: [],
       headers: {}
     };
-  }).then(null, function(err) {
-    t.equal(err, 'Response has a status property but the status property must be a number.');
-  });
+  }).fail(function(err) {
+    t.equal(err, 'Response has a status property but the status property must be a number.', 'Status must be a number');
+  }).end();
 
   t.plan(6);
 });
@@ -369,7 +372,7 @@ test("test bodyAdapter adapts Stream", function(t) {
     var args = Array.prototype.slice.call(arguments)
       , self = this;
 
-    process.nextTick(function emitData() {
+    setTimeout(function emitData() {
       var x = args.shift();
       if (x === undefined) {
         self.emit('end');
@@ -378,10 +381,10 @@ test("test bodyAdapter adapts Stream", function(t) {
 
       self.emit('data', x);
 
-      //process.nextTick(function() {
+      process.nextTick(function() {
         emitData();
-      //});
-    });
+      });
+    }, 100);
 
     this.readable = true;
   }
@@ -389,7 +392,7 @@ test("test bodyAdapter adapts Stream", function(t) {
   util.inherits(TestReadStream, Stream);
 
   Q.when(bogart.middleware.bodyAdapter()(req, function(req) {
-    return new TestReadStream('hello', ' ', 'world');
+    return Q.call(function() { return new TestReadStream('hello', ' ', 'world') });
   }), function(resp) {
     var str = '';
 
@@ -406,7 +409,7 @@ test("test bodyAdapter adapts Stream", function(t) {
       t.ok(false, err, 'found error');
       t.end();
     });
-  });
+  }).end();
 });
 
 /**
