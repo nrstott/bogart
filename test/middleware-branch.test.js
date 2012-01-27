@@ -1,5 +1,5 @@
 var bogart      = require('../lib/bogart')
-  , q           = require("promised-io/lib/promise")
+  , q           = require('q')
   , security    = require("../lib/security")
   , util        = require('util')
   , test        = require('tap').test
@@ -13,9 +13,8 @@ test('rejects with error "Empty chain" when called with an empty chain', functio
 
   q.when(branch(mockRequest('/')), null, function(err) {
     t.equal(err.message, 'Empty chain');
-  });
-
-  t.plan(2);
+    t.end();
+  }).end();
 });
 
 test('should have ifTrue', function(t) {
@@ -42,7 +41,7 @@ test('should follow ifTrue path', function(t) {
   });
 
   binary.ifTrue(function(req) {
-    t.ok(req);
+    t.ok(req, 'Followed ifTrue path');
   });
 
   binary(mockRequest('/'));
@@ -56,7 +55,7 @@ test('should follow ifFalse path', function(t) {
   });
 
   binary.ifFalse(function(req) {
-    t.ok(req);
+    t.ok(req, 'Followed ifFalse path');
   });
 
   binary(mockRequest('/'));
