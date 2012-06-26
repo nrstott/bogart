@@ -1,4 +1,4 @@
-var sys = require("sys");
+var util = require('util');
 
 desc("generate a new bogart application skeleton");
 task("generate", [], function(dir, name) {
