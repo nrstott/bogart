@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/nrstott/bogart.png)](http://travis-ci.org/nrstott/bogart)
 # Bogart
 
 A blazing fast rapid application development web framework using JSGI for [node](http://nodejs.org/).
