@@ -1,5 +1,5 @@
 var bogart = require('../lib/bogart')
-  , Q      = require('promised-io/lib/promise')
+  , Q      = require('promised-io/promise')
   , when   = Q.when
   , jsgi   = require('jsgi')
   , test   = require('tap').test

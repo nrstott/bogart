@@ -1,6 +1,6 @@
 var bogart = require('../lib/bogart')
   , assert = require('assert')
-  , Q      = require('promised-io/lib/promise')
+  , Q      = require('promised-io/promise')
   , fs     = require('fs')
   , path   = require('path')
   , test   = require('tap').test
