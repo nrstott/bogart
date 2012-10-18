@@ -17,7 +17,7 @@
       "email": "nrstott@gmail.com"
     },
     "dependencies": {
-      "promised-io": "v0.2.3",
+      "promised-io": "v0.3.0",
     	"jsgi": ">=v0.2.2",
     	"mustache": "0.3.1-dev",
       "underscore": ">=0.0.0",
