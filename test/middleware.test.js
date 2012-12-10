@@ -5,7 +5,8 @@ var bogart    = require('../lib/bogart')
   , security  = require("../lib/security")
   , util      = require('util')
   , test      = require('tap').test
-  , plan      = require('tap').plan;
+  , plan      = require('tap').plan
+  , mockRequest = require('./test-util').mockRequest;
 
 test("test parses JSON", function(t) {
   var forEachDeferred = Q.defer()
@@ -400,6 +401,61 @@ test("test bodyAdapter adapts Stream", function(t) {
       t.end();
     });
   });
+});
+
+test("test cascade works with a router", function(t){
+  var cascade = bogart.middleware.cascade(function() { return true; })
+    , router = bogart.router()
+    , txt = 'Hello World';
+
+  router.get('/', function(req){
+    return bogart.text(txt);
+  });
+
+  cascade.use(router);
+
+  var resPromise = cascade(mockRequest('/'));
+
+  resPromise.then(function(res){
+    t.equal(txt, res.body.join());
+  }, function(err){
+    t.ok(false, err, 'found error');
+  });
+
+  t.plan(1);
+});
+
+test("test cascade passes to second router", function(t){
+  var router1 = bogart.router()
+    , router2 = bogart.router()
+    , txt = 'Hello World'
+    , cascade = bogart.middleware.cascade(function(res) {
+      return res.status != 404;
+    });
+
+  router1.get('/', function(req) {
+    return {
+      status: 404,
+      body: []
+    };
+  });
+
+  router2.get('/', function(req) {
+    return bogart.text(txt);
+  });
+
+  cascade.use(router1);
+  cascade.use(router2);
+
+  var resPromise = cascade(mockRequest('/'));
+
+  resPromise.then(function(res) {
+    t.equal(txt, res.body.join());
+  }, function(err) {
+    t.ok(false, err, 'found error');
+  });
+
+  t.plan(1);
 });
 
 /**
