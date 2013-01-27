@@ -19,7 +19,7 @@
     "dependencies": {
       "promised-io": "v0.3.0",
     	"jsgi": ">=v0.2.2",
-    	"mustache": "0.3.1-dev",
+    	"mustache": "0.7.2",
       "underscore": ">=0.0.0",
       "node-uuid": ">=1.2.0",
       "parted": "=0.0.8",
