@@ -48,10 +48,10 @@ router.post("/", function(req) {
   return bogart.redirect("/");
 });
 
-router.del("/:name", function(req, name) {
+router.del("/:name", function(req) {
   console.log('deleting '+req.params.name);
   console.log(tasks);
-  delete tasks[name];
+  delete tasks[req.params.name];
   
   return bogart.redirect("/");
 });

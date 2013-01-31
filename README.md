@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/nrstott/bogart.png)](http://travis-ci.org/nrstott/bogart)
 # Bogart
 
 A blazing fast rapid application development web framework using JSGI for [node](http://nodejs.org/).
@@ -48,7 +49,7 @@ If you can't run on 8080, change the `app.start` call e.g. `app.start(9090, '127
 
 ## Routing
 
-Routing in Bogart is simple and intuitive.  A route is a HTTP method paried with a
+Routing in Bogart is simple and intuitive.  A route is a HTTP method paired with a
 URL matching pattern and a handler function.
 
     var router = bogart.router();
