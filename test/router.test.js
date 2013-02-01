@@ -228,6 +228,8 @@ test('matches empty `pathInfo` to "/" if no route is defined for ""', function(t
 
   when(router(mockRequest('')), function(resp) {
     t.equal(resp.body.join(''), 'success', 'Should have matched "/" route');
+  }, function(err) {
+    t.fail(err);
   });
 
   t.plan(1);
