@@ -28,7 +28,8 @@
       "commander": "*",
       "mkdirp": "*",
       "async": "0.1.22", 
-      "promised-io": "0.2.3"
+      "promised-io": "0.2.3",
+      "sinon": "1.5.2"
     },
     "devDependencies": {
       "haml": ">=0.4.2",
@@ -36,6 +37,6 @@
       "tap": "*"
     },
     "scripts": {
-      "test": "tap ./test/middleware.test.js ./test/response-builder.test.js ./test/response-helpers.test.js ./test/router.test.js ./test/stream.test.js ./test/util.test.js ./test/view.test.js"
+      "test": "tap ./test/middleware.test.js ./test/response-builder.test.js ./test/response-helpers.test.js ./test/router.test.js ./test/stream.test.js ./test/util.test.js ./test/view.test.js ./test/app.test.js"
     }
 }
