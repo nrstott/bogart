@@ -70,14 +70,6 @@ be accessible via the `params` object of the `req` object passed to the route ha
       return bogart.html(greeting);
     });
 
-It is also possible to access named parameters via arguments passed to the handler function.
-Named parameters will be passed in the order they are speicifed in the route pattern.
-
-    var router = bogart.router();
-    router.get('/hello/:name', function(req, name) {
-      return bogart.html('Hello '+name);
-    });
-
 Route patterns support wildcards. Wildcards will match anything whereas regular named parameters
 will not match beyond a path separator ("/").
 
