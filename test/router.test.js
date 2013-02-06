@@ -270,10 +270,15 @@ test('matches paths that include encoded spaces', function(t) {
 });
 
 test('matches dot (".") literally in paths', function(t) {
-  var router = simpleRouter('/foo.bar');
+  var router = bogart.router()
+    , respFromRoute = bogart.text('hello');
+
+  router.get('/foo.bar', function() {
+    return respFromRoute;
+  });
 
   when(router(mockRequest('/foo.bar')), function(resp) {
-    t.ok(resp);
+    t.equal(resp, respFromRoute);
   }, function() {
     t.fail('Promise should not have been rejected');
   });
