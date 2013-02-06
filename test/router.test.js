@@ -399,3 +399,8 @@ test('request factory given a non-XHR request', function(t) {
     t.plan(1);
   });
 });
+
+test('route has correct toString', function(t) {
+  t.equal(bogart.router().toString(), '[object Router]');
+  t.end();
+});
