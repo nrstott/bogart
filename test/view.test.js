@@ -1,7 +1,7 @@
 var bogart       = require('../lib/bogart')
   , view         = require('../lib/view')
   , jsgi         = require('jsgi')
-  , when         = require('promised-io/promise').when
+  , when         = bogart.q.when
   , path         = require('path')
   , test         = require('tap').test
   , plan         = require('tap').plan

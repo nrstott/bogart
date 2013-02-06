@@ -1,7 +1,7 @@
 var bogart        = require('../lib/bogart')
   , test          = require('tap').test
   , plan          = require('tap').plan
-  , Q             = require('promised-io/promise')
+  , Q             = bogart.q
   , fs            = require('fs')
   , ForEachStream = require('../lib/forEachStream')
   , zlib          = require('zlib');
