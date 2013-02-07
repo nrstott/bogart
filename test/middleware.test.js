@@ -19,7 +19,7 @@ test("test parses JSON", function(t) {
   body = {
     forEach: function(callback) {
       callback(JSON.stringify({ a: '1' }));
-      return forEachDeferred;
+      return forEachDeferred.promise;
     }
   };
 
@@ -50,7 +50,7 @@ test("test parses form", function(t) {
   body = {
     forEach: function(callback) {
       callback('a=1');
-      return forEachDeferred;
+      return forEachDeferred.promise;
     }
   };
 
@@ -83,14 +83,15 @@ test("test method override", function(t) {
   Q.when(app(request), function() {
     t.equal('PUT', request.method, 'Should change method to PUT');
   }, function(err) {
-    console.log('error', err);
+    t.fail(err, err.stack);
     t.end();
-  });
+  }).done();
 
   t.plan(1);
 });
 
 test("test gzip", function(t) {
+  t.plan(2);
   var app = bogart.middleware.Gzip(function(req) {
     return bogart.html('Hello World');
   });
@@ -99,15 +100,12 @@ test("test gzip", function(t) {
   Q.when(appPromise, function(resp) { 
     t.ok(resp, 'Response should not be falsey');
     t.ok(resp.body, 'Response should have a body');
-  }, function(err) {
-    console.log('error', err);
-    t.end();
-  });
-
-  t.plan(2);
+  }).done();
 });
 
 test("test gzip downloads as text/html", function(t) {
+  t.plan(2);
+
   var router = bogart.router();
   var viewEngine = bogart.viewEngine('mustache', path.join(__dirname, 'fixtures'));
 
@@ -119,28 +117,25 @@ test("test gzip downloads as text/html", function(t) {
   var app = Gzip(router);
 
   Q.when(app({ method: 'GET', env: {}, headers: {}, pathInfo: '/' }), function(resp) {
-    t.ok(resp, 'Response should not be falsey');
     t.equal(resp.status, 200);
     t.equal(resp.headers['content-type'], 'text/html');
   }, function(err) {
-    console.log('error', err);
+    t.fail(err);
     t.end();
-  });
-
-  t.plan(3);
+  }).done();
 });
 
 test("test error middleware has default response when error is thrown", function(t) {
-  var app      = new bogart.middleware.Error(function(req) { throw new Error('intentional'); });
+  var errorApp = new bogart.middleware.Error(function(req) { throw new Error('intentional'); });
   
-  Q.when(app({ method: 'GET', env: {}, headers: {}, pathInfo: '/' }), function(resp) {
+  Q.when(errorApp({ method: 'GET', env: {}, headers: {}, pathInfo: '/' }), function(resp) {
     t.ok(resp, 'Response should not be falsey');
     t.equal(resp.status, 500);
     t.equal(resp.headers['content-type'], 'text/html');
   }, function(err) {
-    console.log('error', err);
+    t.fail(err, err.stack);
     t.end();
-  });
+  }).done();
 
   t.plan(3);
 });
@@ -170,17 +165,19 @@ test("test flash", function(t) {
     t.type(foo, 'undefined', 'Foo should be undefined');
 
     request.headers.cookie = cookieStr;
-    Q.when(app(request), function() {
+    return Q.when(app(request), function() {
       t.equal(foo, 'bar', 'foo should equal bar');
     });
-  });
+  }, function() {
+    t.fail(err);
+  }).done();
 
   t.plan(2);
 });
 
 
 test("test error middleware has default response when promise is rejected", function(t) {
-  var app = new bogart.middleware.Error(function(req) { return bogart.Q.reject('rejected'); });
+  var app = new bogart.middleware.Error(function(req) { return q.reject('rejected'); });
   
   Q.when(app({ method: 'GET', env: {}, headers: {}, pathInfo: '/' }), function(resp) {
     t.ok(resp, 'Response should not be falsey');
@@ -204,7 +201,7 @@ test("test parted json", function(t) {
     env: {},
     headers: { 'content-type': 'application/json' },
     body: [ '{ "hello": "world" }' ]
-  });
+  }).done();
 
   t.plan(3);
 });
@@ -306,7 +303,7 @@ test("test validate response", function(t) {
     };
   })().then(null, function(err) {
     t.equal(err, 'Response must have a body property.');
-  });
+  }).done();
 
   bogart.middleware.validateResponse(function(req) {
     return {
@@ -350,57 +347,6 @@ test("test validate response", function(t) {
   });
 
   t.plan(6);
-});
-
-test("test bodyAdapter adapts Stream", function(t) {
-  var Stream = require('stream').Stream;
-
-  function TestReadStream() {
-    Stream.call(this);
-
-    var args = Array.prototype.slice.call(arguments)
-      , self = this;
-
-    process.nextTick(function emitData() {
-      var x = args.shift();
-      if (x === undefined) {
-        self.emit('end');
-        return;
-      }
-
-      self.emit('data', x);
-
-      //process.nextTick(function() {
-        emitData();
-      //});
-    });
-
-    this.readable = true;
-  }
-
-  util.inherits(TestReadStream, Stream);
-
-  var streamAdapter = bogart.middleware.bodyAdapter(function(req) {
-    return new TestReadStream('hello', ' ', 'world');
-  });
-
-  Q.when(streamAdapter(), function(resp) {
-    var str = '';
-
-    t.ok(resp, 'Response should not be falsey');
-    t.ok(resp.body, 'Response should have a body');
-    t.ok(resp.body.forEach, 'Response body should be forEachable');
-
-    return resp.body.forEach(function(x) {
-      str += x;
-    }).then(function() {
-      t.equal(str, 'hello world', 'should equal hello world');
-      t.end();
-    }, function(err) {
-      t.ok(false, err, 'found error');
-      t.end();
-    });
-  });
 });
 
 test("test cascade works with a router", function(t){
