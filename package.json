@@ -17,7 +17,7 @@
       "email": "nrstott@gmail.com"
     },
     "dependencies": {
-      "promised-io": "v0.3.0",
+      "q": "0.8.12",
     	"jsgi": ">=v0.2.2",
     	"mustache": "0.7.2",
       "underscore": ">=0.0.0",
@@ -28,7 +28,6 @@
       "commander": "*",
       "mkdirp": "*",
       "async": "0.1.22", 
-      "promised-io": "0.2.3",
       "sinon": "1.5.2"
     },
     "devDependencies": {
