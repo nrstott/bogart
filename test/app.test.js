@@ -85,7 +85,7 @@ test('given a new app with a router to be started with object parameter', functi
   });
 
   t.test('starting the app', function(t) {
-    var opts = { port: 123, host: 'localhost' }
+    var opts = { port: 123, host: 'localhost', somethingElse: 'anotherOption' }
       , server = {}
       , jsgiOptsFromSpy
       , bogartStartSpy = sinon.stub(bogart, 'start', function(jsgiApp, opts) {
@@ -100,6 +100,7 @@ test('given a new app with a router to be started with object parameter', functi
     t.test('should have started with correct jsgi options parameter', function(t) {
       t.equal(jsgiOptsFromSpy.port, 123);
       t.equal(jsgiOptsFromSpy.host, 'localhost');
+      t.equal(jsgiOptsFromSpy.somethingElse, 'anotherOption');
       t.end();
     });
 
