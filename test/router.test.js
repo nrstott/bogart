@@ -371,15 +371,10 @@ test('middleware in routes', function(t) {
 test('request factory given a XHR request', function(t) {
   var router = bogart.router()
     , jsgiReq = { headers: {'x-requested-with':''} }
-    , req = bogart.request(router, jsgiReq);
+    , req = bogart.request(jsgiReq);
 
   t.test('request should have `isXMLHttpRequest` property', function(t) {
     t.equal(req.isXMLHttpRequest, true);
-    t.plan(1);
-  });
-
-  t.test('request should have correct `router` property', function(t) {
-    t.equal(req.router, router)
     t.plan(1);
   });
 });
@@ -387,15 +382,10 @@ test('request factory given a XHR request', function(t) {
 test('request factory given a non-XHR request', function(t) {
   var router = bogart.router()
     , jsgiReq = { headers: {} }
-    , req = bogart.request(router, jsgiReq);
+    , req = bogart.request(jsgiReq);
 
   t.test('request should have `isXMLHttpRequest` of false', function(t) {
     t.equal(req.isXMLHttpRequest, false);
-    t.plan(1);
-  });
-
-  t.test('request should have correct `router` property', function(t) {
-    t.equal(req.router, router);
     t.plan(1);
   });
 });

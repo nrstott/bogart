@@ -2,12 +2,8 @@ var request = require('../lib/request')
   , test   = require('tap').test
   , plan   = require('tap').plan;
 
-function stubRouter() {
-  return {};
-}
-
 test('request creation', function(t) {
-  var req = request(stubRouter(), {})
+  var req = request({})
     , keys = Object.keys(req);
 
   t.notEqual(keys.indexOf('params'), -1, 'should have enumerable `params` property');
@@ -18,7 +14,7 @@ test('request creation', function(t) {
 
 test('query string parameters', function(t) {
   var jsgiRequest = { queryString: 'a=1&b=abc' }
-    , req = request(stubRouter(), jsgiRequest);
+    , req = request(jsgiRequest);
 
   t.equal(req.queryString, jsgiRequest.queryString, 'should have correct queryString');
 
@@ -39,7 +35,7 @@ test('query string parameters', function(t) {
 
 test('route parameters', function(t) {
   var jsgiRequest = {}
-    , req = request(stubRouter(), jsgiRequest);
+    , req = request(jsgiRequest);
 
   req.routeParams.name = 'Bob';
 
