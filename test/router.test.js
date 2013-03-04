@@ -286,6 +286,23 @@ test('matches dot (".") literally in paths', function(t) {
   t.plan(1);
 });
 
+test('matches dash ("-") in paths', function(t) {
+  var router = bogart.router()
+    , respFromRoute = bogart.text('hello');
+  
+  router.get('/foo/:bar/dash-url', function() {
+    return respFromRoute;
+  });
+
+  when(router(mockRequest('/foo/baz/dash-url')), function(resp) {
+    t.equal(resp, respFromRoute);
+  }, function() {
+    t.fail('Promise should not have been rejected');
+  });
+
+  t.plan(1);
+});
+
 test('supports splat ("*")', function(t) {
   var router = bogart.router();
   
