@@ -1,7 +1,7 @@
 {
     "name": "bogart",
     "description": "Fast JSGI web framework taking inspiration from Sinatra",
-    "version": "0.4.0-rc",
+    "version": "0.4.0",
     "keywords": ["bogart", "framework", "sinatra", "REST"],
     "author": "Nathan Stott <nrstott@gmail.com>",
     "email": "nathan.stott@whiteboard-it.com",
