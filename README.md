@@ -21,22 +21,24 @@ Create the following file:
 
 ### app.js
 
-    var bogart = require('bogart');
+```javascript
+var bogart = require('bogart');
 
-    var router = bogart.router();
-    router.get('/', function(req) { 
-      return "hello world"; 
-    });
+var router = bogart.router();
+router.get('/', function(req) { 
+  return "hello world"; 
+});
 
-    router.get('/:name', function(req) {
-      return 'hello '+req.params.name;
-    });
-    
-    var app = bogart.app();
-    app.use(bogart.batteries); // A batteries included JSGI stack including streaming request body parsing, session, flash, and much more.
-    app.use(router); // Our router
+router.get('/:name', function(req) {
+  return 'hello '+req.params.name;
+});
 
-    app.start();
+var app = bogart.app();
+app.use(bogart.batteries); // A batteries included JSGI stack including streaming request body parsing, session, flash, and much more.
+app.use(router); // Our router
+
+app.start();
+```
 
 Start your app: `node app.js`
 
@@ -49,13 +51,15 @@ If you can't run on 8080, change the `app.start` call e.g. `app.start(9090, '127
 
 ## Routing
 
-Routing in Bogart is simple and intuitive.  A route is a HTTP method paired with a
+Routing in Bogart is simple and intuitive.  A route is an HTTP method paired with an
 URL matching pattern and a handler function.
 
-    var router = bogart.router();
-    router.get('/', function(req) {
-      return bogart.html('Hello World');
-    });
+```javascript
+var router = bogart.router();
+router.get('/', function(req) {
+  return bogart.html('Hello World');
+});
+```
 
 Routes are tested for matches in the order in which they are defined.
 
@@ -64,165 +68,197 @@ Routes are tested for matches in the order in which they are defined.
 Route patterns are matched against URLs.  They may include named parameters that will
 be accessible via the `params` object of the `req` object passed to the route handler.
 
-    var router = bogart.router();
-    router.get('/hello/:name', function(req) {
-      var greeting = 'Hello '+req.params.name;
-      return bogart.html(greeting);
-    });
+```javascript
+var router = bogart.router();
+router.get('/hello/:name', function(req) {
+  var greeting = 'Hello '+req.params.name;
+  return bogart.html(greeting);
+});
+```
 
 Route patterns support wildcards. Wildcards will match anything whereas regular named parameters
 will not match beyond a path separator ("/").
 
-    var router = bogart.router();
-    router.get('/hello/*', function(req, name) {
-        return bogart.html('Hello '+req.params.splat[0]);
-    });
+```javascript
+var router = bogart.router();
+router.get('/hello/*', function(req, name) {
+    return bogart.html('Hello '+req.params.splat[0]);
+});
+```
 
 ### Regex Routes
 
 When a route pattern is not powerful enough, regular expressions may be used to specify which
 URLs are to be matched.
 
-    var router = bogart.router();
-    router.get(/\/posts?/, function(req) {
-      // Matches 'post' or 'posts'
-      return bogart.html('Regex Route');
-    });
+```javascript
+var router = bogart.router();
+router.get(/\/posts?/, function(req) {
+  // Matches 'post' or 'posts'
+  return bogart.html('Regex Route');
+});
+```
 
 Parameters are via regular expression groups in regular expression routes.  The parameter values
 are put in an `Array` in `req.params.splat` of the `req` object passed to the route handler.
 
-    var router = bogart.router();
-    router.get(/hello-(.*)/, function(req) {
-      var name = req.params.splat[0];
-      return bogart.html('Hello '+name);
-    });
+```javascript
+var router = bogart.router();
+router.get(/hello-(.*)/, function(req) {
+  var name = req.params.splat[0];
+  return bogart.html('Hello '+name);
+});
+```
 
 ## Bogart Application
 
-`bogart.app` makes it easy to setup a middleware chain and start coding. Combined with 
+`bogart.app` makes it easy to setup a middleware chain and start coding. Combined with
 `bogart.batteries` (See Below), you can setup a full-stack JSGI application in two lines of code.
 
-    var app = bogart.app();
-    app.use(bogart.batteries);
+```javascript
+var app = bogart.app();
+app.use(bogart.batteries);
+```
 
 After adding `bogart.batteries`, you will normally want to add a Router. This is also done
 with `app.use`. To start the application, use the `start` method.
 
-    var app = bogart.app();
-    app.use(bogart.batteries);
+```javascript
+var app = bogart.app();
+app.use(bogart.batteries);
 
-    var router = bogart.router();
-    // NOTE: Here you would normally add some routes.
+var router = bogart.router();
+// NOTE: Here you would normally add some routes.
 
-    app.use(router);
-    app.start();
+app.use(router);
+app.start();
+```
 
 ## Response Helpers
 
 Bogart includes helpers for creating JSGI Responses. The helpers, by convention, take a final
-parameter of an options object that allows the caller to override defaults. The options object 
+parameter of an options object that allows the caller to override defaults. The options object
 is merged with the default JSGI Response values of the helper before the JSGI Response is returned.
 
 ### Respond with JSON
 
-Helper to create a HTTP 200 Success response with a Content-Type of application/json.
+Helper to create an HTTP 200 Success response with a Content-Type of application/json.
 
 Sample Route:
 
-    var router = bogart.router();
-    router.get('/', function(req) {
-      return bogart.json({ framework: 'Bogart' });
-    });
+```javascript
+var router = bogart.router();
+router.get('/', function(req) {
+  return bogart.json({ framework: 'Bogart' });
+});
+```
 
 This route yields the following JSGI Response:
 
-    {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-      body: [ '{ "framework": "Bogart" }' ]
-    }
+```
+{
+  status: 200,
+  headers: { 'Content-Type': 'application/json' },
+  body: [ '{ "framework": "Bogart" }' ]
+}
+```
 
 ### Redirect
 
-Helper to create a HTTP 302 Temporary Redirect response.
+Helper to create an HTTP 302 Temporary Redirect response.
 
 Sample Route:
 
-    var router = bogart.router();
-    router.get('/', function(req) {
-      return bogart.redirect('/some/other/url');
-    });
+```javascript
+var router = bogart.router();
+router.get('/', function(req) {
+  return bogart.redirect('/some/other/url');
+});
+```
 
 This route yields the following JSGI Response:
 
-    {
-      status: 302,
-      headers: { 'Location': '/some/other/url' },
-      body: []
-    }
+```
+{
+  status: 302,
+  headers: { 'Location': '/some/other/url' },
+  body: []
+}
+```
 
 ### Error
 
-Helper to create a HTTP 500 Internal Server Error response.
+Helper to create an HTTP 500 Internal Server Error response.
 
 Sample Route:
 
-    var router = bogart.router();
-    router.get('/', function(req) {
-      return bogart.error('<html>...</html>');
-    });
+```javascript
+var router = bogart.router();
+router.get('/', function(req) {
+  return bogart.error('<html>...</html>');
+});
+```
 
-This route yeilds the following JSGI Response:
+This route yields the following JSGI Response:
 
-    {
-      status: 500,
-      headers: { 'Content-Type': 'text/html' },
-      body: [ '<html>...</html>' ]
-    }
+```
+{
+  status: 500,
+  headers: { 'Content-Type': 'text/html' },
+  body: [ '<html>...</html>' ]
+}
+```
 
 ### Not Modified
 
-Helper to create a HTTP 304 Not Modified response.
+Helper to create an HTTP 304 Not Modified response.
 
 Sample Route:
 
-    var router = bogart.router();
-    router.get('/', function(req) {
-      return bogart.notModified();
-    });
+```javascript
+var router = bogart.router();
+router.get('/', function(req) {
+  return bogart.notModified();
+});
+```
 
-This route yeilds the following JSGI Response:
+This route yields the following JSGI Response:
 
-    {
-      status: 304,
-      headers: {},
-      body: []
-    }
+```
+{
+  status: 304,
+  headers: {},
+  body: []
+}
+```
 
 ### File (Streaming!)
 
-Helper to create a HTTP 200 Success response with a body streamed from the contents of a file. The
+Helper to create an HTTP 200 Success response with a body streamed from the contents of a file. The
 Content-Type of the response is determined by the mime type of the file.
 
 Sample Route:
 
-    var path = require('path');
+```javascript
+var path = require('path');
 
-    var router = bogart.router();
-    router.get('/download/*', function(req) {
-      var filePath = path.join(__dirname, 'public', req.params.splat[0]);
+var router = bogart.router();
+router.get('/download/*', function(req) {
+  var filePath = path.join(__dirname, 'public', req.params.splat[0]);
 
-      return bogart.file(filePath);
-    });
+  return bogart.file(filePath);
+});
+```
 
-This route yeilds the following JSGI Response:
+This route yields the following JSGI Response:
 
-    {
-      status: 200,
-      headers: { 'Content-Type': '<mimetype of the file>' },
-      body: fileStream // <-- A file stream
-    }
+```
+{
+  status: 200,
+  headers: { 'Content-Type': '<mimetype of the file>' },
+  body: fileStream // <-- A file stream
+}
+```
 
 ### Proxy (Streaming!)
 
@@ -230,42 +266,46 @@ Helper to create a response that proxies the response from a URL.
 
 Sample Route:
 
-    var router = bogart.router();
-    router.get('/google', function(req) {
-      return bogart.proxy('http://www.google.com');
-    });
+```javascript
+var router = bogart.router();
+router.get('/google', function(req) {
+  return bogart.proxy('http://www.google.com');
+});
+```
 
-This route yeilds a JSGI Response that matches the response from the proxied URL.
+This route yields a JSGI Response that matches the response from the proxied URL.
 
 ## Imperative Response Builder
 
-Bogart includes the ResponseBuidler helper to provide an imperative interface. While not
-recommended as a goto style of programming in Bogart, there are times when buiding a 
+Bogart includes the `ResponseBuilder` helper to provide an imperative interface. While not
+recommended as a goto style of programming in Bogart, there are times when buiding a
 response imperatively makes for cleaner, better code. This is true especially
 when working with callback based functions that cannot be wrapped by `bogart.promisify`.
 
-    var router = bogart.router();
-    router.get('/', function(req) {
-      
-      // Get a ResponseBuilder
-      var res = bogart.res();
+```javascript
+var router = bogart.router();
+router.get('/', function(req) {
 
-      doSomethingAsync(function(err, messageStr) {
-        res.setHeader('Content-Type', 'text/plain');
+  // Get a ResponseBuilder
+  var res = bogart.res();
 
-        if (err) {
-          res.status(500);
-          res.send('Error');
-          return res.end(); // We use return to break out of the function, do not want to continue executing after res.end()
-        }
+  doSomethingAsync(function(err, messageStr) {
+    res.setHeader('Content-Type', 'text/plain');
 
-        res.status(200);
-        res.send(messageStr);
-        res.end(); // End the Response.  This is analagous to resolving a promise for a JSGI Response.
-      });
+    if (err) {
+      res.status(500);
+      res.send('Error');
+      return res.end(); // We use return to break out of the function, do not want to continue executing after res.end()
+    }
 
-      return res;
-    });
+    res.status(200);
+    res.send(messageStr);
+    res.end(); // End the Response.  This is analagous to resolving a promise for a JSGI Response.
+  });
+
+  return res;
+});
+```
 
 ## Using Session
 
@@ -276,27 +316,33 @@ A `session` function will be available on the request object passed to your rout
 function follows the jQuery style of arity determining if it is getting or setting a key/value pair.
 A call to session with one argument is a get to the value of the key referenced by the argument.
 
-    req.session('name'); // => value associated with 'name'
+```javascript
+req.session('name'); // => value associated with 'name'
+```
 
 A call to session with two arguments is a set.
 
-    req.session('name', 'Nathan'); // sets the value of 'name' to 'Nathan'
+```javascript
+req.session('name', 'Nathan'); // sets the value of 'name' to 'Nathan'
+```
 
 ### Contrived Example
 
 A set of two routes that use session:
 
-    router.get('/:name', function(req) {
-      req.session('name', req.params.name);
-      return bogart.redirect('/');
-    });
+```javascript
+router.get('/:name', function(req) {
+  req.session('name', req.params.name);
+  return bogart.redirect('/');
+});
 
-    router.get('/', function(req) {
-      return bogart.html('Hello ' +req.session('name'));
-    });
+router.get('/', function(req) {
+  return bogart.html('Hello ' +req.session('name'));
+});
+```
 
-Visiting '/:name' ('/Nathan', '/Bob', etc...) will set a session key that will 
-be displayed by the root route '/', after the redirect.
+Visiting '/:name' ('/Nathan', '/Bob', etc...) will set a session key that will be displayed by the root
+route '/', after the redirect.
 
 ## Running the Examples
 
@@ -320,11 +366,11 @@ to hold other templates to avoid duplication of content.
     > cd examples/mustache-layout
     > node app.js
 
-Visit the application in a web browser at [http://localhost:8080/](http://localhost:8080)    
+Visit the application in a web browser at [http://localhost:8080/](http://localhost:8080)
 
 ### Jade
 
-If you would like to use Jade instead of Mustache, please `npm install bogart-jade`. Then in 
+If you would like to use Jade instead of Mustache, please `npm install bogart-jade`. Then in
 your application add `require('bogart-jade')` and the Jade ViewEngine will be available via
 `bogart.viewEngine('jade')`. See [the github repository](https://github.com/nrstott/bogart-jade) for more information.
 
@@ -339,7 +385,7 @@ want to use them.
 The batteries middleware creates the following JSGI chain where `nextApp` is the JSGI appliance passed as the first parameter
 to `batteries`:
 
-    error -> validateResponse -> directory -> parted -> methodOverride 
+    error -> validateResponse -> directory -> parted -> methodOverride
           -> session -> flash -> bodyAdapter -> stringReturnAdapter -> nextApp
 
 The binary middleware is configured to check the path of the request and if it corresponds to a potential directory in the 'public' directory,
@@ -353,7 +399,7 @@ The static example demonstrates using bogarts *Directory* middleware to serve an
 
     > cd examples/static-server
     > node app.js
-    
+
 Visit the application in a web browser at [http://localhost:8080/](http://localhost:8080).
 You should see the image.
 
@@ -415,105 +461,118 @@ user-land applications and frameworks are free to employ higher-level abstractio
 
 ### How Promises Work
 
-Promises may only be resolved one time. In the future, when success listeners are added to a 
+Promises may only be resolved one time. In the future, when success listeners are added to a
 promise that has already been resolved, the success listener will be invoked with the
 previously resolved value. Each success listener or error listener is invoked one time and
 one time only.
 
-Promises are not EventEmitters. Many times when describing promises, other coder's ask why 
+Promises are not EventEmitters. Many times when describing promises, other coders ask why
 not just use an EventEmitter. Promises have a different contract. The fact that promises
 are resolved or rejected only one time is powerful. EventEmitters have their place; however,
 they do not take the place of Promises and Promises do not take the place of EventEmitters.
 
-    function helloWorld() {
+```javascript
+function helloWorld() {
+  // Retrieve the q promise utility
+  var q = require('bogart').q;
 
-      // Retrieve the q promise utility
-      var q = require('bogart').q;
+  // Create a deferred, a wrapper around a Promise.
+  var deferred = q.defer();
 
-      // Create a deferred, a wrapper around a Promise.
-      var deferred = q.defer();
+  // Do something async
+  setTimeout(function() {
+    // Resolve the promise, this will cause success listeners to be invoked.
+    deferred.resolve('hello world');
+  }, 100);
 
-      // Do something async
-      setTimeout(function() {
-        // Resolve the promise, this will cause success listeners to be invoked.
-        deferred.resolve('hello world');
-      }, 100);
+  // Return the promise that the deferred wraps to the client.
+  return deferred.promise;
+}
 
-      // Return the promise that the deferred wraps to the client.
-      return deferred.promise;
-    }
-
-    // Consuming the helloWorld function
-    var p = helloWorld();
-    p.then(function(msg) {
-      // This function will be invoked on success
-      console.log(msg);
-    }, function(err) {
-      // This function will be invoked on error.
-      console.log(err);
-    });
+// Consuming the helloWorld function
+var p = helloWorld();
+p.then(function(msg) {
+  // This function will be invoked on success
+  console.log(msg);
+}, function(err) {
+  // This function will be invoked on error.
+  console.log(err);
+});
+```
 
 ### The `then` Method
 
-`promise.then(callback, errback, progress)`
+```javascript
+promise.then(callback, errback, progress)
+```
 
 A promise will have a `then` method which takes up to three parameters. The three parameters are all optional.
-The first parameter, `callback`, is executed if the Promise is successfully resolved. The second parameter, `errback`, is 
-executed if the Promise is rejected. The third parameter, `progress`, is used to provide intermediate feedback on the 
+The first parameter, `callback`, is executed if the Promise is successfully resolved. The second parameter, `errback`, is
+executed if the Promise is rejected. The third parameter, `progress`, is used to provide intermediate feedback on the
 asynchronous operation. This parameter is rarely used. Most promises do not report progress.
 
 ### The `when` Function
 
-`bogart.q.when(promiseOrValue, callback, errback, progress)`
+```javascript
+bogart.q.when(promiseOrValue, callback, errback, progress)
+```
 
-The `when` function in the `bogart.q` namespace is helpful when you do not know if what you have is a value or a promise for a 
+The `when` function in the `bogart.q` namespace is helpful when you do not know if what you have is a value or a promise for a
 value. The callback will be executed for success for a resoled promise or for the value passed if it is a value and not a promise.
 
-    // The following two lines are equivalent with the exception that the `when` can 
-    // handle values that are not promises.
-    q.when(p, function() { console.log('Success'); });
-    p.then(function() { console.log('Success'); });
+```javascript
+// The following two lines are equivalent with the exception that the `when` can 
+// handle values that are not promises.
+q.when(p, function() { console.log('Success'); });
+p.then(function() { console.log('Success'); });
+```
 
 ### Bubbling
 
 Promises can be 'bubbled'. The return value of a callback becomes the value of an external promise. The same is true of errbacks.
 
-    function bubble(p) {
-      return p.then(function() {
-        // Assume makePromise is a function that returns a promise for an asyncronous operation.
-        // The value of makePromise when resolved becomes the resolution of the `bubble` function as well.
-        return makePromise();
-      });
-    }
+```javascript
+function bubble(p) {
+  return p.then(function() {
+    // Assume makePromise is a function that returns a promise for an asyncronous operation.
+    // The value of makePromise when resolved becomes the resolution of the `bubble` function as well.
+    return makePromise();
+  });
+}
+```
 
-Bubbling errbacks is paralell to having a try/catch at a higher level handle errors at a lower level.
+Bubbling errbacks is parallel to having a try/catch at a higher level handle errors at a lower level.
 
-    p.then(function(url) {
-      return request(url).then(function() {
-        throw 'error';
-      });
-    }, function(err) {
-      // Will handle the error that occurs in the callback of `request.then`.
-      console.log(err);
-    });
+```javascript
+p.then(function(url) {
+  return request(url).then(function() {
+    throw 'error';
+  });
+}, function(err) {
+  // Will handle the error that occurs in the callback of `request.then`.
+  console.log(err);
+});
+```
 
 ### Working with Node.JS Callbacks
 
 Node.JS uses a style of callback with the following signuare: `function(err, result)`. Bogart includes a utility function,
 `bogart.promisify`, to adapt these Node.JS-style functions to return a Promise.
 
-    var fs = require('fs'); // Node File System Module
-    var bogart = require('bogart'); // Include Bogart
+```javascript
+var fs = require('fs'); // Node File System Module
+var bogart = require('bogart'); // Include Bogart
 
-    // A promise-based version of fs.readFile.
-    var readFile = bogart.promisify(fs.readFile);
+// A promise-based version of fs.readFile.
+var readFile = bogart.promisify(fs.readFile);
 
-    readFile('test.txt').then(function(data) {
-      console.log(data);
-    });
+readFile('test.txt').then(function(data) {
+  console.log(data);
+});
+```
 
-*NOTE*: A Node.JS-style function which calls its callback multiple times is not compatible with promises. 
-A Promise may be resolved only once. Node.JS style functions that call their callback multiple times are  
+*NOTE*: A Node.JS-style function which calls its callback multiple times is not compatible with promises.
+A Promise may be resolved only once. Node.JS style functions that call their callback multiple times are
 uncommon. The vast majority of Node.JS style functions can be safely translated using `bogart.promisify`.
 
 ### Promises are 'A Good Thing'
@@ -531,7 +590,7 @@ Ruby's Rack and Python's WSGI.
 ### Entities
 
 * Application: A JavaScript Function that takes one argument, the Request as a JavaScript Object, and returns its Response as a JavaScript Object containing three required attributes: status, headers, and body.
-* Middleware: JSGI Applications that can call other JSGI Applications. Middleware can be orgonized into a call chain to provide useful services or perform useful business logic.
+* Middleware: JSGI Applications that can call other JSGI Applications. Middleware can be organized into a call chain to provide useful services or perform useful business logic.
 * Request: A JavaScript Object that contains the state of the HTTP request.  JSGI Applications and Middleware are free to modify the request object.
 
 ### Bogart Relationship to JSGI
