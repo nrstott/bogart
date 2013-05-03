@@ -20,7 +20,7 @@
       "q": "0.8.12",
     	"jsgi": ">=v0.2.2",
     	"mustache": "0.7.2",
-      "underscore": ">=0.0.0",
+      "underscore": ">=1.4.4",
       "node-uuid": ">=1.2.0",
       "parted": "=0.0.8",
       "oauth": "=0.9.5",
