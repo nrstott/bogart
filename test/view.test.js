@@ -28,3 +28,25 @@ test('test render mustache with partials', function(t) {
     t.fail(err);
   });
 });
+
+test('test `bogart.respond` merges headers', function(t) {
+  var viewEngine = bogart.viewEngine('mustache', fixturesPath)
+    , headers = { abc: 123 }
+    , respondOpts = {
+        layout: false,
+        locals: { greeting: {} },
+        headers: headers
+      };
+
+  when(viewEngine.respond('partial-test.mustache', respondOpts), function(response) {
+    t.equals(response.headers.abc, headers.abc);
+    t.equals(response.headers['content-type'], 'text/html');
+
+    t.end();
+  }, function(err) {
+    t.fail(err);
+    t.end();
+  });
+
+  t.plan(2);
+});
