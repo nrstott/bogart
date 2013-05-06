@@ -363,6 +363,69 @@ describe 'session', ->
     , (err) =>
       this.fail err
 
+describe 'validate response middlewre', ->
+  validateResApp = null
+
+  describe 'null response', ->
+
+    beforeEach ->
+      validateResApp = bogart.middleware.validateResponse (req) ->
+        null
+
+    it 'should have correct error', ->
+      validateResApp().fail (err) ->
+        expect(err).toBe 'Response must be an object.'
+
+  describe 'response without a body', ->
+
+    beforeEach ->
+      validateResApp = bogart.middleware.validateResponse (req) ->
+        { status: 200, headers: {} }
+
+    it 'should have correct error', ->
+      validateResApp().fail (err) ->
+        expect(err).toBe 'Response must have a body property.'
+
+  describe 'response that has a body that is not a forEachable', ->
+
+    beforeEach ->
+      validateResApp = bogart.middleware.validateResponse (req) ->
+        { status: 200, body: {}, headers: {} }
+
+    it 'should have correct error', ->
+      validateResApp().fail (err) ->
+        expect(err).toBe 'Response body must have a forEach method.'
+
+  describe 'given response with body that has a forEach property that is not a function', ->
+
+    beforeEach ->
+      validateResApp = bogart.middleware.validateResponse (req) ->
+        { status: 200, body: { forEach: {} }, headers: {} }
+
+    it 'should have correct error', ->
+      validateResApp().fail (err) ->
+        expect(err).toBe 'Response body has a forEach method but the forEach method is not a function.'
+
+  describe 'given a response without status', ->
+
+    beforeEach ->
+      validateResApp = bogart.middleware.validateResponse (req) ->
+        { body: [], headers: {} }
+
+    it 'should have correct error', ->
+      validateResApp().fail (err) ->
+        expect(err).toBe 'Response must have a status property.'
+
+
+  describe 'given a response with a non-number status', ->
+
+    beforeEach ->
+      validateResApp = bogart.middleware.validateResponse (req) ->
+        { body: [], headers: {}, status: '200' }
+
+    it 'should have correct error', ->
+      validateResApp().fail (err) ->
+        expect(err).toBe 'Response has a status property but the status property must be a number.'
 
 ###
 Create a mock request  
