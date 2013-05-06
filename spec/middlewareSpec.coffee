@@ -321,6 +321,48 @@ describe 'parted', ->
         expect(res.body.content).not.toBe undefined
         done()
 
+describe 'session', ->
+  sessionApp = null
+  firstRequest = true
+  res = null
+  values = []
+
+  beforeEach ->
+    sessionApp = bogart.middleware.session {}, (req) ->
+      req.session('foo', 'bar') if firstRequest
+      firstRequest = false
+
+      values.push req.session('foo')
+
+      return {
+        status: 200,
+        body: []
+      }
+
+    headers = { 'content-type': 'text/plain' }
+    jsgiRequest = { headers: headers, body: [] }
+
+    res = q.when sessionApp(jsgiRequest), (res) ->
+      cookieStr = res.headers['Set-Cookie'].join('').replace(/;$/, '');
+
+      jsgiRequest.headers.cookie = cookieStr
+
+      q.when sessionApp(jsgiRequest)
+
+  it 'should have correct value for first request', (done) ->
+    q.when res, (res) ->
+      expect(values[0]).toBe 'bar'
+      done()
+    , (err) =>
+      this.fail err
+
+  it 'should have correct value for second request', (done) ->
+    q.when res, (res) ->
+      expect(values[1]).toBe 'bar'
+      done()
+    , (err) =>
+      this.fail err
+
 
 ###
 Create a mock request  
