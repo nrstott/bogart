@@ -1,5 +1,6 @@
 bogart = require '../lib/bogart'
 q = bogart.q
+mockRequest = require './helpers/JsgiRequestHelper'
 
 describe 'parse json', ->
   parseJsonMiddleware = null
@@ -363,7 +364,7 @@ describe 'session', ->
     , (err) =>
       this.fail err
 
-describe 'validate response middlewre', ->
+describe 'validate response middleware', ->
   validateResApp = null
 
   describe 'null response', ->
@@ -372,9 +373,13 @@ describe 'validate response middlewre', ->
       validateResApp = bogart.middleware.validateResponse (req) ->
         null
 
-    it 'should have correct error', ->
+    it 'should have correct error', (done) ->
       validateResApp().fail (err) ->
         expect(err).toBe 'Response must be an object.'
+        done()
+      , (err) =>
+        this.fail error
+        done()
 
   describe 'response without a body', ->
 
@@ -382,9 +387,10 @@ describe 'validate response middlewre', ->
       validateResApp = bogart.middleware.validateResponse (req) ->
         { status: 200, headers: {} }
 
-    it 'should have correct error', ->
+    it 'should have correct error', (done) ->
       validateResApp().fail (err) ->
         expect(err).toBe 'Response must have a body property.'
+        done()
 
   describe 'response that has a body that is not a forEachable', ->
 
@@ -392,9 +398,10 @@ describe 'validate response middlewre', ->
       validateResApp = bogart.middleware.validateResponse (req) ->
         { status: 200, body: {}, headers: {} }
 
-    it 'should have correct error', ->
+    it 'should have correct error', (done) ->
       validateResApp().fail (err) ->
         expect(err).toBe 'Response body must have a forEach method.'
+        done()
 
   describe 'given response with body that has a forEach property that is not a function', ->
 
@@ -402,9 +409,10 @@ describe 'validate response middlewre', ->
       validateResApp = bogart.middleware.validateResponse (req) ->
         { status: 200, body: { forEach: {} }, headers: {} }
 
-    it 'should have correct error', ->
+    it 'should have correct error', (done) ->
       validateResApp().fail (err) ->
         expect(err).toBe 'Response body has a forEach method but the forEach method is not a function.'
+        done()
 
   describe 'given a response without status', ->
 
@@ -412,10 +420,10 @@ describe 'validate response middlewre', ->
       validateResApp = bogart.middleware.validateResponse (req) ->
         { body: [], headers: {} }
 
-    it 'should have correct error', ->
+    it 'should have correct error', (done) ->
       validateResApp().fail (err) ->
         expect(err).toBe 'Response must have a status property.'
-
+        done()
 
   describe 'given a response with a non-number status', ->
 
@@ -423,9 +431,67 @@ describe 'validate response middlewre', ->
       validateResApp = bogart.middleware.validateResponse (req) ->
         { body: [], headers: {}, status: '200' }
 
-    it 'should have correct error', ->
+    it 'should have correct error', (done) ->
       validateResApp().fail (err) ->
         expect(err).toBe 'Response has a status property but the status property must be a number.'
+        done()
+
+describe 'cascade', ->
+  res = null
+
+  describe 'given router', ->
+
+    beforeEach ->
+      cascadeApp = bogart.middleware.cascade (res) ->
+        true
+
+      txt = 'hello world'
+
+      router = bogart.router()
+      router.get '/', (req) ->
+        bogart.text txt
+
+      res = cascadeApp mockRequest.root()
+
+    it 'should have correct body', (done) ->
+      q.when res, (res) ->
+        expect(res.body.join()).toBe txt
+        done()
+      , (err) =>
+        this.fail err
+        done()
+
+  describe 'given chained routers', ->
+
+    beforeEach ->
+      router1 = bogart.router()
+      router2 = bogart.router()
+
+      txt = 'hello world'
+
+      cascadeApp = bogart.middleware.cascade (res) ->
+        res.status != 404
+
+      router1.get '/', (req) ->
+        { status: 404, body: [], headers: {} }
+
+      router2.get '/', (req) ->
+        bogart.text txt
+
+      cascadeApp.use router1
+      cascadeApp.use router2
+
+      console.log 'root', mockRequest.root()
+
+      res = cascadeApp mockRequest.root()
+
+    it 'should have correct body', (done) ->
+      q.when res, (res) ->
+        expect(res.body.join()).toBe txt
+        done()
+      , (err) =>
+        this.fail err
+        done()
 
 ###
 Create a mock request  
