@@ -440,6 +440,7 @@ describe 'cascade', ->
   res = null
 
   describe 'given router', ->
+    txt = null
 
     beforeEach ->
       cascadeApp = bogart.middleware.cascade (res) ->
@@ -450,6 +451,8 @@ describe 'cascade', ->
       router = bogart.router()
       router.get '/', (req) ->
         bogart.text txt
+
+      cascadeApp.use router
 
       res = cascadeApp mockRequest.root()
 
@@ -462,6 +465,7 @@ describe 'cascade', ->
         done()
 
   describe 'given chained routers', ->
+    txt = null
 
     beforeEach ->
       router1 = bogart.router()
@@ -480,8 +484,6 @@ describe 'cascade', ->
 
       cascadeApp.use router1
       cascadeApp.use router2
-
-      console.log 'root', mockRequest.root()
 
       res = cascadeApp mockRequest.root()
 
