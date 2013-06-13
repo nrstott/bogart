@@ -453,24 +453,3 @@ describe 'chaining route handlers', ->
       expect(hello).toBe 'world'
       done()
 
-describe 'XHR request', ->
-  # TODO: Move to request spec
-  req = null
-
-  beforeEach ->
-    req = bogart.request { headers: { 'x-requested-with': '' } }
-
-  it 'should have correct `isXMLHttpRequest`', ->
-    expect(req.isXMLHttpRequest).toBe true
-
-describe 'non-XHR request', ->
-  # TODO: Move to request spec
-  req = null
-
-  beforeEach ->
-    req = bogart.request { headers: {} }
-
-  it 'should have correct `isXMLHttpRequest`', ->
-    expect(req.isXMLHttpRequest).toBe false
-
-
