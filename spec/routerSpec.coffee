@@ -3,8 +3,6 @@ MockRequest = require './helpers/JsgiRequestHelper'
 Router = (require '../lib/router').Router
 q = require 'q'
 
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 100
-
 describe 'isRouter', ->
 
   it 'given undefined should return false', ->
