@@ -274,7 +274,6 @@ describe 'parted', ->
 
   beforeEach ->
     partedMiddleware = bogart.middleware.parted (req) ->
-      console.log 'req', req.body
       req
   
   describe 'json', ->
