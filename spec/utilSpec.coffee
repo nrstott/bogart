@@ -47,5 +47,38 @@ describe 'security', ->
     it 'should have decrypted original message', ->
       expect(dec).toBe plain
       
-  
+describe 'promisify', ->
+
+  describe 'given success', ->
+    expectedVal = 1
+    res = null
+
+    beforeEach ->
+      asyncFn = (cb) ->
+        process.nextTick ->
+          cb null, expectedVal
+
+      res = bogart.promisify(asyncFn)()
+
+    it 'should have corrected resolution', (done) ->
+      q.when res, (res) ->
+        expect(res).toBe expectedVal
+        done()
+
+  describe 'given rejection', ->
+    res = null
+    expectedRejection = new Error('bad stuff happened')
+
+    beforeEach ->
+      asyncFn = (cb) ->
+        process.nextTick ->
+          cb expectedRejection
+
+      res = bogart.promisify(asyncFn)()
+
+    it 'should have correct rejection', (done) ->
+      q.when(res).fail (err) ->
+        expect(err).toBe expectedRejection
+        done()
+
 
