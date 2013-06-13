@@ -62,7 +62,6 @@ describe 'order of routes matching should be in order defined', ->
 
   it 'should have called first route', (done) ->
     q.when res, (res) ->
-      console.log res
       expect(firstCalled).toBe true
       done()
 
