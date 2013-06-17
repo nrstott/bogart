@@ -83,7 +83,7 @@ describe 'should call notFoundApp', ->
       called = true
       notFoundRes
 
-    router = bogart.router null, notFoundApp
+    router = bogart.router notFoundApp
 
     res = router MockRequest.root()
 
