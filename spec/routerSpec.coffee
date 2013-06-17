@@ -20,8 +20,9 @@ describe 'matches parameter', ->
   beforeEach ->
     req = MockRequest.root()
 
-    router = bogart.router (get) ->
-      get '/hello/:name', (req) ->
+    router = bogart.router()
+
+    router.get '/hello/:name', (req) ->
         name = req.params.name
         bogart.html 'hello'
 
