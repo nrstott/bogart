@@ -1,7 +1,7 @@
 var bogart = require('../../lib/bogart');
 
-var FACEBOOK_APP_ID = "_APP_ID_"
-var FACEBOOK_APP_SECRET = "_SECRET_";
+var FACEBOOK_APP_ID = "ENTER_YOUR_FACEBOOK_APP_ID"
+var FACEBOOK_APP_SECRET = "ENTER_YOUR_FACEBOOK_APP_SECRET";
 
 // Example oauth2 Strategy
 //  would be called like: var fbauth = new bogart.middleware.facebook(facebook_strategy, router);
@@ -38,7 +38,8 @@ var facebook_strategy = {
 
 var facebook_simple = {
 	clientId: FACEBOOK_APP_ID,
-    clientSecret: FACEBOOK_APP_SECRET
+    clientSecret: FACEBOOK_APP_SECRET,
+    host: 'http://localhost:8089'
 }
 
 var router = bogart.router();
@@ -48,13 +49,13 @@ router.get('/profile', function(req) {
 
 var fbauth = new bogart.middleware.facebook(facebook_simple, router);
 
-var frontRouter = bogart.router(null, fbauth);
+var frontRouter = bogart.router(fbauth);
 frontRouter.get('/', function(req) {
     return bogart.html('<a href="/profile">Profile</a> | <a href="/login">Login</a>');
 });
 
 frontRouter.get('/login', function(req) {
-    return bogart.html('<a href="/facebookLogin"><img src="login-with-facebook.png" width="154" height="22"></a>');
+    return bogart.html('<a href="/auth/login?returnUrl=/profile"><img src="login-with-facebook.png" width="154" height="22"></a>');
 });
 
 var app = bogart.middleware.Session(null, frontRouter);
