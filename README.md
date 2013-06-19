@@ -110,6 +110,18 @@ router.get(/hello-(.*)/, function(req) {
 });
 ```
 
+### Custom HTTP Verbs
+
+To handle HTTP Verbs other than `get`, `post`, `put`, and `delete`, the `route` method of 
+`Router` can be invoked.
+
+```javascript
+var router = bogart.router();
+router.route('options', function (req) {
+  // Logic for handling the request goes here.
+});
+```
+
 ## Bogart Application
 
 `bogart.app` makes it easy to setup a middleware chain and start coding. Combined with
