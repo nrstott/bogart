@@ -2,6 +2,31 @@ bogart = require '../lib/bogart'
 q = bogart.q
 mockRequest = require './helpers/JsgiRequestHelper'
 
+describe 'middleware helper', ->
+  testMiddleware = null
+  req = null
+  next = null
+  handler = null
+
+  beforeEach ->
+    handler = jasmine.createSpy()
+    
+    testMiddleware = bogart.middleware handler
+    req = mockRequest.root()
+    next = jasmine.createSpy()
+
+    testMiddleware(next)(req)
+
+  it 'should be a function', ->
+    expect(typeof testMiddleware).toBe 'function'
+
+  it 'should call handler with correct request', ->
+    expect(handler).toHaveBeenCalledWith req, jasmine.any(Function)
+
+  it 'should call handler with correct nextApp', ->
+    expect(handler).toHaveBeenCalledWith jasmine.any(Object), next
+
+
 describe 'parse json', ->
   parseJsonMiddleware = null
   body = null
