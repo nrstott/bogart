@@ -143,7 +143,7 @@ describe 'gzip', ->
   res = null
 
   beforeEach ->
-    headers = { 'content-type': 'text/html' }
+    headers = { 'content-type': 'text/html', 'accept-encoding': 'gzip' }
     jsgiRequest = { method: 'post', env: {}, headers: headers, body: [] }
 
     gzipMiddleware = bogart.middleware.gzip (req) ->
