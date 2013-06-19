@@ -519,6 +519,26 @@ describe 'cascade', ->
         this.fail err
         done()
 
+
+describe 'string return adapter', ->
+  str = null
+  res = null
+
+  beforeEach ->
+    str = 'This is a message'
+    req = mockRequest.root()
+
+    stringReturnAdapterApp = bogart.middleware.stringReturnAdapter ->
+      str
+
+    res = stringReturnAdapterApp req
+
+  it 'should have correct body', (done) ->
+    q.when res, (res) ->
+      expect(res.body).toEqual([ str ])
+      done()
+
+
 ###
 Create a mock request  
 Modified from the mock request method in Parted in compliance with the license.
