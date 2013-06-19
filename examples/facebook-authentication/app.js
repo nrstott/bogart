@@ -1,4 +1,4 @@
-var bogart = require('./bogart');
+var bogart = require('../../lib/bogart');
 
 var FACEBOOK_APP_ID = "_APP_ID_"
 var FACEBOOK_APP_SECRET = "_SECRET_";
