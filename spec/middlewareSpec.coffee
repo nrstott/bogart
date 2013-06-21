@@ -538,6 +538,16 @@ describe 'string return adapter', ->
       expect(res.body).toEqual([ str ])
       done()
 
+describe 'batteries', ->
+
+  describe 'given directory configuration', ->
+
+    beforeEach ->
+      spyOn bogart.middleware, 'directory'
+      bogart.middleware.batteries { directory: 'public' }
+
+    it 'should pass correct configuration to directory middleware', ->
+      expect(bogart.middleware.directory).toHaveBeenCalledWith 'public', jasmine.any(Function)
 
 ###
 Create a mock request  
