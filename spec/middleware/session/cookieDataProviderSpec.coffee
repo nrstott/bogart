@@ -1,5 +1,5 @@
 JsgiRequest = require '../../helpers/JsgiRequestHelper'
-CookieDataProvider = require '../../../lib/session/dataProvider'
+CookieDataProvider = require '../../../lib/session/cookieDataProvider'
 uuid = require 'node-uuid'
 q = require '../../../lib/q'
 
