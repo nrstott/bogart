@@ -34,7 +34,8 @@ router.post('/', function (req) {
 });
 
 var sessionConfig = {
-  lifetime: 600
+  lifetime: 600,
+  encryptionKey: 'ABC1234'
 };
 
 var app = bogart.app();
