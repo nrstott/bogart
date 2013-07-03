@@ -183,7 +183,7 @@ describe 'error middleware given exception', ->
   errorMessage = '__Intentional Error Test__'
 
   beforeEach ->
-    errorMiddleware = bogart.middleware.error (req) ->
+    errorMiddleware = bogart.middleware.error { logError: false }, (req) ->
       throw new Error(errorMessage)
 
     res = errorMiddleware { method: 'get', env: {}, headers: {}, body: [] }
@@ -208,7 +208,7 @@ describe 'error middleware rejected promise given string', ->
   res = null
 
   beforeEach ->
-    errorMiddleware = bogart.middleware.error (req) ->
+    errorMiddleware = bogart.middleware.error { logError: false }, (req) ->
       q.reject rejectionMessage
 
     res = errorMiddleware { body: [], headers: {}, env: {} }
@@ -234,7 +234,7 @@ describe 'error middleware rejected promise given Error', ->
   res = null
 
   beforeEach ->
-    errorMiddleware = bogart.middleware.error (req) ->
+    errorMiddleware = bogart.middleware.error { logError: false }, (req) ->
       q.reject rejectionError
 
     res = errorMiddleware { body: [], headers: {}, env: {} }
