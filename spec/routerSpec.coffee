@@ -3,14 +3,6 @@ MockRequest = require './helpers/JsgiRequestHelper'
 Router = (require '../lib/router').Router
 q = require 'q'
 
-describe 'isRouter', ->
-
-  it 'given undefined should return false', ->
-    expect(Router.isRouter undefined).toBe false
-
-  it 'given null should return false', ->
-    expect(Router.isRouter null).toBe false
-
 describe 'matches parameter', ->
   req = null
   router = null
@@ -28,7 +20,7 @@ describe 'matches parameter', ->
 
     req.pathInfo = '/hello/nathan'
 
-    res = router req
+    res = router() req
 
   it 'should have correct status', (done) ->
     q.when res, (res) ->
@@ -57,7 +49,7 @@ describe 'order of routes matching should be in order defined', ->
       secondCalled = true
       bogart.html 'hello'
 
-    res = router new MockRequest('/hello/nathan')
+    res = router() new MockRequest('/hello/nathan')
 
   it 'should have called first route', (done) ->
     q.when res, (res) ->
@@ -83,9 +75,9 @@ describe 'should call notFoundApp', ->
       called = true
       notFoundRes
 
-    router = bogart.router notFoundApp
+    router = bogart.router()
 
-    res = router MockRequest.root()
+    res = router(notFoundApp) MockRequest.root()
 
   it 'should have correct response', (done) ->
     q.when res, (res) ->
@@ -104,7 +96,7 @@ describe 'default notFoundApp behavior of returning 404', ->
   beforeEach ->
     router = bogart.router()
 
-    res = router MockRequest.root()
+    res = router() MockRequest.root()
 
   it 'should have status of 404', (done) ->
     q.when res, (res) ->
@@ -120,7 +112,7 @@ describe 'partially matched route', ->
     router.get '/partial-match', (req) ->
       { status: 200, body: [ 'hello' ], headers: {} }
 
-    res = router new MockRequest('/partial-match/path')
+    res = router() new MockRequest('/partial-match/path')
 
   it 'should have status of 404', (done) ->
     q.when res, (res) ->
@@ -135,7 +127,7 @@ describe 'partially matched route with parameter', ->
     router.get '/:foo', (req) ->
       return { status: 200, body: [ 'hello' ], headers: {} }
 
-    res = router new MockRequest('/hello/world')
+    res = router() new MockRequest('/hello/world')
 
   it 'should have status of 404', (done) ->
     q.when res, (res) ->
@@ -154,7 +146,7 @@ describe 'route with querystring', ->
     req = new MockRequest('/home')
     req.queryString = 'hello=world'
 
-    res = router req
+    res = router() req
 
   it 'should have correct status', (done) ->
     q.when res, (res) ->
@@ -175,7 +167,7 @@ describe 'regex route', ->
       splat = req.params.splat
       routeRes
 
-    res = router new MockRequest('/hello/cruel/world')
+    res = router() new MockRequest('/hello/cruel/world')
 
   it 'should have correct splat', (done) ->
     q.when res, (res) ->
@@ -199,7 +191,7 @@ describe 'request path with encoded slashes', ->
     router.get '/:foo', (req) ->
       routeRes
 
-    res = router new MockRequest('/foo%2fbar')
+    res = router() new MockRequest('/foo%2fbar')
 
   it 'should have correct response', (done) ->
     q.when res, (res) ->
@@ -220,7 +212,7 @@ describe 'request with a dot (".") as part of the named parameter', ->
       params = req.params
       routeRes
 
-    res = router new MockRequest('/user@example.com/name')
+    res = router() new MockRequest('/user@example.com/name')
 
 
   it 'should have correct :foo param', (done) ->
@@ -249,7 +241,7 @@ describe 'matches empty `pathInfo` to "/" if no route is defined for ""', ->
     router.get '/', ->
       routeRes
 
-    res = router new MockRequest('')
+    res = router() new MockRequest('')
 
   it 'should have correct response', (done) ->
     q.when res, (res) ->
@@ -273,7 +265,7 @@ describe 'matches empty `pathInfo` to "" if a route is defined for ""', ->
     router.get '/', (req) ->
       wrongRouteRes
 
-    res = router new MockRequest('')
+    res = router() new MockRequest('')
 
   it 'should have correct response', (done) ->
     q.when res, (res) ->
@@ -291,7 +283,7 @@ describe 'paths that include spaces', ->
     router.get '/path with spaces', (req) ->
       routeRes
 
-    res = router new MockRequest('/path%20with%20spaces')
+    res = router() new MockRequest('/path%20with%20spaces')
 
   it 'should have correct response', (done) ->
     q.when res, (res) ->
@@ -310,7 +302,7 @@ describe 'literal (".") in path', ->
     router.get '/foo.bar', ->
       routeRes
 
-    res = router new MockRequest('/foo.bar')
+    res = router() new MockRequest('/foo.bar')
 
   it 'should have correct response', (done) ->
     q.when res, (res) ->
@@ -329,7 +321,7 @@ describe '("-") in path', ->
     router.get '/foo/:bar/dash-url', ->
       routeRes
 
-    res = router new MockRequest('/foo/baz/dash-url')
+    res = router() new MockRequest('/foo/baz/dash-url')
 
   it 'should have correct response', (done) ->
     q.when res, (res) ->
@@ -350,7 +342,7 @@ describe 'path with splat ("*")', ->
       params = req.params
       routeRes
 
-    res = router new MockRequest('/foo/hello/there')
+    res = router() new MockRequest('/foo/hello/there')
 
   it 'should have correct splat', (done) ->
     q.when res, (res) ->
@@ -376,7 +368,7 @@ describe 'path with multiple splat parameters', ->
       params = req.params
       routeRes
 
-    res = router new MockRequest('/download/images/ninja-cat.jpg')
+    res = router() new MockRequest('/download/images/ninja-cat.jpg')
 
   it 'should have correct splat', (done) ->
     q.when res, (res) ->
@@ -402,7 +394,7 @@ describe 'mixing splat and named parameters', ->
       params = req.params
       routeRes
 
-    res = router new MockRequest('/foo/bar/baz')
+    res = router() new MockRequest('/foo/bar/baz')
 
   it 'should have correct response', (done) ->
     q.when res, (res) ->
@@ -439,7 +431,7 @@ describe 'chaining route handlers', ->
 
     router.get '/', firstHandler, secondHandler
 
-    res = router MockRequest.root()
+    res = router() MockRequest.root()
 
   it 'should have correct response', (done) ->
     q.when res, (res) ->
