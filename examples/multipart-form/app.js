@@ -23,4 +23,8 @@ router.post('/', function(req) {
   return bogart.text(util.inspect(req.body));
 });
 
-bogart.start(bogart.middleware.Parted(router));
+var app = bogart.app();
+app.use(bogart.middleware.parted);
+app.use(router);
+
+app.start();
