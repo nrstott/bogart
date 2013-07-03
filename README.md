@@ -400,12 +400,6 @@ to `batteries`:
     error -> validateResponse -> directory -> parted -> methodOverride
           -> session -> flash -> bodyAdapter -> stringReturnAdapter -> nextApp
 
-The binary middleware is configured to check the path of the request and if it corresponds to a potential directory in the 'public' directory,
-the request is routed to the `directory` middleware to serve a static file.
-
-#### Binary Split
-Choose between two JSGI appliances based upon the request.
-
 #### Serve Static Files
 The static example demonstrates using bogarts *Directory* middleware to serve an image.
 
