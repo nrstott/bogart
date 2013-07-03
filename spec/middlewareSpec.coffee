@@ -460,66 +460,6 @@ describe 'validate response middleware', ->
         expect(err).toBe 'Response has a status property but the status property must be a number.'
         done()
 
-describe 'cascade', ->
-  res = null
-
-  describe 'given router', ->
-    txt = null
-
-    beforeEach ->
-      cascadeApp = bogart.middleware.cascade (res) ->
-        true
-
-      txt = 'hello world'
-
-      router = bogart.router()
-      router.get '/', (req) ->
-        bogart.text txt
-
-      cascadeApp.use router
-
-      res = cascadeApp mockRequest.root()
-
-    it 'should have correct body', (done) ->
-      q.when res, (res) ->
-        expect(res.body.join()).toBe txt
-        done()
-      , (err) =>
-        this.fail err
-        done()
-
-  describe 'given chained routers', ->
-    txt = null
-
-    beforeEach ->
-      router1 = bogart.router()
-      router2 = bogart.router()
-
-      txt = 'hello world'
-
-      cascadeApp = bogart.middleware.cascade (res) ->
-        res.status != 404
-
-      router1.get '/', (req) ->
-        { status: 404, body: [], headers: {} }
-
-      router2.get '/', (req) ->
-        bogart.text txt
-
-      cascadeApp.use router1
-      cascadeApp.use router2
-
-      res = cascadeApp mockRequest.root()
-
-    it 'should have correct body', (done) ->
-      q.when res, (res) ->
-        expect(res.body.join()).toBe txt
-        done()
-      , (err) =>
-        this.fail err
-        done()
-
-
 describe 'string return adapter', ->
   str = null
   res = null
