@@ -9,4 +9,7 @@ router.get('/', function(req, res) {
   return viewEngine.respond('index.html', { locals: { description: 'This is content' } });
 });
 
-bogart.start(router);
+var app = bogart.app();
+app.use(router);
+
+app.start();
