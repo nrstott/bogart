@@ -5,4 +5,7 @@ router.get('/', function() {
   return bogart.proxy('http://google.com');
 });
 
-bogart.start(router);
+var app = bogart.app();
+app.use(router);
+
+app.start();
