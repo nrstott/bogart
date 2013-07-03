@@ -39,8 +39,8 @@ var sessionConfig = {
 };
 
 var app = bogart.app();
-app.use(bogart.middleware.parted);
-app.use(bogart.middleware.session, sessionConfig);
+app.use(bogart.middleware.parted());
+app.use(bogart.middleware.session(sessionConfig));
 app.use(router);
 
 app.start(1337);
