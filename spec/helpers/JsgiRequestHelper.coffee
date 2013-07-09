@@ -5,6 +5,7 @@ class MockJsgiRequest
     new RootRequest()
 
   constructor: (@pathInfo, @method = 'get', @headers = {}) ->
+    @env = {}
 
 class RootRequest extends MockJsgiRequest
   constructor: (method, headers) ->

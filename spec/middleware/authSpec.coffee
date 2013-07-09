@@ -7,7 +7,28 @@ describe 'auth', ->
   describe 'adding a strategy without a name', ->
     
     it 'should raise error', ->
-      expect(-> auth().addStrategy {}).toThrow(new Error('Strategy does not have required property name'))
+      expect(-> auth().use {}).toThrow(new Error('Strategy does not have required property name'))
+
+  describe 'strategy valid for request', ->
+    middleware = null
+    strategy = null
+
+    beforeEach ->
+      strategy = jasmine.createSpyObj 'strategy', [ 'valid', 'authenticate' ]
+      strategy.name = 'Strategy'
+      strategy.valid.andReturn(true)
+      strategy.authenticate.andReturn({})
+
+      middleware = auth(() -> null)
+      middleware.use(strategy)
+
+      middleware JsgiRequest.root()
+
+    it 'should call valid', ->
+      expect(strategy.valid).toHaveBeenCalled()
+
+    it 'should call authenticate', ->
+      expect(strategy.authenticate).toHaveBeenCalled()
 
 describe 'Strategy', ->
 
@@ -65,5 +86,5 @@ describe 'Strategy', ->
       q.when(simpleStrategy.user).fail (err) ->
         expect(err).toBe(err)
         done()
-    
+
 
