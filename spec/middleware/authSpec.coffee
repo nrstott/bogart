@@ -46,4 +46,24 @@ describe 'Strategy', ->
       q.when simpleStrategy.user, (user) ->
         expect(user).toBe userFromAuthenticate
         done()
-      
+  
+  describe 'rejection', ->
+    simpleStrategy = null
+    err = null
+
+    beforeEach ->
+      err = new Error 'something bad happened'
+
+      SimpleStrategy = auth.Strategy.extend
+        authenticate: ->
+          q.reject err
+
+      simpleStrategy = new SimpleStrategy JsgiRequest.root()
+      simpleStrategy.execute()
+
+    it 'should have correct rejection', (done) ->
+      q.when(simpleStrategy.user).fail (err) ->
+        expect(err).toBe(err)
+        done()
+    
+
