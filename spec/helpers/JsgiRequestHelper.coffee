@@ -6,6 +6,10 @@ class MockJsgiRequest
 
   constructor: (@pathInfo, @method = 'get', @headers = {}) ->
     @env = {}
+    @host = 'whiteboard-it.com'
+    @port = 80
+    @scheme = 'http'
+    @params = {}
 
 class RootRequest extends MockJsgiRequest
   constructor: (method, headers) ->
