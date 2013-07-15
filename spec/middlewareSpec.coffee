@@ -484,7 +484,7 @@ describe 'batteries', ->
 
     beforeEach ->
       spyOn bogart.middleware, 'directory'
-      bogart.middleware.batteries { directory: 'public' }
+      bogart.middleware.batteries({ directory: 'public' })((req) -> {})
 
     it 'should pass correct configuration to directory middleware', ->
       expect(bogart.middleware.directory).toHaveBeenCalledWith 'public', jasmine.any(Function)
