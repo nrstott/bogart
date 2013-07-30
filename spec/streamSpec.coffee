@@ -1,6 +1,7 @@
 bogart = require '../lib/bogart'
 q = bogart.q
 fs = require 'fs'
+Readable = require('stream').Readable
 ForEachStream = require '../lib/forEachStream'
 zlib = require 'zlib'
 
@@ -84,7 +85,12 @@ describe 'pump ForEachStream to file stream', ->
     seed = [ 'Hello', ' ', 'World' ].map (x) ->
       new Buffer x
     fileName = 'forEachableToFileStream.txt'
-    src = new ForEachStream seed
+
+    if Readable && new Readable().wrap
+      src = new Readable().wrap(new ForEachStream(seed))
+    else
+      src = new ForEachStream seed
+
     dest = fs.createWriteStream fileName
 
     ended = bogart.pump src, dest
