@@ -23,17 +23,20 @@ describe 'auth', ->
         firstName: 'Bob',
         lastName: 'Tester'
 
-      strategy = jasmine.createSpyObj 'strategy', [ 'valid', 'authenticate', 'serializeUser' ]
-      strategy.name = 'Strategy'
-      strategy.valid.andReturn(true)
-      strategy.authenticate.andReturn(q.resolve userFromAuthenticate)
-      strategy.serializeUser.andReturn(userFromAuthenticate)
+      strategy =
+        name: 'test-strategy',
+        valid: -> true,
+        authenticate: -> q.resolve userFromAuthenticate,
+        serializeUser: -> userFromAuthenticate
 
-      middleware = auth(() -> null)
-      middleware.use(strategy)
+      spyOn(strategy, 'serializeUser').andCallThrough()
+      spyOn(strategy, 'authenticate').andCallThrough()
+
+      middleware = auth () -> null
+      middleware.use strategy
 
       req = JsgiRequest.root()
-      req.session = jasmine.createSpy('session')
+      req.session = jasmine.createSpy 'session'
 
       res = middleware req
 
@@ -41,7 +44,7 @@ describe 'auth', ->
       expect(strategy.valid).toHaveBeenCalled()
 
     it 'should call authenticate', ->
-      expect(strategy.authenticate).toHaveBeenCalledWith(req)
+      expect(strategy.authenticate).toHaveBeenCalled()
 
     it 'should call serialize user', (done) ->
       q.when res, ->
@@ -193,20 +196,19 @@ describe 'OAuth2 Strategy', ->
 
       tokenResponse = { accessToken: 'access token', refreshToken: 'refresh token' }
 
-      OAuth2Client.getOauthAccessToken = jasmine.createSpy 'get oauth access token'
-      OAuth2Client.getOauthAccessToken.andCallFake (code, opts, cb) ->
-        cb(null, tokenResponse.accessToken, tokenResponse.refreshToken)
-
-      OAuth2Client.getProtectedResource = jasmine.createSpy 'get protected resource'
-      OAuth2Client.getProtectedResource.andCallFake (resourceUrl, accessToken, cb) ->
-        cb null, {}, {}
-
       strategy = new auth.OAuth2Strategy(_.extend({}, validOptions, {
         OAuth2Client: OAuth2Client
       }), req)
 
       spyOn(strategy, 'parseUserProfile').andReturn(userProfile)
+      
       spyOn(strategy, 'verifyUser').andReturn(q.resolve())
+      
+      spyOn(strategy.oauth2, 'getOAuthAccessToken').andCallFake (code, opts, cb) ->
+        cb(null, tokenResponse.accessToken, tokenResponse.refreshToken)
+
+      spyOn(strategy.oauth2, 'getProtectedResource').andCallFake (resourceUrl, accessToken, cb) ->
+        cb null, {}, {}
 
       res = strategy.authenticate()
 
