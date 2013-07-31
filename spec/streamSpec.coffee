@@ -84,12 +84,10 @@ describe 'pump ForEachStream to file stream', ->
   beforeEach ->
     seed = [ 'Hello', ' ', 'World' ].map (x) ->
       new Buffer x
-    fileName = 'forEachableToFileStream.txt'
 
-    if Readable && new Readable().wrap
-      src = new Readable().wrap(new ForEachStream(seed))
-    else
-      src = new ForEachStream seed
+    fileName = 'forEachableToFileStream.txt'
+    
+    src = new ForEachStream seed
 
     dest = fs.createWriteStream fileName
 
