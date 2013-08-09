@@ -1,3 +1,7 @@
+## v0.5.9
+
+* Ignores `examples` directory in npm releases.
+
 ## v0.5.8
 
 * Uses default `directory` middleware configuration if `config` is provided but no 
