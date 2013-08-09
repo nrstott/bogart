@@ -1,3 +1,12 @@
+## v0.5.8
+
+* Uses default `directory` middleware configuration if `config` is provided but no 
+  no value for `directory` is present in call to `bogart.batteries`.
+
+## v0.5.7
+
+* Updates Q dependency to version 0.9.6. This version of Q has many performance enhancements.
+
 ## v0.5.6
 
 * Updates static server example to use `bogart.app`.
