@@ -489,6 +489,15 @@ describe 'batteries', ->
     it 'should pass correct configuration to directory middleware', ->
       expect(bogart.middleware.directory).toHaveBeenCalledWith 'public', jasmine.any(Function)
 
+  describe 'given empty configuration', ->
+
+    beforeEach ->
+      spyOn bogart.middleware, 'directory'
+      bogart.middleware.batteries({})((req) -> {})
+
+    it 'should pass default configuration for `directory`', ->
+      expect(bogart.middleware.directory).toHaveBeenCalledWith 'public', jasmine.any(Function)
+
 ###
 Create a mock request  
 Modified from the mock request method in Parted in compliance with the license.
