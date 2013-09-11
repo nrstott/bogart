@@ -3,6 +3,8 @@ JsgiRequest = require '../helpers/JsgiRequestHelper'
 q = require 'q'
 _ = require 'underscore'
 
+jasmine.getEnv().defaultTimeoutInterval = 100
+
 describe 'auth', ->
 
   describe 'adding a strategy without a name', ->
@@ -26,11 +28,14 @@ describe 'auth', ->
       strategy =
         name: 'test-strategy',
         valid: -> true,
-        authenticate: -> q.resolve userFromAuthenticate,
+        authenticate: ->
+          @user = userFromAuthenticate
+          q.resolve userFromAuthenticate,
         serializeUser: -> userFromAuthenticate
 
       spyOn(strategy, 'serializeUser').andCallThrough()
       spyOn(strategy, 'authenticate').andCallThrough()
+      spyOn(strategy, 'valid').andCallThrough()
 
       middleware = auth () -> null
       middleware.use strategy
@@ -76,6 +81,7 @@ describe 'Strategy', ->
 
   describe 'success', ->
     simpleStrategy = null
+    res = null
     userFromAuthenticate = null
 
     beforeEach ->
@@ -83,19 +89,24 @@ describe 'Strategy', ->
 
       SimpleStrategy = auth.Strategy.extend {
         authenticate: ->
-          userFromAuthenticate
+          @user = userFromAuthenticate
+          @user
       }
 
-      simpleStrategy = new SimpleStrategy(JsgiRequest.root())
-      simpleStrategy.execute()
+      req = JsgiRequest.root()
+      req.session = jasmine.createSpy 'session'
+
+      simpleStrategy = new SimpleStrategy(req)
+      res = simpleStrategy.execute()
 
     it 'should have correct user', (done) ->
-      q.when simpleStrategy.user, (user) ->
-        expect(user).toBe userFromAuthenticate
+      q.when res, ->
+        expect(simpleStrategy.user).toBe userFromAuthenticate
         done()
   
   describe 'rejection', ->
     simpleStrategy = null
+    res = null
     err = null
 
     beforeEach ->
@@ -105,11 +116,14 @@ describe 'Strategy', ->
         authenticate: ->
           q.reject err
 
-      simpleStrategy = new SimpleStrategy JsgiRequest.root()
-      simpleStrategy.execute()
+      req = JsgiRequest.root()
+      req.session = jasmine.createSpy 'session'
+
+      simpleStrategy = new SimpleStrategy req
+      res = simpleStrategy.execute()
 
     it 'should have correct rejection', (done) ->
-      q.when(simpleStrategy.user).fail (err) ->
+      q.when(res).fail (err) ->
         expect(err).toBe(err)
         done()
 
@@ -191,8 +205,10 @@ describe 'OAuth2 Strategy', ->
     beforeEach ->
       req = new JsgiRequest(callbackUrl)
       req.params.code = 'code'
+      req.session = jasmine.createSpy 'session'
 
       OAuth2Client = jasmine.createSpy 'oauth2 client'
+      OAuth2Client.andReturn jasmine.createSpyObj 'oauth2', [ 'getOAuthAccessToken', 'getProtectedResource' ]
 
       tokenResponse = { accessToken: 'access token', refreshToken: 'refresh token' }
 
@@ -202,47 +218,32 @@ describe 'OAuth2 Strategy', ->
 
       spyOn(strategy, 'parseUserProfile').andReturn(userProfile)
       
-      spyOn(strategy, 'verifyUser').andReturn(q.resolve())
+      spyOn(strategy, 'verifyUser').andReturn(userProfile)
       
-      spyOn(strategy.oauth2, 'getOAuthAccessToken').andCallFake (code, opts, cb) ->
+      strategy.oauth2.getOAuthAccessToken.andCallFake (code, opts, cb) ->
         cb(null, tokenResponse.accessToken, tokenResponse.refreshToken)
 
-      spyOn(strategy.oauth2, 'getProtectedResource').andCallFake (resourceUrl, accessToken, cb) ->
+      strategy.oauth2.getProtectedResource.andCallFake (resourceUrl, accessToken, cb) ->
         cb null, {}, {}
 
       res = strategy.authenticate()
 
     it 'should get token', (done) ->
-      q.when res,
-        ->
-          expect(OAuth2Client.getOauthAccessToken)
-            .toHaveBeenCalledWith 'code',
-              {
-                grant_type: 'authorization_code',
-                redirect_uri: 'http://whiteboard-it.com/oauth2/login'
-              }
-              jasmine.any(Function)
-
-          done()
-        (err) =>
-          @fail err
-          done()
+      q.when res, ->
+        expect(strategy.oauth2.getOAuthAccessToken)
+          .toHaveBeenCalledWith 'code', {
+              grant_type: 'authorization_code',
+              redirect_uri: 'http://whiteboard-it.com/oauth2/login'
+            }, jasmine.any(Function)
+        done()
 
     it 'should get protected resource', (done) ->
-      q.when res,
-        ->
-          expect(OAuth2Client.getProtectedResource)
-            .toHaveBeenCalledWith(validOptions.resourceUrl, tokenResponse.accessToken, jasmine.any(Function))
-          done()
-        (err) =>
-          @fail err
-          done()
+      q.when res, ->
+        expect(strategy.oauth2.getProtectedResource)
+          .toHaveBeenCalledWith(validOptions.resourceUrl, tokenResponse.accessToken, jasmine.any(Function))
+        done()
 
     it 'should verify user profile', (done) ->
-      q.when res,
-        ->
-          expect(strategy.verifyUser).toHaveBeenCalledWith(userProfile)
-          done()
-        (err) =>
-          @fail err
-          done()
+      q.when res, ->
+        expect(strategy.verifyUser).toHaveBeenCalledWith(userProfile)
+        done()

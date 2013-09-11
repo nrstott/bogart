@@ -10,11 +10,11 @@ describe 'FacebookStrategy', ->
   }
 
   it 'should construct', ->
-    expect(new FacebookStrategy(JsgiRequest.root(), validOptions)).not.toBeUndefined()
+    expect(new FacebookStrategy(validOptions, JsgiRequest.root())).not.toBeUndefined()
 
   it 'should use verifyUser parameter', ->
     verifyUser = jasmine.createSpy 'verify user'
-    facebookStrategy = new FacebookStrategy(JsgiRequest.root(), validOptions, verifyUser)
+    facebookStrategy = new FacebookStrategy(_.extend(validOptions, { verifyUser: verifyUser }), JsgiRequest.root())
     expect(facebookStrategy.verifyUser).toBe verifyUser
 
   describe 'parseUserProfile', ->
@@ -34,7 +34,7 @@ describe 'FacebookStrategy', ->
         email: 'asdf@whiteboard-it.com'
       }
 
-      profile = new FacebookStrategy(JsgiRequest.root(), validOptions).parseUserProfile(JSON.stringify(body))
+      profile = new FacebookStrategy(validOptions, JsgiRequest.root()).parseUserProfile(JSON.stringify(body))
 
     it 'should have correct displayName', ->
       expect(profile.displayName).toBe body.name
