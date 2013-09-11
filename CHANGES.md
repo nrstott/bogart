@@ -1,3 +1,62 @@
+## v0.5.9
+
+* Ignores `examples` directory in npm releases.
+
+## v0.5.8
+
+* Uses default `directory` middleware configuration if `config` is provided but no 
+  no value for `directory` is present in call to `bogart.batteries`.
+
+## v0.5.7
+
+* Updates Q dependency to version 0.9.6. This version of Q has many performance enhancements.
+
+## v0.5.6
+
+* Updates static server example to use `bogart.app`.
+* Switches Travis configuration to only run tests in node v0.10.x.
+* Updates stream specs for node v0.10.x style streams.
+* Fixes a bug with `bogart.pump` resolving its promise at wrong time.
+
+## v0.5.5
+
+* Falls back to `process.nextTick` when setImmediate is unavailable in `ForEachStream`.
+* Resolves `ResponseBuilder` promise for the response on first call to `send` to support streaming.
+* Add node v0.10.x to Travis configuration.
+
+## v0.5.4
+
+* Changes ForEachStream to use `setImmediate` instead of `process.nextTick`.
+
+## v0.5.3
+
+* Fixes bug preventing passing of options to `bogart.batteries`.
+
+## v0.5.2
+
+* Updates examples to use `bogart.app`.
+* Normalizes the return value of `bogart.router` to match other middleware.
+* Changes `bogart.error` middleware to match middleware conventions.
+* Updates `bogart.session` example to use a custom configuration key.
+* Allows configuration of session's `SessionIdProvider` and `SessionDataProvider`
+  encryption key from the options parameter to `bogart.session`.
+* Removes `bogart.build`.
+* Removes `binary` middleware.
+* Removes `cascade` middleware.
+
+## v0.5.1
+
+* `SessionDataProvider.loadSession` now returns the session.
+
+## v0.5.0
+
+* Changes order of parameters to `bogart.parted` middleware to match middleware conventions.
+* Creates a helper module called `fsp` where node.js `fs` methods are adapted to return promises.
+* General housekeeping on the middleware code base to make it more maintainable.
+* Changes `bogart.middelware` to be a function that makes creating JSGI middleware easier. 
+  All bogart middleware is still attached to the `bogart.middleware` function as properties.
+* Removes the deprecated support for passing a configuration function to `bogart.router`.
+
 ## v0.3.38
 
 * Changed `bogart.response()` to `bogart.res()` to better fit design philosophy and Node conventions.

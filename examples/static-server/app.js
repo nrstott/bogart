@@ -9,4 +9,8 @@ router.get("/", function(req) {
 
 var root = require("path").join(__dirname, "public");
 
-bogart.start(bogart.middleware.Directory(root, router));
+var app = bogart.app();
+app.use(bogart.middleware.directory(root));
+app.use(router);
+
+app.start();

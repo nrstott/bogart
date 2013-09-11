@@ -1,6 +1,7 @@
 bogart = require '../lib/bogart'
 q = bogart.q
 fs = require 'fs'
+Readable = require('stream').Readable
 ForEachStream = require '../lib/forEachStream'
 zlib = require 'zlib'
 
@@ -81,19 +82,16 @@ describe 'pump ForEachStream to file stream', ->
   fileName = null
 
   beforeEach ->
-    endedDeferred = q.defer()
-    ended = endedDeferred.promise
-
     seed = [ 'Hello', ' ', 'World' ].map (x) ->
       new Buffer x
+
     fileName = 'forEachableToFileStream.txt'
+    
     src = new ForEachStream seed
+
     dest = fs.createWriteStream fileName
 
-    bogart.pump src, dest
-
-    src.on 'end', ->
-      endedDeferred.resolve()
+    ended = bogart.pump src, dest
 
   it 'should create file', (done) ->
     q.when ended, ->
