@@ -103,6 +103,24 @@ describe 'default notFoundApp behavior of returning 404', ->
       expect(res.status).toBe 404
       done()
 
+describe 'router.notFound', ->
+  notFoundHandler = null
+  req = null
+  res = null
+
+  beforeEach ->
+    notFoundHandler = jasmine.createSpy 'not found handler'
+
+    router = bogart.router()
+    router.notFound(notFoundHandler)
+
+    req = MockRequest.root()
+    res = router() req
+
+  it 'should have called handler specified by notFound', ->
+    q.when res, ->
+      expect(notFoundHandler).toHaveBeenCalled()
+
 describe 'partially matched route', ->
   res = null
 
