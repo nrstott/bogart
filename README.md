@@ -89,19 +89,21 @@ router.get('/hello/*', function(req, name) {
 ### No Route Found
 
 When no route pattern matches the request, a `next` jsgi application to be called may
-be specified either with the `router.notFound` method or via a parameter to the function
-returned by `bogart.router`. If both techniques are used, then the parameter overrides
-the app specified by the `router.notFound` method.
+be specified either with the `Router#notFound` method or via a parameter to the function
+returned by `bogart:router`. If both techniques are used, then the parameter overrides
+the app specified by the `Router#notFound` method.
 
+_Specified by calling the `Router#notFound` method_
 ```javascript
-// Added via the .notFound method
-var myRouter = bogart.router();
-myRouter.get('/', index);
+var myRouter = bogart.myRouter();
+router.get('/', index);
 myRouter.notFound(function (req) {
   return bogart.html('Not Found', { status: 404 });
 });
+```
 
-// Specified as a parameter to the router
+_Specified as a parameter to the router_
+```javascript
 var myRouter = bogart.router();
 myRouter.get('/', index);
 
