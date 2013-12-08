@@ -218,7 +218,7 @@ router.get('/', function(req) {
 });
 ```
 
-This route yields the following JSGI Response:
+This route yields the following JSGI Response: 
 
 ```
 {
