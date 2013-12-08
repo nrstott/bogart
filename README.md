@@ -205,6 +205,34 @@ This route yields the following JSGI Response:
 }
 ```
 
+### Respond with CORS headers
+
+Helper to send a JSON response with 'Access-Control-Allow-Origin', 'Access-Control-Allow-Methods', and 'Access-Control-Allow-Headers' headers to faciliate Cross-Origin Resource Sharing (CORS).
+
+Sample Route:
+
+```javascript
+var router = bogart.router();
+router.get('/', function(req) {
+  return bogart.cors({ framework: 'Bogart' });
+});
+```
+
+This route yields the following JSGI Response: 
+
+```
+{
+  status: 200,
+  headers: { 
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE',
+    'Access-Control-Allow-Headers': 'x-requested-with,*'
+  },
+  body: [ '{ "framework": "Bogart" }' ]
+}
+```
+
 ### Redirect
 
 Helper to create an HTTP 302 Temporary Redirect response.
