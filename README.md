@@ -89,19 +89,21 @@ router.get('/hello/*', function(req, name) {
 ### No Route Found
 
 When no route pattern matches the request, a `next` jsgi application to be called may
-be specified either with the `router.notFound` method or via a parameter to the function
-returned by `bogart.router`. If both techniques are used, then the parameter overrides
-the app specified by the `router.notFound` method.
+be specified either with the `Router#notFound` method or via a parameter to the function
+returned by `bogart:router`. If both techniques are used, then the parameter overrides
+the app specified by the `Router#notFound` method.
 
+_Specified by calling the `Router#notFound` method_
 ```javascript
-// Added via the .notFound method
-var myRouter = bogart.router();
-myRouter.get('/', index);
+var myRouter = bogart.myRouter();
+router.get('/', index);
 myRouter.notFound(function (req) {
   return bogart.html('Not Found', { status: 404 });
 });
+```
 
-// Specified as a parameter to the router
+_Specified as a parameter to the router_
+```javascript
 var myRouter = bogart.router();
 myRouter.get('/', index);
 
@@ -199,6 +201,34 @@ This route yields the following JSGI Response:
 {
   status: 200,
   headers: { 'Content-Type': 'application/json' },
+  body: [ '{ "framework": "Bogart" }' ]
+}
+```
+
+### Respond with CORS headers
+
+Helper to send a JSON response with 'Access-Control-Allow-Origin', 'Access-Control-Allow-Methods', and 'Access-Control-Allow-Headers' headers to faciliate Cross-Origin Resource Sharing (CORS).
+
+Sample Route:
+
+```javascript
+var router = bogart.router();
+router.get('/', function(req) {
+  return bogart.cors({ framework: 'Bogart' });
+});
+```
+
+This route yields the following JSGI Response: 
+
+```
+{
+  status: 200,
+  headers: { 
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET,PUT,POST,DELETE',
+    'Access-Control-Allow-Headers': 'x-requested-with,*'
+  },
   body: [ '{ "framework": "Bogart" }' ]
 }
 ```
