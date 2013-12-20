@@ -1,41 +1,49 @@
 {
-    "name": "bogart",
-    "description": "Fast JSGI web framework taking inspiration from Sinatra",
-    "version": "0.5.12",
-    "keywords": ["bogart", "framework", "sinatra", "REST"],
-    "author": "Nathan Stott <nrstott@gmail.com>",
-    "email": "nathan.stott@whiteboard-it.com",
-    "homepage": "https://github.com/nrstott/bogart",
-    "main": "./lib/bogart",
-    "directories": { "lib": "./lib" },
-    "repository": {
-      "type": "git",
-      "url": "https://github.com/nrstott/bogart"
-    },
-    "bugs": {
-      "url": "https://github.com/nrstott/bogart/issues",
-      "email": "nrstott@gmail.com"
-    },
-    "dependencies": {
-      "q": "0.9.6",
-    	"jsgi": ">=v0.2.2",
-    	"mustache": "0.7.2",
-      "underscore": ">=1.4.4",
-      "node-uuid": ">=1.2.0",
-      "parted": "=0.0.8",
-      "oauth": "=0.9.5",
-      "request": "=2.2.9",
-      "commander": "*",
-      "mkdirp": "*",
-      "async": "0.1.22", 
-      "sinon": "1.5.2"
-    },
-    "devDependencies": {
-      "haml": ">=0.4.2",
-      "jade": ">=0.15.4",
-      "jasmine-node": ">=1.4.0"
-    },
-    "scripts": {
-      "test": "jasmine-node --coffee spec/"
-    }
+  "name": "bogart",
+  "description": "Fast JSGI web framework taking inspiration from Sinatra",
+  "version": "0.5.12",
+  "keywords": [
+    "bogart",
+    "framework",
+    "sinatra",
+    "REST"
+  ],
+  "author": "Nathan Stott <nrstott@gmail.com>",
+  "email": "nathan.stott@whiteboard-it.com",
+  "homepage": "https://github.com/nrstott/bogart",
+  "main": "./lib/bogart",
+  "directories": {
+    "lib": "./lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nrstott/bogart"
+  },
+  "bugs": {
+    "url": "https://github.com/nrstott/bogart/issues",
+    "email": "nrstott@gmail.com"
+  },
+  "dependencies": {
+    "q": "0.9.6",
+    "jsgi": ">=v0.2.2",
+    "mustache": "0.7.2",
+    "underscore": ">=1.4.4",
+    "node-uuid": ">=1.2.0",
+    "parted": "=0.0.8",
+    "oauth": "=0.9.5",
+    "request": "=2.2.9",
+    "commander": "*",
+    "mkdirp": "*",
+    "async": "0.1.22",
+    "sinon": "1.5.2",
+    "form-warden": "~2.0.4"
+  },
+  "devDependencies": {
+    "haml": ">=0.4.2",
+    "jade": ">=0.15.4",
+    "jasmine-node": ">=1.4.0"
+  },
+  "scripts": {
+    "test": "jasmine-node --coffee spec/"
+  }
 }
