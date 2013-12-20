@@ -64,7 +64,7 @@ describe 'Form', ->
     it 'should add formswarden_script to locals', (done) ->
       res
         .then ->
-          expect(afterRender.mostRecentCall.args[1].locals.formswardenScript).not.toBeUndefined()
+          expect(afterRender.mostRecentCall.args[1].locals.formwardenScript).not.toBeUndefined()
         .fail (err) =>
           @fail(err)
         .fin done
