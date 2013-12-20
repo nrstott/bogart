@@ -36,7 +36,6 @@
     "mkdirp": "*",
     "async": "0.1.22",
     "sinon": "1.5.2",
-    "form-warden": "~2.0.4"
   },
   "devDependencies": {
     "haml": ">=0.4.2",
