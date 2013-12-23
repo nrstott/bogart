@@ -438,12 +438,6 @@ to hold other templates to avoid duplication of content.
 
 Visit the application in a web browser at [http://localhost:8080/](http://localhost:8080)
 
-### Jade
-
-If you would like to use Jade instead of Mustache, please `npm install bogart-jade`. Then in
-your application add `require('bogart-jade')` and the Jade ViewEngine will be available via
-`bogart.viewEngine('jade')`. See [the github repository](https://github.com/nrstott/bogart-jade) for more information.
-
 ## Middleware
 Bogart comes with a variety of JSGI middleware appliances. The `batteries` appliance includes a recommended JSGI application chain for
 normal usage.
