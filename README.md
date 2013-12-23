@@ -176,6 +176,22 @@ app.use(router);
 app.start();
 ```
 
+## View Engine
+
+The Bogart view engine is a tempalting language agnostic tool to resolve and render
+templates. Bogart comes with a `mustache` renderer included. Other renderers can
+be added via the plugin infrastructure. 
+
+Example:
+
+    var viewEngine = bogart.viewEngine('mustache');
+
+    // Render `views/index.html` with values `{ name: 'Nathan Stott' }`
+    viewEngine.render('index.html', { locals: { name: 'Nathan Stott' } });
+
+More information can be found in
+[docs/view-engine.md](docs/view-engine.md).
+
 ## Response Helpers
 
 Bogart includes helpers for creating JSGI Responses. The helpers, by convention, take a final
