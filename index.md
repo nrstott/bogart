@@ -28,14 +28,16 @@ Great, now lets install bogart.
 The `--save` flag tells npm to add the dependency to your `package.json`. Open
 `package.json` again and if everything worked, it should now look like this:
 
-    {
-      "name": "hello-bogart",
-      "private": true,
-      "version": 0.1.0,
-      "dependencies": {
-        "bogart": "1.x"
-      }
-    }
+{% highlight javascript %}
+{
+  "name": "hello-bogart",
+  "private": true,
+  "version": 0.1.0,
+  "dependencies": {
+    "bogart": "1.x"
+  }
+}
+{% endhighlight %}
 
 Also, a new directory, `node_modules`, was created by npm in your `hello-bogart` directory.
 The `node_modules` directory holds localized copies of dependencies declared in the 
@@ -55,13 +57,15 @@ var router = bogart.router();
 With an instance of `Router`, you can now add routes using the `get`, `post`, `put`,
 and `del` methods.
 
-    router.get('/', function (req) {
-      return {
-        status: 200,
-        headers: { 'content-type': 'text/plain' },
-        body: 'Hello World'
-      };
-    });
+{% highlight javascript %}
+router.get('/', function (req) {
+  return {
+    status: 200,
+    headers: { 'content-type': 'text/plain' },
+    body: 'Hello World'
+  };
+});
+{% endhighlight %}
 
 This adds a route handler responding to GET "/". The result of the route is specified
 declaratively as a JSON object containing three properties: `status`, `headers`, and `body`.
@@ -101,9 +105,11 @@ performance penalty if you do not access them.
 
 Next, create and start the bogart app.
 
-    var app = bogart.app();
-    app.use(router); // Add router to the app
-    app.start();
+{% highlight javascript %}
+var app = bogart.app();
+app.use(router); // Add router to the app
+app.start();
+{% endhighlight %}
 
 Note the `app.use(router)` call adds the router to the App chain. You can have
 as many routers as you want to isolate routes in a logical manner. `app.use` also
@@ -112,16 +118,18 @@ allows you to add middelware.
 Bogart middleware is in the form of a function that takes the next step in the chain and
 returns a function that takes a request and returns a response.
 
-    function LogRequest(next) {
-      return function (req) {
-        console.log('Request', req);
+{% highlight javascript %}
+function LogRequest(next) {
+  return function (req) {
+    console.log('Request', req);
 
-        return next(req).then(function (res) {
-          console.log('Response', res);
-          return res;
-        });
-      };
-    }
+    return next(req).then(function (res) {
+      console.log('Response', res);
+      return res;
+    });
+  };
+}
+{% endhighlight %}
 
 First things first, Bogart embraces [Promises](http://howtonode.org/promises) as a
 control-flow mechanism. The LogRequest middleware expects that what is returned from
@@ -131,11 +139,13 @@ is returned from a route, Bogart will wrap it in a Promise.
 So where does this `next` parameter come from? Don\'t worry about it! Bogart figures it out.
 Let's alter the previous code sample where we created the app and added the router to it.
 
+{% highlight javascript %}
     var app = bogart.app();
     app.use(LogRequest)
     app.use(router);
 
     app.start();
+{% endhighlight %}
 
 Now run the server using `node app.js`. When you view it on `localhost:8080`, you should see messages
 in your terminal each time you refresh the page showing you the request and response objects.
@@ -146,14 +156,16 @@ them in the order you want them to execute.
 Also, bogart provides a middleware helper to make writing middleware a little nicer. Rewriting
 LogRequest using the helper looks like this:
 
-    var LogRequest = bogart.middleware(function (req, next) {
-      console.log('Request', req);
+{% highlight javascript %}
+var LogRequest = bogart.middleware(function (req, next) {
+  console.log('Request', req);
 
-      return next(req).then(function (res) {
-        console.log('Resoponse', res);
-        return res;
-      });
-    });
+  return next(req).then(function (res) {
+    console.log('Resoponse', res);
+    return res;
+  });
+});
+{% endhighlight %}
 
 Note that the `next` parameter is optional. If you ignore it, you're just writing an end-point
 that will ignore anything after it in the middleware chain. Simply not calling `next` is a way
@@ -162,13 +174,15 @@ of ending the chain.
 What if I don't want *every* request to be logged? Bogart lets you target middleware to specific
 routes.
 
-    router.get('/', LogRequest, function (req) {
-      return {
-        status: 200,
-        headers: { 'content-type': 'text/plain' },
-        body: 'Hello World'
-      };      
-    });
+{% highlight javascript %}
+router.get('/', LogRequest, function (req) {
+  return {
+    status: 200,
+    headers: { 'content-type': 'text/plain' },
+    body: 'Hello World'
+  };      
+});
+{% endhighlight %}
 
 You can provide as many middleware functions as you want to the router verb methods.
 
@@ -184,36 +198,42 @@ So how do we use the view engine?
 
 Add the following in app.js:
 
-    var viewEngine = bogart.viewEngine('mustache');
+{% highlight javascript %}
+var viewEngine = bogart.viewEngine('mustache');
 
-    router.get('/mustache-rocks', function (req) {
-      var body = viewEngine.render('mustache-rocks.html', {
-        locals: {
-          title: 'Hello View Engine'
-        }
-      });
+router.get('/mustache-rocks', function (req) {
+  var body = viewEngine.render('mustache-rocks.html', {
+    locals: {
+      title: 'Hello View Engine'
+    }
+  });
 
-      return {
-        status: 200,
-        headers: { 'content-type': 'text/html' },
-        body: body
-      };
-    });
+  return {
+    status: 200,
+    headers: { 'content-type': 'text/html' },
+    body: body
+  };
+});
+{% endhighlight %}
 
 Create a `views/mustache-rocks.html` file:
 
-    <h1>Mustache Rocks!</h1>
-    <p>{{title}}</p>
+{% highlight html %}
+<h1>Mustache Rocks!</h1>
+<p>{{title}}</p>
+{% endhighlight %}
 
 Create a `views/layout.html` file:
 
-    <html>
-    <head>
-      <title>{% raw %}{{title}}{% endraw %}</title>
-    </head>
-    <body>
-      {% raw %}{{{body}}}{% endraw %}
-    </body>
+{% highlight html %}
+<html>
+<head>
+  <title>{% raw %}{{title}}{% endraw %}</title>
+</head>
+<body>
+  {% raw %}{{{body}}}{% endraw %}
+</body>
+{% endhighlight %}
 
 What have we here? The `layout.html` file contains markup that is to be reused
 for many pages. The `title` variable is provided from the `locals` property in the call
