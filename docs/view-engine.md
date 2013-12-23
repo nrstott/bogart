@@ -1,45 +1,75 @@
 # View Engine
 
-The Bogart `ViewEngine` renders view.  It handles partials and layouts as well.
-The `ViewEngine` ships with support for [Mustache](http://mustache.github.com/), 
-[Jade](http://jade-lang.com/), and [Haml](http://haml-lang.com/).
+The Bogart `ViewEngine` is responsible for rendering templates.
+It supports partials and layouts. The `ViewEngine` comes with
+support for [Mustache](http://mustache.github.com/). It provides
+plugin capability to support other templating engines.
 
-## view.viewEngine(engine)
+## bogart.viewEngine(engine, [viewRoot], [options])
 
-Creates a `view.ViewEngine`.
+* engine `String`  The name of the rendering engine. Defaults to `mustache`.
+* viewRoot `String`  Root directory used to resolve templates. Defaults to `public`.
+* options `ViewEngineOptions`
 
-## ViewEngine.render(template, [options])
+## viewEngine.render(template, [options])
+
+* template `String`  Path to the template. Relative paths are resolved
+                     from the root provied to bogart.viewEngine. Defaults
+                     to `public`.
 
 The `render` method uses the selected templating engine to render the specified view
-with options specified in the options `locals` object.
+with variables from RenderOptions#locals.
 
 Rendering a view with mustache and replacement variables:
 
     var viewEngine = bogart.viewEngine('mustache');
     viewEngine.render('index.html', { locals: { title: 'Hello Mustache' } });
 
-## ViewEngine.respond(template, [options])
+## viewEngine.respond(template, [options])
 
-The `respond` method returns a promise for a JSGI response that will render the 
-specified view.
+* template `String` Template to render.
+* options `ViewEngineOptions` See class `ViewEngineOptions`.
+
+Returns a promise for a `bogart.Response`.
 
     var viewEngine = bogart.viewEngine('mustache');
-    viewEngine.respond('index.html', { locals: { title: 'Hello Mustache' } });
+    var res = viewEngine.respond('index.html', { locals: { title: 'Hello Mustache' } });
 
-## view.RenderOptions
+Response would look like this:
 
-Options passed to `viewEngine.render` and `viewEngine.respond` should quack like view.RenderOptions.
+    {
+      status: 200,
+      headers: {
+        'content-type': 'text/html'
+      },
+      body: [ 'the contents rendered from index.html would be here' ]
+    }
 
-* opts.layout  The name of the layout or a boolean. If `true` then the name is defaulted to 'layout.html'. If `false` then no layout should be used.
-* opts.locals  Context in which to render the template. This should contain the replacement values of variables in your templates.
+## Class: ViewEngineOptions
+
+* viewEngineOptions.cache `Boolean`  Determines whether views are cached or reloaded
+                                     from disk when rendered.
+
+Options for constructing a `ViewEngine`.
+
+## Class: RenderOptions
+
+* renderOptions.layout `Boolean|String`  Defaults to `layout.html`. A `String` value indicates
+                                         the layout template to resolve using normal template
+                                         resolution. A value of `false` indicates that no layout
+                                         should be used. A value of `true` indicates that
+                                         the default of `layout.html` should be used.
+* renderOptions.locals `Object|Array`  Value(s) to be passed to the rendering engine.
 
 ## Layouts
 
-Layouts are supported.  By default, if there is a file named 'layout.{ext}' where
+Layouts help templates that are applicable to multiople pages.  
+By default, if there is a file named 'layout.{ext}' where
 `ext` is the extension of the view (haml, jade, mustache, html, etc...) then this file
-is used as the layout for the view.  The layout is expected to render a variable named
-`body`.  The `body` variable will contain the contents of view being rendered into the
-layout.  The `body` variable should not be HTML escaped.
+is used as the layout for the view.  The layout is given a variable named
+`body` that contains the contents of view. 
+The `body` variable should not be HTML escaped. In Mustache, this means using 
+triple mustache form: `{{{body}}}`.
 
 Specifying the file extension of a template is optional as long as the file extension
 matches the default file extension associated with the template type.  For example, if
@@ -47,13 +77,12 @@ using Jade then `viewEngine.render('index')` is equivalent to `viewEngine.render
 
 ### Mustache Example
 
-Mustache is the default template engine of Bogart.
-
 View (index.html):
 
     Welcome {{firstName}}!
 
 Layout (layout.html):
+
     <html>
       <head>
         <title>{{title}}</title>
@@ -77,40 +106,9 @@ App (app.js):
       });
     });
 
-    bogart.start(router);
-
-Execute `node app.js` and visit [http://localhost:8080/hello/bogart](http://localhost:8080/hello/bogart).
-
-### Jade Example
-
-Make sure to install bogart-jade from npm before running these examples.
-
-View (index.jade):
-
-    Welcome #{firstName}!
-
-Layout (layout.jade):
-
-    html
-      head
-        title #{title}
-      body
-        h1 #{title}
-        !{body}
-
-App (app.js):
-
-    var bogart = require('bogart');
-    var viewEngine = bogart.viewEngine('jade');
-    var router = bogart.router();
-    
-    router.get('/hello/:firstName', function(req) {
-      return viewEngine.respond('index', {
-        locals: { title: 'Hello', firstName: req.params.firstName }
-      });
-    });
-
-    bogart.start(router);
+    var app = bogart.app();
+    app.use(router);
+    app.start();
 
 Execute `node app.js` and visit [http://localhost:8080/hello/bogart](http://localhost:8080/hello/bogart).
 
