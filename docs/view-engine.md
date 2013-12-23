@@ -8,14 +8,14 @@ plugin capability to support other templating engines.
 ## bogart.viewEngine(engine, [viewRoot], [options])
 
 * engine `String`  The name of the rendering engine. Defaults to `mustache`.
-* viewRoot `String`  Root directory used to resolve templates. Defaults to `public`.
+* viewRoot `String`  Root directory used to resolve templates. Defaults to `views`.
 * options `ViewEngineOptions`
 
 ## viewEngine.render(template, [options])
 
 * template `String`  Path to the template. Relative paths are resolved
                      from the root provied to bogart.viewEngine. Defaults
-                     to `public`.
+                     to `views`.
 
 The `render` method uses the selected templating engine to render the specified view
 with variables from RenderOptions#locals.
