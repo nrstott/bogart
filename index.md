@@ -46,9 +46,11 @@ You can verify that Bogart was installed as a package by executing `npm ls`.
 
 Now, create an `app.js` file.
 
-    var bogart = require('bogart');
+{% highlight javascript %}
+var bogart = require('bogart');
 
-    var router = bogart.router();
+var router = bogart.router();
+{% endhighlight %}
 
 With an instance of `Router`, you can now add routes using the `get`, `post`, `put`,
 and `del` methods.
