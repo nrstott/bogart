@@ -18,7 +18,7 @@ Create a `package.json` file in your `hello-bogart` directory.
     {
       "name": "hello-bogart",
       "private": true,
-      "version": 0.1.0
+      "version": "0.1.0"
     }
 
 Great, now lets install bogart.
