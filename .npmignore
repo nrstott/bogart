@@ -4,3 +4,5 @@ npm-debug.log
 hello-world.dat
 hello-world.txt
 examples/
+*.lock
+_site/
