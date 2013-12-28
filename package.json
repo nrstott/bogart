@@ -27,7 +27,6 @@
       "request": "=2.2.9",
       "commander": "*",
       "mkdirp": "*",
-      "async": "0.1.22", 
       "sinon": "1.5.2"
     },
     "devDependencies": {
