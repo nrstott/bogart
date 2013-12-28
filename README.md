@@ -77,7 +77,9 @@ router.get('/hello/:name', function(req) {
 ```
 
 Route patterns support wildcards. Wildcards will match anything whereas regular named parameters
-will not match beyond a path separator ("/").
+will not match beyond a path separator ("/"). Multiple wildcards may be used in a route pattern.
+The values for the wildcard matches are placed in an `Array` available from
+the request params at `req.params.splat`.
 
 ```javascript
 var router = bogart.router();
@@ -85,6 +87,9 @@ router.get('/hello/*', function(req) {
     return bogart.html('Hello '+req.params.splat[0]);
 });
 ```
+
+In the above example, everything after `/hello/` will be in req.params.splat[0].
+A request to `/hello/how/are/you` would have a `splat` of `[ 'how/are/you' ]`.
 
 ### Regex Routes
 
