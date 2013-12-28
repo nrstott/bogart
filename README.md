@@ -81,8 +81,32 @@ will not match beyond a path separator ("/").
 
 ```javascript
 var router = bogart.router();
-router.get('/hello/*', function(req, name) {
+router.get('/hello/*', function(req) {
     return bogart.html('Hello '+req.params.splat[0]);
+});
+```
+
+### Regex Routes
+
+When a route pattern is not powerful enough, regular expressions may be used to specify which
+URLs are to be matched.
+
+```javascript
+var router = bogart.router();
+router.get(/\/posts?/, function(req) {
+  // Matches 'post' or 'posts'
+  return bogart.html('Regex Route');
+});
+```
+
+Parameters are via regular expression groups in regular expression routes.  The parameter values
+are put in an `Array` in `req.params.splat` of the `req` object passed to the route handler.
+
+```javascript
+var router = bogart.router();
+router.get(/hello-(.*)/, function(req) {
+  var name = req.params.splat[0];
+  return bogart.html('Hello '+name);
 });
 ```
 
@@ -114,30 +138,6 @@ app.use(myRouter(function (req) {
     body: [ 'Not Found' ]
   };
 }))
-```
-
-### Regex Routes
-
-When a route pattern is not powerful enough, regular expressions may be used to specify which
-URLs are to be matched.
-
-```javascript
-var router = bogart.router();
-router.get(/\/posts?/, function(req) {
-  // Matches 'post' or 'posts'
-  return bogart.html('Regex Route');
-});
-```
-
-Parameters are via regular expression groups in regular expression routes.  The parameter values
-are put in an `Array` in `req.params.splat` of the `req` object passed to the route handler.
-
-```javascript
-var router = bogart.router();
-router.get(/hello-(.*)/, function(req) {
-  var name = req.params.splat[0];
-  return bogart.html('Hello '+name);
-});
 ```
 
 ### Custom HTTP Verbs
