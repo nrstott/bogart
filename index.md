@@ -34,7 +34,7 @@ The `--save` flag tells npm to add the dependency to your `package.json`. Open
   "private": true,
   "version": 0.1.0,
   "dependencies": {
-    "bogart": "1.x"
+    "bogart": "~0.5.14"
   }
 }
 {% endhighlight %}
