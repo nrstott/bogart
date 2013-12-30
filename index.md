@@ -89,9 +89,6 @@ about the request for the route.
 * routeParams: An object containing the named route parameters.
 * params: Combines the route parameters, form parameters, and query string parameters. Precendence for conflicting
           names is resolved in the following order: route parameters -> form parameters -> query string parameters.
-
-The request also contains information about the parsed URL:
-
 * hostname: Host part of the URL ex: whiteboard-it.com
 * hostName: alias of hostname for those who prefer camel case to being consistent with location object.
 * host: Hostname and Port portion of the URL ex: whiteboard-it.com:8080
