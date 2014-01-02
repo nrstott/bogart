@@ -16,12 +16,27 @@ describe 'bogart app', ->
 
     describe 'instantiating middleware', ->
       app = null
-      middleware = (config, next) ->
+      middleware1ConfigVal = null
+      middleware1NextVal = null
+      middleware2NextVal = null
+
+      middleware1 = (config, next) ->
+        middleware1ConfigVal = config
+        middleware1NextVal = next
+        (req) ->
+          next()
+
+      middleware2 = (next) ->
+        middleware2NextVal = next
+        middleware2Responder
+
+      middleware2Responder = (req) ->
         bogart.html 'hello world'
 
       beforeEach ->
         app = bogart.app()
-        app.use middleware
+        app.use middleware1
+        app.use middleware2
 
         app.injector.value('config', {
           foo: 'bar'
@@ -40,8 +55,17 @@ describe 'bogart app', ->
       it 'should create `nextApp` factory', ->
         expect(app.injector.factory).toHaveBeenCalledWith('nextApp', jasmine.any(Function))
 
-      it 'should invoke middleware', ->
-        expect(app.injector.invoke).toHaveBeenCalledWith(middleware)
+      it 'should invoke middleware1', ->
+        expect(app.injector.invoke).toHaveBeenCalledWith(middleware1 )
+
+      it 'should have passed correct config', ->
+        expect(middleware1ConfigVal).toEqual({ foo: 'bar' })
+
+      it 'should have passed correct next', ->
+        expect(middleware1NextVal).toBe(middleware2Responder)
+
+      it 'should have passed correct next to middlware2', ->
+        expect(middleware2NextVal).toBeUndefined()
 
   describe 'given a router with no parameters', ->
 
