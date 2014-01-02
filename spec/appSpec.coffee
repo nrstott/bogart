@@ -6,6 +6,43 @@ describe 'bogart app', ->
   beforeEach ->
     app = bogart.app()
 
+  describe 'injector', ->
+    it 'should be defined', ->
+      expect(app.injector).not.toBe(undefined)
+
+    it 'should let me pass an injector', ->
+      injector = jasmine.createSpy('Injector')
+      expect(bogart.app(injector).injector).toBe(injector)
+
+    describe 'instantiating middleware', ->
+      app = null
+      middleware = (config, next) ->
+        bogart.html 'hello world'
+
+      beforeEach ->
+        app = bogart.app()
+        app.use middleware
+
+        app.injector.value('config', {
+          foo: 'bar'
+        });
+
+        spyOn(app.injector, 'factory').andCallThrough()
+        spyOn(app.injector, 'invoke').andCallThrough()
+
+        spyOn(bogart, 'start')
+
+        app.start()
+
+      it 'should create `next` factory', ->
+        expect(app.injector.factory).toHaveBeenCalledWith('next', jasmine.any(Function))
+
+      it 'should create `nextApp` factory', ->
+        expect(app.injector.factory).toHaveBeenCalledWith('nextApp', jasmine.any(Function))
+
+      it 'should invoke middleware', ->
+        expect(app.injector.invoke).toHaveBeenCalledWith(middleware)
+
   describe 'given a router with no parameters', ->
 
     it 'should not be started', ->
