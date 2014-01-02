@@ -158,7 +158,7 @@ var LogRequest = bogart.middleware(function (req, next) {
   console.log('Request', req);
 
   return next(req).then(function (res) {
-    console.log('Resoponse', res);
+    console.log('Response', res);
     return res;
   });
 });
