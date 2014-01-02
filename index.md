@@ -164,7 +164,7 @@ var LogRequest = bogart.middleware(function (req, next) {
 });
 {% endhighlight %}
 
-Note that the `next` parameter is optional. If you ignore it, you're just writing an end-point
+Note that the `next` parameter is optional. If you ignore it, you\'re just writing an end-point
 that will ignore anything after it in the middleware chain. Simply not calling `next` is a way
 of ending the chain.
 
