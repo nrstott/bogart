@@ -128,15 +128,27 @@ describe 'bogart app', ->
     app = null
 
     beforeEach ->
-      router = jasmine.createSpyObj 'Router', [ 'get', 'put', 'post', 'del' ]
+      router = jasmine.createSpy 'Router'
+      [ 'get', 'put', 'post', 'del' ].forEach (method) ->
+        router[method] = jasmine.createSpy 'Router#'+method
+      
       spyOn(bogart, 'router').andReturn router
 
       app = bogart.app()
+      spyOn(app, 'use').andCallThrough()
 
     METHODS.forEach (method) ->
       it "should have correct App\##{method}", ->
         app[method]('/', bogart.noop())
         expect(router[method]).toHaveBeenCalled()
+
+    it 'should app.use router', ->
+      app._usedImplicitRouter = true
+
+      spyOn(bogart, 'start')
+
+      app.start();
+      expect(app.use).toHaveBeenCalledWith(router)
 
   describe 'starting the app', ->
     server = {}
