@@ -16,6 +16,44 @@ describe 'Router', ->
   it 'should have `emit` method', ->
     expect(router.emit).toBeFunction()
 
+describe 'invokes route callbacks with injector', ->
+  router = null
+  injector = null
+  childInjector = null
+  routeCallback = null
+  res = null
+
+  beforeEach ->
+    childInjector = jasmine.createSpyObj 'Child Injector', [ 'value', 'invoke' ]
+
+    injector = jasmine.createSpyObj 'Injector', [ 'createChild' ]
+    injector.createChild.andReturn childInjector
+
+    router = bogart.router injector
+
+    routeCallback = (req) ->
+      bogart.html 'hello world'
+
+    router.get '/', routeCallback
+
+    res = router()(MockRequest.root())
+
+  it 'should create child injector', (done) ->
+    res
+      .then ->
+        expect(injector.createChild).toHaveBeenCalled()
+      .fail (err) =>
+        @fail err
+      .fin done
+
+  it 'should call child injector invoke', (done) ->
+    res
+      .then ->
+        expect(childInjector.invoke).toHaveBeenCalledWith(routeCallback)
+      .fail (err) =>
+        @fail err
+      .fin done
+
 describe 'matches parameter', ->
   req = null
   router = null
