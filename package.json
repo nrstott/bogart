@@ -40,7 +40,8 @@
   "devDependencies": {
     "haml": ">=0.4.2",
     "jade": ">=0.15.4",
-    "jasmine-node": ">=1.4.0"
+    "jasmine-node": ">=1.4.0",
+    "jasmine-expect": "~1.21.0"
   },
   "scripts": {
     "test": "jasmine-node --coffee spec/"

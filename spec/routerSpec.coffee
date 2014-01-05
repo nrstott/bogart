@@ -1,7 +1,20 @@
+require('jasmine-expect')
 bogart = require '../lib/bogart'
 MockRequest = require './helpers/JsgiRequestHelper'
 Router = (require '../lib/router').Router
 q = require 'q'
+
+describe 'Router', ->
+  router = null
+
+  beforeEach ->
+    router = bogart.router()
+
+  it 'should have `on` method', ->
+    expect(router.on).toBeFunction()
+
+  it 'should have `emit` method', ->
+    expect(router.emit).toBeFunction()
 
 describe 'matches parameter', ->
   req = null
