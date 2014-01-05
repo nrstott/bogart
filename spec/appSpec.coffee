@@ -95,6 +95,49 @@ describe 'bogart app', ->
       it 'should raise afterAddMiddleware with correct middleware parameter', ->
         expect(middlewareParam).toBe(router)
 
+  describe 'App#router', ->
+    injector = null
+    app = null
+    router = null
+    childInjector = null
+
+    beforeEach ->
+      childInjector = jasmine.createSpyObj 'Child Injector', [ 'value', 'invoke' ]
+
+      injector = jasmine.createSpyObj 'Injector', [ 'createChild' ]
+      injector.createChild.andReturn childInjector
+
+      app = bogart.app(injector)
+
+      spyOn(app, 'use')
+
+      router = app.router()
+
+    it 'should create child injector for router', ->
+      expect(injector.createChild).toHaveBeenCalled()
+
+    it 'should have child injector from injector.createChild', ->
+      expect(router.injector).toBe(childInjector)
+
+    it 'should App#use the router', ->
+      expect(app.use).toHaveBeenCalledWith(router)
+
+  describe 'App as a router', ->
+    METHODS = [ 'get', 'put', 'post', 'del' ]
+    router = null
+    app = null
+
+    beforeEach ->
+      router = jasmine.createSpyObj 'Router', [ 'get', 'put', 'post', 'del' ]
+      spyOn(bogart, 'router').andReturn router
+
+      app = bogart.app()
+
+    METHODS.forEach (method) ->
+      it "should have correct App\##{method}", ->
+        app[method]('/', bogart.noop())
+        expect(router[method]).toHaveBeenCalled()
+
   describe 'starting the app', ->
     server = {}
     result = null
