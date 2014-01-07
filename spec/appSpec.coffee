@@ -6,66 +6,58 @@ describe 'bogart app', ->
   beforeEach ->
     app = bogart.app()
 
+  describe 'given custom injector', ->
+    injector = null
+    app = null
+
+    beforeEach ->
+      injector = jasmine.createSpyObj('Injector', [ 'value' ])
+      app = bogart.app(injector)
+
+    it 'should set property of app', ->
+      expect(app.injector).toBe(injector)
+
+    it 'router should have custom injector', ->
+      expect(app._router.injector).toBe(injector)
+
+    it 'should register itself', ->
+      expect(injector.value).toHaveBeenCalledWith('injector', injector)
+
   describe 'injector', ->
     it 'should be defined', ->
       expect(app.injector).not.toBe(undefined)
 
-    it 'should let me pass an injector', ->
-      injector = jasmine.createSpy('Injector')
-      expect(bogart.app(injector).injector).toBe(injector)
+  describe 'listen', ->
+    req = null
+    res = null
 
-    describe 'instantiating middleware', ->
-      app = null
-      middleware1ConfigVal = null
-      middleware1NextVal = null
-      middleware2NextVal = null
+    beforeEach ->
+      req = jasmine.createSpy('Request');
 
-      middleware1 = (config, next) ->
-        middleware1ConfigVal = config
-        middleware1NextVal = next
-        (req) ->
-          next()
+      spyOn(app.injector, 'createChild').andCallThrough()
 
-      middleware2 = (next) ->
-        middleware2NextVal = next
-        middleware2Responder
+      # Needed so that there will be some middleware
+      app.use (req) ->
+        bogart.q(bogart.text 'hello')
 
-      middleware2Responder = (req) ->
-        bogart.html 'hello world'
+      res = app.listen(req)
 
-      beforeEach ->
-        app = bogart.app()
-        app.use middleware1
-        app.use middleware2
+    it 'should create child injector', (done) ->
+      res
+        .then ->
+          expect(app.injector.createChild).toHaveBeenCalled()
+        .fail (err) =>
+          @fail err
+        .fin done
 
-        app.injector.value('config', {
-          foo: 'bar'
-        });
+  describe 'listen given no middleware', ->
+    it 'should throw error', ->
+      req = jasmine.createSpy('Request')
 
-        spyOn(app.injector, 'factory').andCallThrough()
-        spyOn(app.injector, 'invoke').andCallThrough()
-
-        spyOn(bogart, 'start')
-
-        app.start()
-
-      it 'should create `next` factory', ->
-        expect(app.injector.factory).toHaveBeenCalledWith('next', jasmine.any(Function))
-
-      it 'should create `nextApp` factory', ->
-        expect(app.injector.factory).toHaveBeenCalledWith('nextApp', jasmine.any(Function))
-
-      it 'should invoke middleware1', ->
-        expect(app.injector.invoke).toHaveBeenCalledWith(middleware1 )
-
-      it 'should have passed correct config', ->
-        expect(middleware1ConfigVal).toEqual({ foo: 'bar' })
-
-      it 'should have passed correct next', ->
-        expect(middleware1NextVal).toBe(middleware2Responder)
-
-      it 'should have passed correct next to middlware2', ->
-        expect(middleware2NextVal).toBeUndefined()
+      exec = ->
+        app.listen(req)
+      
+      expect(exec).toThrow()
 
   describe 'given a router with no parameters', ->
 
@@ -104,7 +96,7 @@ describe 'bogart app', ->
     beforeEach ->
       childInjector = jasmine.createSpyObj 'Child Injector', [ 'value', 'invoke' ]
 
-      injector = jasmine.createSpyObj 'Injector', [ 'createChild' ]
+      injector = jasmine.createSpyObj 'Injector', [ 'createChild', 'value' ]
       injector.createChild.andReturn childInjector
 
       app = bogart.app(injector)
@@ -131,7 +123,7 @@ describe 'bogart app', ->
       router = jasmine.createSpy 'Router'
       [ 'get', 'put', 'post', 'del' ].forEach (method) ->
         router[method] = jasmine.createSpy 'Router#'+method
-      
+
       spyOn(bogart, 'router').andReturn router
 
       app = bogart.app()
