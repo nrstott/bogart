@@ -1,7 +1,72 @@
+require('jasmine-expect')
 bogart = require '../lib/bogart'
 MockRequest = require './helpers/JsgiRequestHelper'
 Router = (require '../lib/router').Router
 q = require 'q'
+Injector = require 'bogart-injector'
+
+jasmine.getEnv().defaultTimeoutInterval = 100;
+
+mockInjector = (name, childInjector) ->
+  if typeof name == 'object' || typeof name == 'function'
+    childInjector = name
+    name = undefined
+  else
+    childInjector = jasmine.createSpyObj 'Child Injector', [ 'value', 'invoke', 'createChild' ]
+
+  injector = jasmine.createSpyObj name || 'Injector', [ 'value', 'invoke', 'createChild' ]
+  injector.createChild.andReturn(childInjector)
+  injector
+
+describe 'Router', ->
+  router = null
+
+  beforeEach ->
+    router = bogart.router()
+
+  it 'should have `on` method', ->
+    expect(router.on).toBeFunction()
+
+  it 'should have `emit` method', ->
+    expect(router.emit).toBeFunction()
+
+describe 'invokes route callbacks with injector', ->
+  router = null
+  injector = null
+  childInjector = null
+  routeCallback = null
+  res = null
+
+  beforeEach ->
+    childInjector = mockInjector 'Child Injector'
+
+    injector = mockInjector()
+    injector.createChild.andReturn childInjector
+
+    router = bogart.router()
+
+    routeCallback = (req) ->
+      bogart.html 'hello world'
+
+    router.get '/', routeCallback
+
+    res = router injector, MockRequest.root()
+
+  it 'should create child injector', (done) ->
+    res
+      .then ->
+        expect(injector.createChild).toHaveBeenCalled()
+      .fail (err) =>
+        @fail err
+      .fin done
+
+  it 'should call child injector invoke', (done) ->
+    res
+      .then ->
+        expect(childInjector.invoke).toHaveBeenCalledWith(routeCallback)
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'matches parameter', ->
   req = null
@@ -20,17 +85,23 @@ describe 'matches parameter', ->
 
     req.pathInfo = '/hello/nathan'
 
-    res = router() req
+    res = router new Injector(), req
 
   it 'should have correct status', (done) ->
-    q.when res, (res) ->
-      expect(res.status).toBe 200
-      done()
+    res
+      .then (res) ->
+        expect(res.status).toBe 200
+      .fail (err) =>
+        @fail err
+      .fin done
 
   it 'should have correct name', (done) ->
-    q.when res, (res) ->
-      expect(name).toBe 'nathan'
-      done()
+    res
+      .then (res) ->
+        expect(name).toBe 'nathan'
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'order of routes matching should be in order defined', ->
   router = null
@@ -49,7 +120,7 @@ describe 'order of routes matching should be in order defined', ->
       secondCalled = true
       bogart.html 'hello'
 
-    res = router() new MockRequest('/hello/nathan')
+    res = router new Injector(), new MockRequest('/hello/nathan')
 
   it 'should have called first route', (done) ->
     q.when res, (res) ->
@@ -77,18 +148,23 @@ describe 'should call notFoundApp', ->
 
     router = bogart.router()
 
-    res = router(notFoundApp) MockRequest.root()
+    res = router new Injector(), MockRequest.root(), notFoundApp
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe notFoundRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe notFoundRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
   it 'should have called the not found app', (done) ->
-    q.when res, (res) ->
-      expect(called).toBe true
-      done()
-
+    res
+      .then (res) ->
+        expect(called).toBe true
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'default notFoundApp behavior of returning 404', ->
   res = null
@@ -96,30 +172,38 @@ describe 'default notFoundApp behavior of returning 404', ->
   beforeEach ->
     router = bogart.router()
 
-    res = router() MockRequest.root()
+    res = router new Injector(), MockRequest.root()
 
   it 'should have status of 404', (done) ->
-    q.when res, (res) ->
-      expect(res.status).toBe 404
-      done()
+    res
+      .then (res) ->
+        expect(res.status).toBe 404
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'router.notFound', ->
-  notFoundHandler = null
+  notFoundCallback = null
   req = null
   res = null
+  router = null
 
   beforeEach ->
-    notFoundHandler = jasmine.createSpy 'not found handler'
+    notFoundCallback = jasmine.createSpy 'not found callback'
 
     router = bogart.router()
-    router.notFound(notFoundHandler)
+    router.notFound(notFoundCallback)
 
     req = MockRequest.root()
-    res = router() req
+    res = router new Injector(), req
 
-  it 'should have called handler specified by notFound', ->
-    q.when res, ->
-      expect(notFoundHandler).toHaveBeenCalled()
+  it 'should call notFound callback', (done) ->
+    q(res)
+      .then ->
+        expect(notFoundCallback).toHaveBeenCalled()
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'partially matched route', ->
   res = null
@@ -130,12 +214,15 @@ describe 'partially matched route', ->
     router.get '/partial-match', (req) ->
       { status: 200, body: [ 'hello' ], headers: {} }
 
-    res = router() new MockRequest('/partial-match/path')
+    res = router new Injector(), new MockRequest('/partial-match/path')
 
   it 'should have status of 404', (done) ->
-    q.when res, (res) ->
-      expect(res.status).toBe 404
-      done()
+    q(res)
+      .then (res) ->
+        expect(res.status).toBe 404
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'partially matched route with parameter', ->
   res = null
@@ -145,12 +232,15 @@ describe 'partially matched route with parameter', ->
     router.get '/:foo', (req) ->
       return { status: 200, body: [ 'hello' ], headers: {} }
 
-    res = router() new MockRequest('/hello/world')
+    res = router new Injector(), new MockRequest('/hello/world')
 
   it 'should have status of 404', (done) ->
-    q.when res, (res) ->
-      expect(res.status).toBe 404
-      done()
+    res
+      .then (res) ->
+        expect(res.status).toBe 404
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'route with querystring', ->
   res = null
@@ -164,12 +254,15 @@ describe 'route with querystring', ->
     req = new MockRequest('/home')
     req.queryString = 'hello=world'
 
-    res = router() req
+    res = router new Injector(), req
 
   it 'should have correct status', (done) ->
-    q.when res, (res) ->
-      expect(res.status).toBe 200
-      done()
+    res
+      .then (res) ->
+        expect(res.status).toBe 200
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'regex route', ->
   res = null
@@ -185,17 +278,23 @@ describe 'regex route', ->
       splat = req.params.splat
       routeRes
 
-    res = router() new MockRequest('/hello/cruel/world')
+    res = router new Injector(), new MockRequest('/hello/cruel/world')
 
   it 'should have correct splat', (done) ->
-    q.when res, (res) ->
-      expect(splat).toEqual [ 'cruel', 'world' ]
-      done()
+    res
+      .then (res) ->
+        expect(splat).toEqual [ 'cruel', 'world' ]
+      .fail (err) =>
+        @fail err
+      .fin done
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe routeRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe routeRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'request path with encoded slashes', ->
   res = null
@@ -209,12 +308,15 @@ describe 'request path with encoded slashes', ->
     router.get '/:foo', (req) ->
       routeRes
 
-    res = router() new MockRequest('/foo%2fbar')
+    res = router new Injector(), new MockRequest('/foo%2fbar')
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe routeRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe routeRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'request with a dot (".") as part of the named parameter', ->
   res = null
@@ -230,23 +332,32 @@ describe 'request with a dot (".") as part of the named parameter', ->
       params = req.params
       routeRes
 
-    res = router() new MockRequest('/user@example.com/name')
+    res = router new Injector(), new MockRequest('/user@example.com/name')
 
 
   it 'should have correct :foo param', (done) ->
-    q.when res, ->
-      expect(params.foo).toBe 'user@example.com'
-      done()
+    res
+      .then ->
+        expect(params.foo).toBe 'user@example.com'
+      .fail (err) =>
+        @fail err
+      .fin done
 
   it 'should have correct :bar param', (done) ->
-    q.when res, ->
-      expect(params.bar).toBe 'name'
-      done()
+    res
+      .then ->
+        expect(params.bar).toBe 'name'
+      .fail (err) =>
+        @fail err
+      .fin done
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe routeRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe routeRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'matches empty `pathInfo` to "/" if no route is defined for ""', ->
   res = null
@@ -259,12 +370,15 @@ describe 'matches empty `pathInfo` to "/" if no route is defined for ""', ->
     router.get '/', ->
       routeRes
 
-    res = router() new MockRequest('')
+    res = router new Injector(), new MockRequest('')
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe routeRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe routeRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'matches empty `pathInfo` to "" if a route is defined for ""', ->
   res = null
@@ -283,12 +397,15 @@ describe 'matches empty `pathInfo` to "" if a route is defined for ""', ->
     router.get '/', (req) ->
       wrongRouteRes
 
-    res = router() new MockRequest('')
+    res = router new Injector(), new MockRequest('')
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe rightRouteRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe rightRouteRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'paths that include spaces', ->
   res = null
@@ -301,12 +418,15 @@ describe 'paths that include spaces', ->
     router.get '/path with spaces', (req) ->
       routeRes
 
-    res = router() new MockRequest('/path%20with%20spaces')
+    res = router new Injector(), new MockRequest('/path%20with%20spaces')
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe routeRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe routeRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'literal (".") in path', ->
   res = null
@@ -320,12 +440,15 @@ describe 'literal (".") in path', ->
     router.get '/foo.bar', ->
       routeRes
 
-    res = router() new MockRequest('/foo.bar')
+    res = router new Injector(), new MockRequest('/foo.bar')
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe routeRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe routeRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe '("-") in path', ->
   res = null
@@ -339,12 +462,15 @@ describe '("-") in path', ->
     router.get '/foo/:bar/dash-url', ->
       routeRes
 
-    res = router() new MockRequest('/foo/baz/dash-url')
+    res = router new Injector(), new MockRequest('/foo/baz/dash-url')
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe routeRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe routeRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'path with splat ("*")', ->
   routeRes = null
@@ -360,17 +486,23 @@ describe 'path with splat ("*")', ->
       params = req.params
       routeRes
 
-    res = router() new MockRequest('/foo/hello/there')
+    res = router new Injector(), new MockRequest('/foo/hello/there')
 
   it 'should have correct splat', (done) ->
-    q.when res, (res) ->
-      expect(params.splat[0]).toBe 'hello/there'
-      done()
+    res
+      .then (res) ->
+        expect(params.splat[0]).toBe 'hello/there'
+      .fail (err) =>
+        @fail err
+      .fin done
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe routeRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe routeRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'path with multiple splat parameters', ->
   routeRes = null
@@ -386,17 +518,23 @@ describe 'path with multiple splat parameters', ->
       params = req.params
       routeRes
 
-    res = router() new MockRequest('/download/images/ninja-cat.jpg')
+    res = router new Injector(), new MockRequest('/download/images/ninja-cat.jpg')
 
   it 'should have correct splat', (done) ->
-    q.when res, (res) ->
-      expect(params.splat).toEqual [ 'images', 'ninja-cat.jpg' ]
-      done()
+    res
+      .then (res) ->
+        expect(params.splat).toEqual [ 'images', 'ninja-cat.jpg' ]
+      .fail (err) =>
+        @fail err
+      .fin done
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe routeRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe routeRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'mixing splat and named parameters', ->
   routeRes = null
@@ -412,22 +550,31 @@ describe 'mixing splat and named parameters', ->
       params = req.params
       routeRes
 
-    res = router() new MockRequest('/foo/bar/baz')
+    res = router new Injector(), new MockRequest('/foo/bar/baz')
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe routeRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe routeRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
   it 'should have correct named parameter', (done) ->
-    q.when res, (res) ->
-      expect(params.foo).toBe 'foo'
-      done()
+    res
+      .then (res) ->
+        expect(params.foo).toBe 'foo'
+      .fail (err) =>
+        @fail err
+      .fin done
 
   it 'should have correct splat parameter', (done) ->
-    q.when res, (res) ->
-      expect(params.splat).toEqual [ 'bar/baz' ]
-      done()
+    res
+      .then (res) ->
+        expect(params.splat).toEqual [ 'bar/baz' ]
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'chaining route handlers', ->
   routeRes = null
@@ -449,15 +596,21 @@ describe 'chaining route handlers', ->
 
     router.get '/', firstHandler, secondHandler
 
-    res = router() MockRequest.root()
+    res = router new Injector(), MockRequest.root()
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe routeRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe routeRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
   it 'should have correct value set by first handler', (done) ->
-    q.when res, ->
-      expect(hello).toBe 'world'
-      done()
+    res
+      .then ->
+        expect(hello).toBe 'world'
+      .fail (err) =>
+        @fail err
+      .fin done
 

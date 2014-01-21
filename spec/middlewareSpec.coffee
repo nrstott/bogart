@@ -2,30 +2,7 @@ bogart = require '../lib/bogart'
 q = bogart.q
 mockRequest = require './helpers/JsgiRequestHelper'
 
-describe 'middleware helper', ->
-  testMiddleware = null
-  req = null
-  next = null
-  handler = null
-
-  beforeEach ->
-    handler = jasmine.createSpy()
-    
-    testMiddleware = bogart.middleware handler
-    req = mockRequest.root()
-    next = jasmine.createSpy()
-
-    testMiddleware(next)(req)
-
-  it 'should be a function', ->
-    expect(typeof testMiddleware).toBe 'function'
-
-  it 'should call handler with correct request', ->
-    expect(handler).toHaveBeenCalledWith req, jasmine.any(Function)
-
-  it 'should call handler with correct nextApp', ->
-    expect(handler).toHaveBeenCalledWith jasmine.any(Object), next
-
+jasmine.getEnv().defaultTimeoutInterval = 100;
 
 describe 'parse json', ->
   parseJsonMiddleware = null
@@ -120,14 +97,12 @@ describe 'method override', ->
   res = null
 
   beforeEach ->
-    methodOverrideMiddleware = bogart.middleware.methodOverride((req) ->
-      {}
-    )
+    methodOverrideMiddleware = bogart.middleware.methodOverride()
 
     headers = { 'content-type': 'text/html' }
     jsgiRequest = { method: 'post', env: {}, body: { _method: 'put' }, headers: headers }
 
-    res = methodOverrideMiddleware jsgiRequest
+    res = methodOverrideMiddleware jsgiRequest, jasmine.createSpy('next')
 
   it 'should change request method to `PUT`', (done) ->
     q.when(res, () ->
@@ -183,15 +158,21 @@ describe 'error middleware given exception', ->
   errorMessage = '__Intentional Error Test__'
 
   beforeEach ->
-    errorMiddleware = bogart.middleware.error { logError: false }, (req) ->
+    errorMiddleware = bogart.middleware.error
+      logError: false
+
+    errorApp = (req) ->
       throw new Error(errorMessage)
 
-    res = errorMiddleware { method: 'get', env: {}, headers: {}, body: [] }
+    res = errorMiddleware { method: 'get', env: {}, headers: {}, body: [] }, errorApp
 
   it 'should have correct status', (done) ->
-    q.when res, (res) ->
-      expect(res.status).toBe 500
-      done()
+    q(res)
+      .then (res) ->
+        expect(res.status).toBe 500
+      .fail (err) =>
+        @fail err
+      .fin done
 
   it 'should have correct content-type', (done) ->
     q.when res, (res) ->
@@ -208,10 +189,11 @@ describe 'error middleware rejected promise given string', ->
   res = null
 
   beforeEach ->
-    errorMiddleware = bogart.middleware.error { logError: false }, (req) ->
-      q.reject rejectionMessage
+    errorMiddleware = bogart.middleware.error
+      logError: false
 
-    res = errorMiddleware { body: [], headers: {}, env: {} }
+    res = errorMiddleware { body: [], headers: {}, env: {} }, (req) ->
+      q.reject rejectionMessage
 
   it 'should have correct status', (done) ->
     q.when res, (res) ->
@@ -234,10 +216,11 @@ describe 'error middleware rejected promise given Error', ->
   res = null
 
   beforeEach ->
-    errorMiddleware = bogart.middleware.error { logError: false }, (req) ->
-      q.reject rejectionError
+    errorMiddleware = bogart.middleware.error
+      logError: false
 
-    res = errorMiddleware { body: [], headers: {}, env: {} }
+    res = errorMiddleware { body: [], headers: {}, env: {} }, (req) ->
+      q.reject rejectionError
 
   it 'should have correct status', (done) ->
     q.when res, (res) ->
@@ -298,25 +281,31 @@ describe 'parted', ->
   res = null
 
   beforeEach ->
-    partedMiddleware = bogart.middleware.parted (req) ->
-      req
+    partedMiddleware = bogart.middleware.parted()
   
   describe 'json', ->
+    next = null
 
     beforeEach ->
+      next = jasmine.createSpy('next')
+
       res = partedMiddleware {
         headers: { 'content-type': 'application/json' },
         body: [ '{ "hello": "world" }' ],
         env: {},
         method: 'POST'
-      }
+      }, next
 
-    it 'should have correct body', (done) ->
-      q.when res, (req) ->
-        expect(req.body.hello).toBe 'world'
-        done()
+    it 'should call next', (done) ->
+      q.when(res)
+        .then (req) ->
+          expect(next).toHaveBeenCalled()
+        .fail (err) =>
+          @fail err
+        .fin done
 
   describe 'form url-encoded', ->
+    next = null
 
     beforeEach ->
       body = {
@@ -324,27 +313,37 @@ describe 'parted', ->
           callback('hello=world')
       }
 
+      next = jasmine.createSpy('next')
+
       res = partedMiddleware {
         method: 'POST',
         env: {},
         headers: { 'content-type': 'application/x-www-form-urlencoded' },
         body: body
-      }
+      }, next
 
-    it 'should have correct body', (done) ->
-      q.when res, (res) ->
-        expect(res.body.hello).toBe 'world'
-        done()
+    it 'should call next', (done) ->
+      q(res) 
+        .then (res) ->
+          expect(next).toHaveBeenCalled()
+        .fail (err) =>
+          @fail err
+        .fin done
 
   describe 'multipart form-encoded', ->
+    next = null
 
     beforeEach ->
-      res = partedMiddleware multipartRequest(100, 'chrome')
+      next = jasmine.createSpy('next')
+      res = partedMiddleware multipartRequest(100, 'chrome'), next
 
-    it 'should have content', (done) ->
-      q.when res, (res) ->
-        expect(res.body.content).not.toBe undefined
-        done()
+    it 'should call next', (done) ->
+      q(res)
+        .then (res) ->
+          expect(next).toHaveBeenCalled()
+        .fail (err) =>
+          @fail err
+        .fin done
 
 describe 'session', ->
   sessionApp = null
@@ -518,7 +517,7 @@ multipartRequest = (size, file) ->
     .match(/--[^\r\n]+/)[0]
     .slice(2)
 
-  res =
+  req =
     headers: { 'content-type': 'multipart/form-data; boundary="' + boundary + '"' }
     method: 'POST'
     env: {}
