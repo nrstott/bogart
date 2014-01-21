@@ -17,9 +17,6 @@ describe 'bogart app', ->
     it 'should set property of app', ->
       expect(app.injector).toBe(injector)
 
-    it 'router should have custom injector', ->
-      expect(app._router.injector).toBe(injector)
-
     it 'should register itself', ->
       expect(injector.value).toHaveBeenCalledWith('injector', injector)
 
