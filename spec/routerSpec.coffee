@@ -76,14 +76,20 @@ describe 'matches parameter', ->
     res = router req
 
   it 'should have correct status', (done) ->
-    q.when res, (res) ->
-      expect(res.status).toBe 200
-      done()
+    res
+      .then (res) ->
+        expect(res.status).toBe 200
+      .fail (err) =>
+        @fail err
+      .fin done
 
   it 'should have correct name', (done) ->
-    q.when res, (res) ->
-      expect(name).toBe 'nathan'
-      done()
+    res
+      .then (res) ->
+        expect(name).toBe 'nathan'
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'order of routes matching should be in order defined', ->
   router = null
@@ -133,15 +139,20 @@ describe 'should call notFoundApp', ->
     res = router MockRequest.root(), notFoundApp
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe notFoundRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe notFoundRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
   it 'should have called the not found app', (done) ->
-    q.when res, (res) ->
-      expect(called).toBe true
-      done()
-
+    res
+      .then (res) ->
+        expect(called).toBe true
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'default notFoundApp behavior of returning 404', ->
   res = null
@@ -152,9 +163,12 @@ describe 'default notFoundApp behavior of returning 404', ->
     res = router MockRequest.root()
 
   it 'should have status of 404', (done) ->
-    q.when res, (res) ->
-      expect(res.status).toBe 404
-      done()
+    res
+      .then (res) ->
+        expect(res.status).toBe 404
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'router.notFound', ->
   notFoundCallback = null
@@ -209,9 +223,12 @@ describe 'partially matched route with parameter', ->
     res = router new MockRequest('/hello/world')
 
   it 'should have status of 404', (done) ->
-    q.when res, (res) ->
-      expect(res.status).toBe 404
-      done()
+    res
+      .then (res) ->
+        expect(res.status).toBe 404
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'route with querystring', ->
   res = null
@@ -228,9 +245,12 @@ describe 'route with querystring', ->
     res = router req
 
   it 'should have correct status', (done) ->
-    q.when res, (res) ->
-      expect(res.status).toBe 200
-      done()
+    res
+      .then (res) ->
+        expect(res.status).toBe 200
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'regex route', ->
   res = null
@@ -249,14 +269,20 @@ describe 'regex route', ->
     res = router new MockRequest('/hello/cruel/world')
 
   it 'should have correct splat', (done) ->
-    q.when res, (res) ->
-      expect(splat).toEqual [ 'cruel', 'world' ]
-      done()
+    res
+      .then (res) ->
+        expect(splat).toEqual [ 'cruel', 'world' ]
+      .fail (err) =>
+        @fail err
+      .fin done
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe routeRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe routeRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'request path with encoded slashes', ->
   res = null
@@ -273,9 +299,12 @@ describe 'request path with encoded slashes', ->
     res = router new MockRequest('/foo%2fbar')
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe routeRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe routeRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'request with a dot (".") as part of the named parameter', ->
   res = null
@@ -295,19 +324,28 @@ describe 'request with a dot (".") as part of the named parameter', ->
 
 
   it 'should have correct :foo param', (done) ->
-    q.when res, ->
-      expect(params.foo).toBe 'user@example.com'
-      done()
+    res
+      .then ->
+        expect(params.foo).toBe 'user@example.com'
+      .fail (err) =>
+        @fail err
+      .fin done
 
   it 'should have correct :bar param', (done) ->
-    q.when res, ->
-      expect(params.bar).toBe 'name'
-      done()
+    res
+      .then ->
+        expect(params.bar).toBe 'name'
+      .fail (err) =>
+        @fail err
+      .fin done
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe routeRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe routeRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'matches empty `pathInfo` to "/" if no route is defined for ""', ->
   res = null
@@ -323,9 +361,12 @@ describe 'matches empty `pathInfo` to "/" if no route is defined for ""', ->
     res = router new MockRequest('')
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe routeRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe routeRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'matches empty `pathInfo` to "" if a route is defined for ""', ->
   res = null
@@ -347,9 +388,12 @@ describe 'matches empty `pathInfo` to "" if a route is defined for ""', ->
     res = router new MockRequest('')
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe rightRouteRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe rightRouteRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'paths that include spaces', ->
   res = null
@@ -365,9 +409,12 @@ describe 'paths that include spaces', ->
     res = router new MockRequest('/path%20with%20spaces')
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe routeRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe routeRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'literal (".") in path', ->
   res = null
@@ -384,9 +431,12 @@ describe 'literal (".") in path', ->
     res = router new MockRequest('/foo.bar')
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe routeRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe routeRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe '("-") in path', ->
   res = null
@@ -403,9 +453,12 @@ describe '("-") in path', ->
     res = router new MockRequest('/foo/baz/dash-url')
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe routeRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe routeRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'path with splat ("*")', ->
   routeRes = null
@@ -424,14 +477,20 @@ describe 'path with splat ("*")', ->
     res = router new MockRequest('/foo/hello/there')
 
   it 'should have correct splat', (done) ->
-    q.when res, (res) ->
-      expect(params.splat[0]).toBe 'hello/there'
-      done()
+    res
+      .then (res) ->
+        expect(params.splat[0]).toBe 'hello/there'
+      .fail (err) =>
+        @fail err
+      .fin done
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe routeRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe routeRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'path with multiple splat parameters', ->
   routeRes = null
@@ -450,14 +509,20 @@ describe 'path with multiple splat parameters', ->
     res = router new MockRequest('/download/images/ninja-cat.jpg')
 
   it 'should have correct splat', (done) ->
-    q.when res, (res) ->
-      expect(params.splat).toEqual [ 'images', 'ninja-cat.jpg' ]
-      done()
+    res
+      .then (res) ->
+        expect(params.splat).toEqual [ 'images', 'ninja-cat.jpg' ]
+      .fail (err) =>
+        @fail err
+      .fin done
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe routeRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe routeRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'mixing splat and named parameters', ->
   routeRes = null
@@ -476,19 +541,28 @@ describe 'mixing splat and named parameters', ->
     res = router new MockRequest('/foo/bar/baz')
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe routeRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe routeRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
   it 'should have correct named parameter', (done) ->
-    q.when res, (res) ->
-      expect(params.foo).toBe 'foo'
-      done()
+    res
+      .then (res) ->
+        expect(params.foo).toBe 'foo'
+      .fail (err) =>
+        @fail err
+      .fin done
 
   it 'should have correct splat parameter', (done) ->
-    q.when res, (res) ->
-      expect(params.splat).toEqual [ 'bar/baz' ]
-      done()
+    res
+      .then (res) ->
+        expect(params.splat).toEqual [ 'bar/baz' ]
+      .fail (err) =>
+        @fail err
+      .fin done
 
 describe 'chaining route handlers', ->
   routeRes = null
@@ -513,12 +587,18 @@ describe 'chaining route handlers', ->
     res = router MockRequest.root()
 
   it 'should have correct response', (done) ->
-    q.when res, (res) ->
-      expect(res).toBe routeRes
-      done()
+    res
+      .then (res) ->
+        expect(res).toBe routeRes
+      .fail (err) =>
+        @fail err
+      .fin done
 
   it 'should have correct value set by first handler', (done) ->
-    q.when res, ->
-      expect(hello).toBe 'world'
-      done()
+    res
+      .then ->
+        expect(hello).toBe 'world'
+      .fail (err) =>
+        @fail err
+      .fin done
 
