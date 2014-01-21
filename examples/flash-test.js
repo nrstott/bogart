@@ -4,8 +4,10 @@ var flashConfig = {
   encryptionKey: 'db0031e2-04e7-11e1-86ad-000c290196f7'
 };
 
-var router = bogart.router();
-router.get('/', function (req) {
+var app = bogart.app();
+app.use(bogart.middleware.flash(flashConfig));
+
+app.get('/', function (req) {
   var html  = '<html><head><title>Bogart Flash</title></head><body><h1>Bogart Flash Middleware</h1>';
   html += '<p>A random number has been inserted into flash. ' +
     'On the first request, the value should be undefined. Subsequent requests should ' +
@@ -17,9 +19,5 @@ router.get('/', function (req) {
 
   return bogart.html(html);
 });
-
-var app = bogart.app();
-app.use(bogart.middleware.flash(flashConfig));
-app.use(router);
 
 app.start();

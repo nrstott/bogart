@@ -242,9 +242,12 @@ describe 'flash middleware', ->
   foo = null
   jsgiRequest = null
   flashMiddleware = null
+  next = null
 
   beforeEach ->
-    flashMiddleware = bogart.middleware.flash {}, (req) ->
+    flashMiddleware = bogart.middleware.flash {}
+
+    next = (req) ->
       req.flash 'foo', 'bar'
 
       foo = req.flash 'foo'
@@ -253,7 +256,7 @@ describe 'flash middleware', ->
 
     jsgiRequest = { headers: { 'content-type': 'text/plain' }, body: [] }
 
-    res = flashMiddleware(jsgiRequest).then (res) ->
+    res = flashMiddleware(jsgiRequest, next).then (res) ->
       cookieStr = res.headers['Set-Cookie'].join('').replace(/;$/, '');
       jsgiRequest.headers.cookie = cookieStr
       res
@@ -269,7 +272,7 @@ describe 'flash middleware', ->
 
     beforeEach ->
       res = q.when res, () ->
-        flashMiddleware jsgiRequest
+        flashMiddleware jsgiRequest, next
 
     it 'should have correct `foo` value', (done) ->
       q.when res, (res) ->
