@@ -4,6 +4,9 @@ mockRequest = require './helpers/JsgiRequestHelper'
 
 jasmine.getEnv().defaultTimeoutInterval = 100;
 
+anyObject = (-> jasmine.any Object)
+anyString = (-> jasmine.any String)
+
 describe 'parse json', ->
   parseJsonMiddleware = null
   body = null
@@ -348,47 +351,87 @@ describe 'parted', ->
           @fail err
         .fin done
 
-describe 'session', ->
+describe 'SessionMiddleware', ->
   sessionApp = null
-  firstRequest = true
+  req = null
   res = null
-  values = []
+  next = null
+  nextRes = null
+  sessionConfig = null
+
+  SESSION_ID = 'Id returned from getSessionId'
 
   beforeEach ->
-    sessionApp = bogart.middleware.session {}, (req) ->
-      req.session('foo', 'bar') if firstRequest
-      firstRequest = false
+    sessionConfig =
+      idProvider: jasmine.createSpyObj 'Id Provider', [ 'getSessionId', 'save' ]
+      dataProvider: jasmine.createSpyObj 'Data Provider', [ 'loadSession', 'save' ]
 
-      values.push req.session('foo')
+    sessionConfig.idProvider.getSessionId.andReturn SESSION_ID
 
-      return {
-        status: 200,
-        body: []
-      }
+    sessionApp = bogart.middleware.session sessionConfig
 
-    headers = { 'content-type': 'text/plain' }
-    jsgiRequest = { headers: headers, body: [] }
+    nextRes =
+      status: 200,
+      body: [],
+      headers: {}
 
-    res = q.when sessionApp(jsgiRequest), (res) ->
-      cookieStr = res.headers['Set-Cookie'].join('').replace(/;$/, '');
+    next = jasmine.createSpy('next')
+    next.andReturn(nextRes)
 
-      jsgiRequest.headers.cookie = cookieStr
+    headers =
+      'content-type': 'text/plain'
 
-      q.when sessionApp(jsgiRequest)
+    req =
+      headers: headers
+      body: []
 
-  it 'should have correct value for first request', (done) ->
-    q.when res, (res) ->
-      expect(values[0]).toBe 'bar'
-      done()
-    , (err) =>
-      this.fail err
+    res = sessionApp req, next
 
-  it 'should have correct value for second request', (done) ->
-    q.when res, (res) ->
-      expect(values[1]).toBe 'bar'
-      done()
-    , (err) =>
-      this.fail err
+  it 'should call SessionIdProvider#getSessionId', (done) ->
+    res
+      .then ->
+        expect(sessionConfig.idProvider.getSessionId).toHaveBeenCalledWith(req)
+      .fail (err) =>
+        @fail err
+      .fin done
+
+  loadSessionCallSpec = (description, a, b) ->
+    it "should call SessionDataProvider#loadSession with correct #{description}", (done) ->
+      res
+        .then ->
+          expect(sessionConfig.dataProvider.loadSession).toHaveBeenCalledWith(a(), b())
+        .fail (err) =>
+          @fail err
+        .fin done
+
+  loadSessionCallSpec 'request', (-> req), anyString
+  loadSessionCallSpec 'session id', anyObject, (-> SESSION_ID)
+
+  sessionIdProviderSaveCallSpec = (description, a, b, c) ->
+    it "should call SessionIdProvider#save with correct #{description}", (done) ->
+      res
+        .then ->
+          expect(sessionConfig.idProvider.save).toHaveBeenCalledWith(a(), b(), c())
+        .fail (err) =>
+          @fail err
+        .fin done
+
+  sessionIdProviderSaveCallSpec 'request', (-> req), anyObject, anyString
+  sessionIdProviderSaveCallSpec 'response', anyObject, (-> nextRes), anyString
+  sessionIdProviderSaveCallSpec 'session id', anyObject, anyObject, (-> SESSION_ID)
+
+  sessionDataProviderSaveCallSpec = (description, a, b, c) ->
+    it "should call SessionDataProvider#save with correct #{description}", (done) ->
+      res
+        .then ->
+          expect(sessionConfig.dataProvider.save).toHaveBeenCalledWith(a(), b(), c())
+        .fail (err) =>
+          @fail err
+        .fin done
+
+  sessionDataProviderSaveCallSpec 'request', (-> req), anyObject, anyString
+  sessionDataProviderSaveCallSpec 'session id', anyObject, anyObject, (-> SESSION_ID)
+  sessionDataProviderSaveCallSpec 'response', anyObject, (-> nextRes), anyString
 
 describe 'validate response middleware', ->
   validateResApp = null
