@@ -57,7 +57,9 @@ describe 'bogart app', ->
       expect(exec).toThrow()
 
   describe 'listen given no middleware and using implicit router', ->
-    it 'should invoke with Injector#invoke', ->
+    childInjector = null
+
+    beforeEach ->
       req = jasmine.createSpy('Request')
 
       spyOn(bogart, 'start')
@@ -71,7 +73,14 @@ describe 'bogart app', ->
       app.start()
       app.listen(req)
 
+    it 'should invoke with Injector#invoke', ->
       expect(childInjector.invoke).toHaveBeenCalledWith(app._router)
+
+    it 'should register next of undefined', ->
+      expect(childInjector.value).toHaveBeenCalledWith('next', undefined)
+
+    it 'should register nextApp of undefined', ->
+      expect(childInjector.value).toHaveBeenCalledWith('nextApp', undefined)
 
   describe 'given a router with no parameters', ->
 
