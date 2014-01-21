@@ -7,7 +7,7 @@ q = require 'q'
 jasmine.getEnv().defaultTimeoutInterval = 100;
 
 mockInjector = (name) ->
-  jasmine.createSpyObj name || 'Injector', [ 'value', 'invoke' ]
+  jasmine.createSpyObj name || 'Injector', [ 'value', 'invoke', 'createChild' ]
 
 describe 'Router', ->
   router = null
@@ -31,7 +31,7 @@ describe 'invokes route callbacks with injector', ->
   beforeEach ->
     childInjector = mockInjector 'Child Injector'
 
-    injector = jasmine.createSpyObj 'Injector', [ 'createChild' ]
+    injector = mockInjector()
     injector.createChild.andReturn childInjector
 
     router = bogart.router()
