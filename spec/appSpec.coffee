@@ -105,9 +105,6 @@ describe 'bogart app', ->
     it 'should create child injector for router', ->
       expect(injector.createChild).toHaveBeenCalled()
 
-    it 'should have child injector from injector.createChild', ->
-      expect(router.injector).toBe(childInjector)
-
     it 'should App#use the router', ->
       expect(app.use).toHaveBeenCalledWith(router)
 
