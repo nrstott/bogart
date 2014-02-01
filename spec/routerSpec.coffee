@@ -197,6 +197,24 @@ describe 'regex route', ->
       expect(res).toBe routeRes
       done()
 
+describe 'request with an empty param', ->
+  res = null
+  routeRes = null
+
+  beforeEach ->
+    router = bogart.router()
+    routeRes = bogart.html 'hello'
+
+    router.get '/foo/:bar', (req) ->
+      routeRes
+
+    res = router() new MockRequest('/foo')
+
+  it 'should still match a variatic route', (done) ->
+    q.when res, (res) ->
+      expect(res).toBe routeRes
+      done()
+
 describe 'request path with encoded slashes', ->
   res = null
   routeRes = null
