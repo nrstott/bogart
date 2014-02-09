@@ -8,12 +8,12 @@ var bogart = require('../lib/bogart');
 
 var router = bogart.router();
 router.get('/', function(req) {
-	return 'Tennant: ' + req.env.domain.tennant;
+	return 'Tenant: ' + req.env.domain.tenant;
 });
 
 var app = bogart.app();
 
-app.use(bogart.middleware.domainFilter, ":tennant.bogart.local")
+app.use(bogart.middleware.domainFilter, ":tenant.bogart.local")
 app.use(bogart.batteries);
 app.use(router);
 
