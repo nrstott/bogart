@@ -25,7 +25,7 @@ frontRouter.get('/', function(req) {
 
 frontRouter.get('/login', function(req) {
   req.session('returnUrl', '/profile');
-  return bogart.html('<a href="/auth/login"><img src="login-with-facebook.png" width="154" height="22"></a>');
+  return bogart.html('<a href="/auth/login"><img src="sign-in-with-google.png" width="154" height="22"></a>');
 });
 
 var app = bogart.app();
