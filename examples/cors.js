@@ -10,7 +10,7 @@ router.get('/:name', function(req) {
 });
 
 var app = bogart.app();
-app.use(bogart.batteries);
+bogart.batteries(app);
 app.use(router);
 
 app.start();
