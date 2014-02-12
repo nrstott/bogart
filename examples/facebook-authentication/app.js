@@ -17,7 +17,7 @@ router.get('/profile', function(req) {
   return bogart.html(JSON.stringify(req.session('profile')));
 });
 
-var facebookAuth = new bogart.middleware.facebook(facebookConfig, router);
+var facebookAuth = new bogart.middleware.facebook(facebookConfig);
 
 var frontRouter = bogart.router();
 frontRouter.get('/', function(req) {
