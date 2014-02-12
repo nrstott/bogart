@@ -10,7 +10,7 @@ function HelloWorldStream() {
   var index = 0;
 
   var message = [
-    '<html><body><p>This is an example ',
+    '<html><head><meta charset="UTF-8"></head><body><p>This is an example ',
     'of a Bogart route that returns a ',
     'stream.</p>',
     '<p>To view a route that returns a buffer ',
@@ -36,7 +36,7 @@ router.get('/', function() {
 });
 
 router.get('/buffer', function() {
-  return new Buffer('<html><head><title>Buffer</title></head>' +
+  return new Buffer('<html><head><meta charset="UTF-8"><title>Buffer</title></head>' +
     '<body>This is an example of a Bogart route that returns a buffer.</body></html>');
 });
 
