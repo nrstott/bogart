@@ -8,4 +8,4 @@ forEachableToFileStream.txt
 *.sublime-workspace
 lib-cov
 node_modules
-
+examples/facebook-authentication/config.json
