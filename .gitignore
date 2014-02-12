@@ -9,3 +9,4 @@ forEachableToFileStream.txt
 lib-cov
 node_modules
 examples/facebook-authentication/config.json
+examples/google-authentication/config.json
