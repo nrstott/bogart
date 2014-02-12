@@ -1,4 +1,5 @@
 var bogart = require('../../lib/bogart');
+var path = require('path');
 
 // Replace these values with the values from your facebook app.
 var FACEBOOK_APP_ID = "YOUR_APP_ID";
@@ -31,7 +32,7 @@ frontRouter.get('/login', function(req) {
 var app = bogart.app();
 app.use(bogart.middleware.session());
 app.use(bogart.middleware.flash());
-app.use(bogart.middleware.directory('public'));
+app.use(bogart.middleware.directory(path.join(__dirname, 'public')));
 app.use(frontRouter);
 app.use(facebookAuth);
 app.use(router);
