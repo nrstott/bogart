@@ -57,5 +57,4 @@ echo $ABFLAGS > results/flags
 # Run benchmarks
 log $AB $ABFLAGS $ADDR
 bm hello-world
-#bm alternative-routing
 bm mustache-layout
