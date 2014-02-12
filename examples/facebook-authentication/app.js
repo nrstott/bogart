@@ -1,15 +1,12 @@
 var bogart = require('../../lib/bogart');
 var path = require('path');
-
-// Replace these values with the values from your facebook app.
-var FACEBOOK_APP_ID = "YOUR_APP_ID";
-var FACEBOOK_APP_SECRET = "YOUR_APP_SECRET";
+var config = require('./config.json');
 
 var PORT = 1337;
 
 var facebookConfig = {
-  clientId: FACEBOOK_APP_ID,
-  clientSecret: FACEBOOK_APP_SECRET,
+  clientId: config.appId,
+  clientSecret: config.secret,
   host: 'http://localhost:'+PORT
 };
 
