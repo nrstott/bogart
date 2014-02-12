@@ -1,4 +1,5 @@
 {
   "appId": "YOUR_GOOGLE_APP_ID",
-  "secret": "YOUR_GOOGLE_SECRET"
+  "secret": "YOUR_GOOGLE_SECRET",
+  "callbackRoute": "YOUR_GOOGLE_CALLBACK_ROUTE"
 }
