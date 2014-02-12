@@ -1,26 +1,34 @@
 var bogart = require('../lib/bogart')
   , util   = require('util')
-  , Stream = require('stream').Stream;
+  , stream = require('stream');
 
 function HelloWorldStream() {
   var self = this;
 
-  Stream.call(this);
+  stream.Readable.call(this);
 
-  this.readable = true;
+  var index = 0;
 
-  process.nextTick(function() {
-    self.emit('data', '<html><head><title>Stream</title><body>');
-    process.nextTick(function() {
-      self.emit('data', 
-        'This is an example of a Bogart route that returns a stream. '+
-        '<a href="/buffer">See a route that returns a Buffer</a></body></html>');
-      self.emit('end');
-    });
-  });
+  var message = [
+    '<html><body><p>This is an example ',
+    'of a Bogart route that returns a ',
+    'stream.</p>',
+    '<p>To view a route that returns a buffer ',
+    'go to <a href="/buffer">/buffer</a></p>',
+    '</body>',
+    '</html>'
+  ];
+
+  this._read = function () {
+    if (index >= message.length) {
+      this.push(null);
+    } else {
+      this.push(new Buffer(message[index++], 'ascii'));
+    }
+  };
 }
 
-util.inherits(HelloWorldStream, Stream);
+util.inherits(HelloWorldStream, stream.Readable);
 
 var router = bogart.router();
 router.get('/', function() {
