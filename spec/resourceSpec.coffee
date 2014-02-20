@@ -73,7 +73,10 @@ describe 'Resource', ->
       expect(negotiator.preferredMediaType).toHaveBeenCalledWith([ 'application/json', 'text/html' ])
 
     it 'should format response', ->
-      expect(resource.format['application/json']).toHaveBeenCalledWith(req, res)
+      expect(resource.format['application/json']).toHaveBeenCalledWith(req, { foo: 'bar', bleh: 'blah', links: jasmine.any(Object) })
+
+    it 'should add links to response', ->
+      expect(res.links).toBeDefined();
 
   describe 'URL helpers', ->
     resource = null
