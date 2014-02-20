@@ -6,6 +6,38 @@ describe 'Resource', ->
   it 'should have a router', ->
     expect(new Resource('foo').router).toBeDefined();
 
+  describe 'register routes', ->
+    resource = null
+    router = null
+
+    beforeEach ->
+      resource = new Resource('foo')
+      router = resource.router
+
+    it 'should register list route', ->
+      listLink = resource.listLink()
+      expect(router.handler(listLink.method, listLink.url)).not.toBeNull();
+
+    it 'should register show route', ->
+      showLink = resource.showLink(':id')
+      expect(router.handler(showLink.method, showLink.url)).not.toBeNull();
+
+    it 'should register create route', ->
+      createLink = resource.createLink()
+      expect(router.handler(createLink.method, createLink.url)).not.toBeNull()
+
+    it 'should register update route', ->
+      updateLink = resource.updateLink()
+      expect(router.handler(updateLink.method, updateLink.url)).not.toBeNull()
+
+    it 'should register edit route', ->
+      editLink = resource.editLink()
+      expect(router.handler(editLink.method, editLink.url)).not.toBeNull()
+
+    it 'should register new route', ->
+      newLink = resource.newLink()
+      expect(router.handler(newLink.method, newLink.url)).not.toBeNull()
+
   describe 'routePrefix', ->
     it 'given name that does not start with "/" should prepend "/" to name', ->
       expect(new Resource('foo').routePrefix).toBe('/foo')
@@ -92,24 +124,24 @@ describe 'Resource', ->
     beforeEach ->
       resource = new Resource('foo')
 
-    it 'should have correct showUrl', ->
+    it 'should have correct showLink', ->
       id = '123'
-      expectLink resource.showUrl(id), "/foo/#{id}"
+      expectLink resource.showLink(id), "/foo/#{id}"
 
-    it 'should have correct createUrl', ->
-      expectLink resource.createUrl(), '/foo', 'post'
+    it 'should have correct createLink', ->
+      expectLink resource.createLink(), '/foo', 'post'
 
-    it 'should have correct updateUrl', ->
+    it 'should have correct updateLink', ->
       id = '123'
-      expectLink resource.updateUrl(id), "/foo/#{id}", 'put'
+      expectLink resource.updateLink(id), "/foo/#{id}", 'put'
 
-    it 'should have correct destroyUrl', ->
+    it 'should have correct destroyLink', ->
       id = '123'
-      expectLink resource.destroyUrl(id), '/foo/'+id, 'delete'
+      expectLink resource.destroyLink(id), '/foo/'+id, 'delete'
 
-    it 'should have correct newUrl', ->
-      expectLink resource.newUrl(), '/foo/new'
+    it 'should have correct newLink', ->
+      expectLink resource.newLink(), '/foo/new'
 
-    it 'should have correct editUrl', ->
+    it 'should have correct editLink', ->
       id = '123'
-      expectLink resource.editUrl(id), "/foo/edit/#{id}"
+      expectLink resource.editLink(id), "/foo/edit/#{id}"
