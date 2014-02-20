@@ -74,3 +74,39 @@ describe 'Resource', ->
 
     it 'should format response', ->
       expect(resource.format['application/json']).toHaveBeenCalledWith(req, res)
+
+  describe 'URL helpers', ->
+    resource = null
+
+    link = (url, method = 'get') ->
+      result =
+        url: url,
+        method: method
+
+    expectLink = (actual, url, method = 'get') ->
+      expect(actual).toEqual(link(url, method))
+
+    beforeEach ->
+      resource = new Resource('foo')
+
+    it 'should have correct showUrl', ->
+      id = '123'
+      expectLink resource.showUrl(id), "/foo/#{id}"
+
+    it 'should have correct createUrl', ->
+      expectLink resource.createUrl(), '/foo', 'post'
+
+    it 'should have correct updateUrl', ->
+      id = '123'
+      expectLink resource.updateUrl(id), "/foo/#{id}", 'put'
+
+    it 'should have correct destroyUrl', ->
+      id = '123'
+      expectLink resource.destroyUrl(id), '/foo/'+id, 'delete'
+
+    it 'should have correct newUrl', ->
+      expectLink resource.newUrl(), '/foo/new'
+
+    it 'should have correct editUrl', ->
+      id = '123'
+      expectLink resource.editUrl(id), "/foo/edit/#{id}"
