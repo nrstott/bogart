@@ -353,7 +353,7 @@ describe 'session', ->
   values = []
 
   beforeEach ->
-    sessionApp = bogart.middleware.session {}, (req) ->
+    sessionApp = bogart.middleware.session { secret: 'my-super-secret' }, (req) ->
       req.session('foo', 'bar') if firstRequest
       firstRequest = false
 
@@ -484,7 +484,7 @@ describe 'batteries', ->
 
     beforeEach ->
       spyOn bogart.middleware, 'directory'
-      bogart.middleware.batteries({ directory: 'public' })((req) -> {})
+      bogart.middleware.batteries({ directory: 'public', secret: 'my-super-secret' })((req) -> {})
 
     it 'should pass correct configuration to directory middleware', ->
       expect(bogart.middleware.directory).toHaveBeenCalledWith 'public', jasmine.any(Function)
