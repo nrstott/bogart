@@ -36,7 +36,8 @@
     "mkdirp": "*",
     "sinon": "1.5.2",
     "bogart-injector": "~0.1.0",
-    "negotiator": "~0.4.1"
+    "negotiator": "~0.4.1",
+    "inflect": "~0.3.0"
   },
   "devDependencies": {
     "haml": ">=0.4.2",

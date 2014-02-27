@@ -124,6 +124,9 @@ describe 'Resource', ->
     beforeEach ->
       resource = new Resource('foo')
 
+    it 'shoudl have correct listLink', ->
+      expectLink resource.listLink(), "/foos"
+
     it 'should have correct showLink', ->
       id = '123'
       expectLink resource.showLink(id), "/foo/#{id}"
