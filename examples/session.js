@@ -23,6 +23,12 @@ router.get('/', function (req) {
   html += '<input name="val" />';
   html += '<input type="submit" />'
   html += '</form></section>';
+  html += '<section><h1>Destroy Session</h1>';
+  html += '<form action="/destroy" method="post">';
+  html += '<input type="hidden" name="_method" value="delete" />';
+  html += '<input type="submit" value="Destroy Session" />';
+  html += '</form>';
+  html += '</section>';
 
   return bogart.html(html);
 });
@@ -33,13 +39,20 @@ router.post('/', function (req) {
   return bogart.redirect('/');
 });
 
+router.del('/destroy', function (req) {
+  req.session.destroy();
+
+  return bogart.redirect('/');
+});
+
 var sessionConfig = {
   lifetime: 600,
-  encryptionKey: 'ABC1234'
+  secret: 'ABC1234'
 };
 
 var app = bogart.app();
 app.use(bogart.middleware.parted());
+app.use(bogart.middleware.methodOverride());
 app.use(bogart.middleware.session(sessionConfig));
 app.use(router);
 

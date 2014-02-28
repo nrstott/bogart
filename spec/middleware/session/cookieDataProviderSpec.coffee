@@ -27,7 +27,7 @@ describe 'Cookie Data Provider', ->
       decrypt.andReturn decryptedSessionData
 
       cookieDataProvider = new CookieDataProvider({
-        encryptionKey: encryptionKey,
+        secret: encryptionKey,
         encrypt: encrypt,
         decrypt: decrypt
       });
