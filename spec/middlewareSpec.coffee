@@ -363,8 +363,9 @@ describe 'SessionMiddleware', ->
 
   beforeEach ->
     sessionConfig =
+      secret: 'my-super-secret'
       idProvider: jasmine.createSpyObj 'Id Provider', [ 'getSessionId', 'save' ]
-      dataProvider: jasmine.createSpyObj 'Data Provider', [ 'loadSession', 'save' ]
+      store: jasmine.createSpyObj 'Data Provider', [ 'loadSession', 'save' ]
 
     sessionConfig.idProvider.getSessionId.andReturn SESSION_ID
 
@@ -399,7 +400,7 @@ describe 'SessionMiddleware', ->
     it "should call SessionDataProvider#loadSession with correct #{description}", (done) ->
       res
         .then ->
-          expect(sessionConfig.dataProvider.loadSession).toHaveBeenCalledWith(a(), b())
+          expect(sessionConfig.store.loadSession).toHaveBeenCalledWith(a(), b())
         .fail (err) =>
           @fail err
         .fin done
@@ -424,7 +425,7 @@ describe 'SessionMiddleware', ->
     it "should call SessionDataProvider#save with correct #{description}", (done) ->
       res
         .then ->
-          expect(sessionConfig.dataProvider.save).toHaveBeenCalledWith(a(), b(), c())
+          expect(sessionConfig.store.save).toHaveBeenCalledWith(a(), b(), c())
         .fail (err) =>
           @fail err
         .fin done
