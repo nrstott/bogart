@@ -27,7 +27,7 @@ frontRouter.get('/login', function(req) {
 });
 
 var app = bogart.app();
-app.use(bogart.middleware.session());
+app.use(bogart.middleware.session({ secret: 'super-secret-do-not-share' }));
 app.use(bogart.middleware.flash());
 app.use(bogart.middleware.directory(path.join(__dirname, 'public')));
 app.use(frontRouter);
