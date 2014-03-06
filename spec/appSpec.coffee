@@ -24,6 +24,43 @@ describe 'bogart app', ->
     it 'should be defined', ->
       expect(app.injector).not.toBe(undefined)
 
+  describe 'App#resource', ->
+    resource = null
+    resourceCtor = null
+    app = null
+    middlewareShim = null
+    req = null
+    next = null
+    injector = null
+
+    beforeEach ->
+      resource =
+        router: jasmine.createSpy('router')
+
+      resourceCtor = (() -> resource)
+
+      injector =
+        invoke: jasmine.createSpy('Injector#invoke')
+
+      injector.invoke.andReturn(resource)
+
+      app = bogart.app()
+
+      spyOn(app.middleware, 'push').andCallFake (x) ->
+        middlewareShim = x
+
+      req =
+        pathInfo: '/'
+
+      next = jasmine.createSpy('next')
+
+      app.resource resourceCtor
+
+      middlewareShim(injector, req, next)
+
+    it 'should invoke resource constructor', ->
+      expect(injector.invoke).toHaveBeenCalledWith(resourceCtor)
+
   describe 'listen', ->
     req = null
     res = null
