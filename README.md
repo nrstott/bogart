@@ -34,7 +34,7 @@ router.get('/:name', function(req) {
 });
 
 var app = bogart.app();
-app.use(bogart.batteries); // A batteries included JSGI stack including streaming request body parsing, session, flash, and much more.
+app.use(bogart.batteries({ secret: 'do-not-share' })); // A batteries included JSGI stack including streaming request body parsing, session, flash, and much more.
 app.use(router); // Our router
 
 app.start();
@@ -400,8 +400,13 @@ router.get('/', function(req) {
 
 ## Using Session
 
-The session middleware can be included individually with `app.use(bogart.middleware.session)` or
-by using batteries `app.use(bogart.batteries)` which includes a default stack of JSGI middleware.
+The session middleware can be included individually with 
+`app.use(bogart.middleware.session({ secret: 'do-not-share' }))` or
+by using batteries `app.use(bogart.batteries({ secret: 'do-not-share' }))` 
+which includes a default stack of middleware including session.
+
+The `secret` parameter is the encryption secret. Do not use a secret from an example
+you find online, including in this document. Do not share your secret.
 
 A `session` function will be available on the request object passed to your route handlers. This
 function follows the jQuery style of arity determining if it is getting or setting a key/value pair.
