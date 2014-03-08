@@ -105,6 +105,8 @@ describe 'bogart app', ->
       app.get('/', callback)
 
       childInjector = jasmine.createSpyObj 'Child Injector', [ 'value', 'invoke' ]
+      childInjector.value.andReturn(childInjector)
+
       spyOn(app.injector, 'createChild').andReturn(childInjector)
 
       app.start()
@@ -113,11 +115,11 @@ describe 'bogart app', ->
     it 'should invoke with Injector#invoke', ->
       expect(childInjector.invoke).toHaveBeenCalledWith(app._router)
 
-    it 'should register next of undefined', ->
-      expect(childInjector.value).toHaveBeenCalledWith('next', undefined)
+    it 'should register next of `null`', ->
+      expect(childInjector.value).toHaveBeenCalledWith('next', null)
 
-    it 'should register nextApp of undefined', ->
-      expect(childInjector.value).toHaveBeenCalledWith('nextApp', undefined)
+    it 'should register nextApp of `null`', ->
+      expect(childInjector.value).toHaveBeenCalledWith('nextApp', null)
 
   describe 'given a router with no parameters', ->
 
