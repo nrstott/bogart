@@ -35,46 +35,67 @@ describe 'Router', ->
   it 'should have `emit` method', ->
     expect(router.emit).toBeFunction()
 
-describe 'invokes route callbacks with injector', ->
+describe 'invokes route callbacks', ->
   router = null
   injector = null
-  childInjector = null
   routeCallback = null
+  next = null
   res = null
 
   beforeEach ->
     req = MockRequest.root()
 
-    childInjector = createInjector req
-    spyOn(childInjector, 'invoke').andCallThrough()
+    next = jasmine.createSpy 'next'
 
     injector = createInjector req
-    spyOn(injector, 'createChild').andReturn(childInjector)
+    injector.value 'next', next
+    spyOn(injector, 'invoke').andCallThrough()
 
-    router = bogart.router()
-
-    routeCallback = (req) ->
+    routeCallback = ->
       bogart.html 'hello world'
 
+    router = bogart.router()
     router.get '/', routeCallback
 
     res = router injector
 
-  it 'should create child injector', (done) ->
+  it 'should invoke without a `next` in locals', (done) ->
     res
       .then ->
-        expect(injector.createChild).toHaveBeenCalled()
+        expect(injector.invoke).toHaveBeenCalledWith(jasmine.any(Function), null,
+          {})
       .fail (err) =>
         @fail err
       .fin done
 
-  it 'should call child injector invoke', (done) ->
-    res
-      .then ->
-        expect(childInjector.invoke).toHaveBeenCalledWith(routeCallback)
-      .fail (err) =>
-        @fail err
-      .fin done
+describe 'invokes multiple route callbacks', ->
+  router = null
+  injector = null
+  callbackA = null
+  callbackB = null
+  res = null
+
+  beforeEach (done) ->
+    req = MockRequest.root()
+
+    injector = createInjector req
+    spyOn(injector, 'invoke').andCallThrough()
+
+    callbackA = (next) ->
+      next()
+
+    callbackB = ->
+      bogart.text 'hello world'
+
+    router = bogart.router()
+    router.get '/', callbackA, callbackB
+
+    router(injector).then(((response) -> res = response))
+      .fail(@fail)
+      .fin(done)
+
+  it 'should have correct response', ->
+    expect(res)
 
 describe 'matches parameter', ->
   req = null
@@ -142,70 +163,6 @@ describe 'order of routes matching should be in order defined', ->
       expect(secondCalled).toBe false
       done()
 
-describe 'should call "not found callback"', ->
-  notFoundApp = null
-  router = null
-  res = null
-  called = false
-  notFoundRes = null
-
-  beforeEach ->
-    notFoundRes = { status: 404, body: [ '' ], headers: {} }
-
-    notFoundCallback = (req) ->
-      called = true
-      notFoundRes
-
-    router = bogart.router notFoundCallback
-
-    res = router createInjector(MockRequest.root())
-
-  it 'should have correct response', ->
-    expect(res).toBe notFoundRes
-
-  it 'should have called the not found app', ->
-    expect(called).toBe true
-      
-
-describe 'default notFoundApp behavior of returning 404', ->
-  res = null
-
-  beforeEach ->
-    router = bogart.router()
-
-    injector = createInjector(MockRequest.root())
-
-    res = router injector
-
-  it 'should have status of 404', ->
-    expect(res.status).toBe 404
-
-describe 'router.notFound', ->
-  notFoundCallback = null
-  req = null
-  res = null
-  router = null
-
-  beforeEach ->
-    notFoundCallback = jasmine.createSpy 'not found callback'
-
-    router = bogart.router()
-    router.notFound(notFoundCallback)
-
-    req = MockRequest.root()
-
-    injector = createInjector(req)
-
-    res = router injector
-
-  it 'should call notFound callback', (done) ->
-    q(res)
-      .then ->
-        expect(notFoundCallback).toHaveBeenCalled()
-      .fail (err) =>
-        @fail err
-      .fin done
-
 describe 'partially matched route', ->
   res = null
 
@@ -215,15 +172,13 @@ describe 'partially matched route', ->
     router.get '/partial-match', (req) ->
       { status: 200, body: [ 'hello' ], headers: {} }
 
-    res = router createInjector(new MockRequest('/partial-match/path'))
+    injector = createInjector(new MockRequest('/partial-match/path'))
+    injector.value('next', null)
 
-  it 'should have status of 404', (done) ->
-    q(res)
-      .then (res) ->
-        expect(res.status).toBe 404
-      .fail (err) =>
-        @fail err
-      .fin done
+    res = router injector
+
+  it 'should be undefined', ->
+    expect(res).toBeUndefined()
 
 describe 'partially matched route with parameter', ->
   res = null
@@ -233,15 +188,13 @@ describe 'partially matched route with parameter', ->
     router.get '/:foo', (req) ->
       return { status: 200, body: [ 'hello' ], headers: {} }
 
-    res = router createInjector(new MockRequest('/hello/world'))
+    injector = createInjector(new MockRequest('/hello/world'))
+    injector.value('next', null)
 
-  it 'should have status of 404', (done) ->
-    q(res)
-      .then (res) ->
-        expect(res.status).toBe 404
-      .fail (err) =>
-        @fail err
-      .fin done
+    res = router injector
+
+  it 'should be undefined', ->
+    expect(res).toBeUndefined()
 
 describe 'route with querystring', ->
   res = null
