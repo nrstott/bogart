@@ -6,3 +6,5 @@ hello-world.txt
 examples/
 *.lock
 _site/
+spec/
+
