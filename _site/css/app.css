@@ -1786,7 +1786,7 @@ body .row {
   }
 }
 #content {
-  margin-top: 50px;
+  padding-top: 50px;
 }
 h1 {
   display: inline-block;
