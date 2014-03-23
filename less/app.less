@@ -36,6 +36,8 @@ html, body {
   font-family: 'Ubuntu', Helvetica, Arial, sans-serif;
   color: @dark-text;
   font-size: 14px;
+  overflow-x: hidden;
+  width: 100%;
   
   .col-xs-offset-1 {
     float: none;
@@ -47,7 +49,8 @@ html, body {
 
   @media (min-width: @screen-sm-min) { 
     #content {
-      overflow: auto;
+      overflow-y: auto;
+      overflow-x: hidden;
       height: 100%;
     }
     .col-xs-offset-1 {
