@@ -1,0 +1,20 @@
+{
+  "name": "bogart-pages",
+  "version": "0.0.0",
+  "authors": [
+    "Duncan Smith <hello@duncanmsmith.com>"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.1.1",
+    "fastclick": "~1.0.0"
+  }
+}

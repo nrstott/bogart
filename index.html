@@ -1,0 +1,174 @@
+---
+layout: default
+---
+
+
+<h1 id="home">Bogart</h1><img src="img/bogart.png" alt="Bogart logo" class="logo">
+<h2>A Node.js Web Framework</h2>
+
+<p>Inspired by Ruby's Sinatra library, Bogart is a blazing fast, promise-based, "everything-you-wish-sucked-less-about-Express" Node JSGI framework.</p>
+
+<a class="cta hidden-xs" href="https://github.com/nrstott/bogart">Check out the GitHub repo &rarr;</a>
+<a class="cta visible-xs" href="#features">Why is Bogart awesome?</a>
+<hr>
+
+<h2 id="features">Features</h2>
+
+<ul>
+  <li><strong>Promise-based</strong> &mdash; No more callback hell</li>
+  <li><strong>Response helpers</strong> &mdash; JSON, HTML, File (Streaming!), CORS (JSON), 302 Redirect, and more</li>
+  <li><strong>Template rendering</strong> &mdash; Server-side templates with partial support</li>
+  <li><strong>Middleware support</strong></li>
+  <li><strong>Session support</strong></li>
+  <li><strong>OAuth support</strong> &mdash; Facebook and Google+ out of the box</li>
+  <li><strong>Static file support</strong> &mdash; Using the built-in Directory middleware</li>
+  <li><strong>Flash</strong> &mdash; Ruby-esque flash variables</li>
+  <li><strong>Parted</strong> &mdash; A streaming multipart, json, and urlencoded parser</li>
+  <li><strong>Imperative response builder</strong> &mdash; Easily construct your own JSGI responses</li>
+  <li><strong>MIT License</strong></li>
+</ul>
+
+<p>Coming soon:</p>
+<ul>
+  <li>Bluebird for promises (currently using Q)</li>
+  <li>Handlebars as default templating engine (currently using Mustache)</li>
+  <li>Twitter OAuth support out of the box</li>
+</ul>
+
+<p>Full documentation is available <a href="https://github.com/nrstott/bogart">on GitHub</a>.</p>
+
+<hr>
+
+<h2 id="getting-started">Getting Started</h2>
+
+<p>Install it with npm: <kbd>npm install bogart</kbd></p>
+
+
+<p>Then start with the following file:</p>
+
+<pre><code class="language-javascript">
+  var bogart = require('bogart');
+  var router = bogart.router();
+
+  router.get('/', function (req) { 
+    return "Hello Bogart"; 
+  });
+
+  var app = bogart.app();
+
+  // A batteries included JSGI stack including streaming request body parsing, session, flash, and much more.
+  app.use(bogart.batteries); 
+
+  // Our router
+  app.use(router);
+
+  // Here's lookin' at you, kid
+  app.start(1337);  
+</code></pre>
+
+<p>Fire up your browser and head to <a href="http://localhost:1337">http://localhost:1337</a>.</p>
+
+<hr>
+
+<h2 id="routing">Routing</h2>
+
+<p>Routing follows the major patterns for Sinatra-style frameworks:</p>
+<pre><code class="language-javascript">
+  router.get('/hello/:name', function (req) {
+    var greeting = 'Hello ' + req.params.name;
+    return bogart.html(greeting);
+  });
+</code></pre>
+
+<p>Route patterns support wildcards. Wildcards will match anything whereas regular named parameters will not match beyond a path separator ("/").</p>
+<pre><code class="language-javascript">
+  router.get('/hello/*', function (req) {
+    return bogart.html('Hello ' + req.params.splat[0]);
+  });
+</code></pre>
+
+<p>The router also supports regex:</p>
+<pre><code class="language-javascript">
+  router.get(/\/posts?/, function () {
+    // Matches 'post' or 'posts'
+    return bogart.html('Regex Route');
+  });
+
+  // Regex routes also support splat
+  router.get(/hello-(.*)/, function (req) {
+    var name = req.params.splat[0];
+    return bogart.html('Hello ' + name);
+  });
+</code></pre>
+
+<hr>
+
+<h2 id="middleware">Middleware</h2>
+
+<p>Middleware logic is executed before a request is passed to a route handler.</p>
+
+<p>Bogart comes with batteries, and you can include them like this:</p>
+<pre><code class="language-javascript">
+  app.use(bogart.batteries);
+
+  // Include the router after the middleware
+  app.use(router);
+  app.start();
+</code></pre>
+
+
+<p>Writing your own middleware is easy, just create a function that returns the transformation function.</p>
+<pre><code class="language-javascript">
+  var exampleMiddleware = function (nextApp) {
+    return function (req) {
+      // Middleware logic goes here
+      req.user = {username: 'notduncansmith'};
+
+      // Pass the request along when you're done
+      return nextApp(req);
+    }   
+  }
+
+  // Include it like this
+  app.use(exampleMiddleware);
+</code></pre>
+
+<hr>
+
+<h2 id="jsgi">JSGI <small>JavaScript Gateway Interface</small></h2>
+
+<p>Bogart sits on top of <a href="http://jackjs.org/jsgi-spec.html">JSGI</a>, similar to Ruby's Rack or Python's WSGI. Bogart makes it easy to create JSGI Applications and Middleware. Bogart is a high-level wrapper around JSGI.</p>
+
+<p>Valid JSGI responses are always valid returns from Bogart. Bogart, via its helpful Middleware, also allows you to return Node.JS Streams, Node.JS Buffers, and JavaScript Strings as responses that will be translated into valid JSGI responses.</p>
+
+<p>Bogart also provides helper functions to make creating JSGI responses easier. Prime examples of this are <kbd>bogart.file</kbd> which returns a JSGI response that serves a file and bogart.proxy which returns a response that proxies another URL.</p>
+
+<hr>
+
+<h2 id="contributors">Contributors</h2>
+
+<p>A million thanks to the people that help make Bogart:</p>
+
+<ul>
+  <li>
+    <a href="https://github.com/nrstott">Nathan Stott</a>
+  </li>
+  <li>
+    <a href="https://github.com/fitzgen">Nick Fitzgerald</a>
+  </li>
+  <li>
+    <a href="https://github.com/soitgoes">Martin Murphy</a>
+  </li>
+  <li>
+    <a href="">Davis Clark</a>
+  </li>
+  <li>
+    <a href="https://github.com/aaronshaf">Aaron Shafovaloff</a>
+  </li>
+  <li>
+    <a href="https://github.com/lpatters">Lewis Patterson</a>
+  </li>
+  <li>
+    <a href="https://github.com/notduncansmith">Duncan Smith</a>
+  </li>
+</ul>

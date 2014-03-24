@@ -1,1 +1,7 @@
-baseurl: /bogart
+exclude: [ 'node_modules',
+           'bower_components',
+           'less',
+           'package.json',
+           'bower.json',
+           'README.md',
+           'gulpfile.js' ]

@@ -1,0 +1,42 @@
+h1,h2,h3 {
+  font-family: @title-font;
+}
+
+h1 {
+  font-size: 5rem;
+  font-weight: 700;
+}
+
+h2 {
+  color: @light-text;
+  font-size: 3rem;
+}
+
+p,span,a,code,pre {
+  font-family: @body-font;
+}
+
+p {
+  margin-top: 20px;
+}
+
+a {
+  color: @light-text;
+  &:hover {
+    color: darken(@light-text, 10%);
+    text-decoration: underline;
+  }
+
+  &.cta {
+    font-family: @title-font;
+    margin-top: 30px;
+    font-size: 1.5rem;
+    color: @cta-text;
+    text-align: center;
+    display: block;
+    &:hover {
+      color: darken(@cta-text, 10%);
+      text-decoration: none;
+    }
+  }
+}
