@@ -679,6 +679,8 @@ returns a JSGI response that serves a file and `bogart.proxy` which returns a re
 * [Davis Clark](https://github.com/jdc0589)
 * [Aaron Shafovaloff](https://github.com/aaronshaf)
 * [Lewis Patterson](https://github.com/lpatters)
+* [William Skinner](https://github.com/weskinner)
+* [Duncan Smith](https://github.com/notduncansmith)
 
 ## License
 
