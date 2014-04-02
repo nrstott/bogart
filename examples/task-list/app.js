@@ -33,10 +33,6 @@ router.post("/", function(req) {
   if (!task.name || task.name.trim() === "") {
     errors.push("name is required");
   }
-
-  if (task.name && task.name.trim().indexOf(' ') !== -1) {
-    errors.push('Task name may not have spaces');
-  }
   
   // PRG pattern http://en.wikipedia.org/wiki/Post/Redirect/Get
   if (errors.length > 0) {
