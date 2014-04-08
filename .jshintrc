@@ -2,5 +2,6 @@
   "node": true,
   "indent": 2,
   "laxcomma": true,
-  "multistr": true
+  "multistr": true,
+  "quotmark": true
 }
