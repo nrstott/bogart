@@ -1,0 +1,6 @@
+{
+  "node": true,
+  "indent": 2,
+  "laxcomma": true,
+  "multistr": true
+}
