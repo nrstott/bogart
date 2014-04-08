@@ -4,5 +4,7 @@
   "laxcomma": true,
   "multistr": true,
   "quotmark": true,
-  "undef": true
+  "undef": true,
+  "trailing": true,
+  "maxlen": 120
 }
