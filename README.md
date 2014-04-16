@@ -147,7 +147,7 @@ To handle HTTP Verbs other than `get`, `post`, `put`, and `delete`, the `route` 
 
 ```javascript
 var router = bogart.router();
-router.route('options', function (req) {
+router.route('options', '/', function (req) {
   // Logic for handling the request goes here.
 });
 ```
