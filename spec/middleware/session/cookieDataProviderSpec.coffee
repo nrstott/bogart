@@ -88,7 +88,7 @@ describe 'Cookie Data Provider', ->
           cookie = res.headers['Set-Cookie'][0]
           parts = cookie.split(';')
           val = parts[0].split('=')[1]
-          expect(val).toEqual('')
+          expect(val).toEqual(encodeURIComponent(JSON.stringify({})))
         .fail (err) =>
           @fail err
         .fin done
