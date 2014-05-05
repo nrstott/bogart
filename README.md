@@ -147,7 +147,7 @@ To handle HTTP Verbs other than `get`, `post`, `put`, and `delete`, the `route` 
 
 ```javascript
 var router = bogart.router();
-router.route('options', function (req) {
+router.route('options', '/', function (req) {
   // Logic for handling the request goes here.
 });
 ```
@@ -679,7 +679,9 @@ returns a JSGI response that serves a file and `bogart.proxy` which returns a re
 * [Davis Clark](https://github.com/jdc0589)
 * [Aaron Shafovaloff](https://github.com/aaronshaf)
 * [Lewis Patterson](https://github.com/lpatters)
-
+* [William Skinner](https://github.com/weskinner)
+* [Duncan Smith](https://github.com/notduncansmith)
+* [Madison Sharps](https://github.com/mcsharps)
 ## License
 
 Copyright (c) 2009 Nathan Stott <[nathan.whiteboard-it.com](http://nathan.whiteboard-it.com/)\>

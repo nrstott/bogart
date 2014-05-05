@@ -4,3 +4,6 @@ npm-debug.log
 hello-world.dat
 hello-world.txt
 examples/
+_site/
+spec/
+

@@ -1,7 +1,7 @@
 {
     "name": "bogart",
     "description": "Fast JSGI web framework taking inspiration from Sinatra",
-    "version": "0.5.16",
+    "version": "0.5.22",
     "keywords": ["bogart", "framework", "sinatra", "REST"],
     "author": "Nathan Stott <nrstott@gmail.com>",
     "email": "nathan.stott@whiteboard-it.com",
@@ -22,7 +22,7 @@
     	"mustache": "0.7.2",
       "underscore": ">=1.4.4",
       "node-uuid": ">=1.2.0",
-      "parted": "=0.0.8",
+      "parted": "=0.1.1",
       "oauth": "=0.9.5",
       "request": "=2.2.9",
       "commander": "*",

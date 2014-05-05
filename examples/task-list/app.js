@@ -33,10 +33,6 @@ router.post("/", function(req) {
   if (!task.name || task.name.trim() === "") {
     errors.push("name is required");
   }
-
-  if (task.name && task.name.trim().indexOf(' ') !== -1) {
-    errors.push('Task name may not have spaces');
-  }
   
   // PRG pattern http://en.wikipedia.org/wiki/Post/Redirect/Get
   if (errors.length > 0) {
@@ -60,7 +56,11 @@ router.del("/:name", function(req) {
 var app = bogart.app();
 
 // Frameworks are better when batteries are included. Put the batteries into this app!
-app.use(bogart.batteries);
+app.use(bogart.batteries, {
+	session: {
+		secret: "some secret key.."
+	}
+});
 
 // Add our router to the app.  NOTE: It is important to add batteries first.
 app.use(router);

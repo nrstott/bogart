@@ -48,3 +48,47 @@ describe 'Cookie Data Provider', ->
       q.when session, (session) ->
         expect(session).toEqual JSON.parse(decryptedSessionData)
         done()
+
+  describe 'destroy session', ->
+    res = null
+    sessionId = null
+    encrypt = null
+
+    beforeEach ->
+      sessionId = '--some-session-id--'
+
+      encrypt = jasmine.createSpy 'encrypt'
+      encrypt.andCallFake (sessionId, secret) ->
+        sessionId
+
+      cookieDataProvider = new CookieDataProvider
+        secret: 'VERY_SECRET',
+        encrypt: encrypt
+
+      req = new JsgiRequest('/', 'get', { cookie: '' })
+      req.env =
+        session:
+          foo: 'bar'
+          bar: 'baz'
+
+      res = { headers: {} }
+      res = cookieDataProvider.destroy(req, res, sessionId)
+
+    it 'should call encrypt', (done) ->
+      q(res)
+        .then ->
+          expect(encrypt).toHaveBeenCalled()
+        .fail (err) =>
+          @fail err
+        .fin done
+
+    it 'should have empty session cookie', (done) ->
+      q(res)
+        .then (res) ->
+          cookie = res.headers['Set-Cookie'][0]
+          parts = cookie.split(';')
+          val = parts[0].split('=')[1]
+          expect(val).toEqual(encodeURIComponent(JSON.stringify({})))
+        .fail (err) =>
+          @fail err
+        .fin done
