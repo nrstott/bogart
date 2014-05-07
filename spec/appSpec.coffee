@@ -244,3 +244,22 @@ describe 'bogart app', ->
     it 'should have been started with correct JSGI Options', ->
       expect(bogart.start).toHaveBeenCalledWith jasmine.any(Function), jsgiOpts
 
+  describe 'setting', ->
+    beforeEach ->
+      @key = 'hello world'
+      @val = 'hi there'
+
+      @app = bogart.app()
+
+      spyOn(@app, 'emit').andCallThrough()
+
+      @app.setting @key, @val
+
+    it 'should find value', ->
+      expect(@app.setting @key).toBe(@val)
+
+    it 'should emit change notification', ->
+      expect(@app.emit).toHaveBeenCalledWith('settingChange', {
+        key: @key,
+        value: @val
+      })
