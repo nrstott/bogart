@@ -247,9 +247,11 @@ describe 'bogart app', ->
   describe 'setting', ->
     beforeEach ->
       @key = 'hello world'
+      @oldVal = 'old'
       @val = 'hi there'
 
       @app = bogart.app()
+      @app._settings[@key] = @oldVal
 
       spyOn(@app, 'emit').andCallThrough()
 
@@ -259,7 +261,5 @@ describe 'bogart app', ->
       expect(@app.setting @key).toBe(@val)
 
     it 'should emit change notification', ->
-      expect(@app.emit).toHaveBeenCalledWith('settingChange', {
-        key: @key,
-        value: @val
-      })
+      expect(@app.emit).toHaveBeenCalledWith('settingChange', 
+        @key, @val, @oldVal)
