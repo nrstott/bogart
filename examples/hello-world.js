@@ -10,7 +10,7 @@ router.get('/:name', function(req) {
 });
 
 var app = bogart.app();
-app.use(bogart.batteries);
+app.use(bogart.batteries({ secret: 'my-secret' }));
 app.use(router);
 
 app.start();
