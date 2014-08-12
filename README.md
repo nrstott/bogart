@@ -682,6 +682,7 @@ returns a JSGI response that serves a file and `bogart.proxy` which returns a re
 * [William Skinner](https://github.com/weskinner)
 * [Duncan Smith](https://github.com/notduncansmith)
 * [Madison Sharps](https://github.com/mcsharps)
+* [Phillip Schmidt](https://github.com/pjschmidt3)
 ## License
 
 Copyright (c) 2009 Nathan Stott <[nathan.whiteboard-it.com](http://nathan.whiteboard-it.com/)\>
