@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "q": "0.9.6",
-    "jsgi": "notduncansmith/jsgi-node",
+    "jsgi": "notduncansmith/jsgi-node#patch-1",
     "mustache": "0.7.2",
     "underscore": ">=1.4.4",
     "node-uuid": ">=1.2.0",
