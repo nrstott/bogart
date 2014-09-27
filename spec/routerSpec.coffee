@@ -23,18 +23,6 @@ createInjector = (req) ->
   injector.value('req', req)
   injector
 
-describe 'Router', ->
-  router = null
-
-  beforeEach ->
-    router = bogart.router()
-
-  it 'should have `on` method', ->
-    expect(router.on).toBeFunction()
-
-  it 'should have `emit` method', ->
-    expect(router.emit).toBeFunction()
-
 describe 'invokes route callbacks', ->
   router = null
   injector = null
