@@ -13,14 +13,19 @@ describe 'json', ->
   describe 'given object', ->
     res = null
     obj = null
+    etag = "298fjsdkf"
 
     beforeEach ->
       obj = { hello: 'world' }
+      opts = { headers: {ETag:etag} }
 
-      res = bogart.json obj
+      res = bogart.json obj, opts
 
     it 'should have correct body', ->
       expect(res.body.join()).toBe JSON.stringify(obj)
+
+    it 'should add any additional headers', ->
+      expect(res.headers["ETag"]).toBe etag
 
 
 describe 'cors', ->
