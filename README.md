@@ -34,7 +34,7 @@ router.get('/:name', function(req) {
 });
 
 var app = bogart.app();
-app.use(bogart.batteries); // A batteries included JSGI stack including streaming request body parsing, session, flash, and much more.
+app.use(bogart.batteries({secret: "myBogartSecretChangeThis"})); // A batteries included JSGI stack including streaming request body parsing, session, flash, and much more. secret needs to be included to run and must be changed don't use this default.
 app.use(router); // Our router
 
 app.start();
