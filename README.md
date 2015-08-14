@@ -34,7 +34,7 @@ router.get('/:name', function(req) {
 });
 
 var app = bogart.app();
-app.use(bogart.batteries); // A batteries included JSGI stack including streaming request body parsing, session, flash, and much more.
+app.use(bogart.batteries({secret: "my-super-secret"})); // A batteries included JSGI stack including streaming request body parsing, session, flash, and much more.
 app.use(router); // Our router
 
 app.start();
@@ -159,7 +159,7 @@ router.route('options', '/', function (req) {
 
 ```javascript
 var app = bogart.app();
-app.use(bogart.batteries);
+app.use(bogart.batteries({ secret: "my-super-secret" });
 ```
 
 After adding `bogart.batteries`, you will normally want to add a Router. This is also done
@@ -167,7 +167,7 @@ with `app.use`. To start the application, use the `start` method.
 
 ```javascript
 var app = bogart.app();
-app.use(bogart.batteries);
+app.use(bogart.batteries({ secret: "my-super-secret" }));
 
 var router = bogart.router();
 // NOTE: Here you would normally add some routes.
