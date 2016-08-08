@@ -514,10 +514,10 @@ describe 'string return adapter', ->
     str = 'This is a message'
     req = mockRequest.root()
 
-    stringReturnAdapterApp = bogart.middleware.stringReturnAdapter ->
-      str
+    stringReturnAdapterApp = bogart.middleware.stringReturnAdapter()
 
-    res = stringReturnAdapterApp req
+    res = stringReturnAdapterApp req, ->
+      str
 
   it 'should have correct body', (done) ->
     q.when res, (res) ->
