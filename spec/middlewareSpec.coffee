@@ -124,10 +124,10 @@ describe 'gzip', ->
     headers = { 'content-type': 'text/html', 'accept-encoding': 'gzip' }
     jsgiRequest = { method: 'post', env: {}, headers: headers, body: [] }
 
-    gzipMiddleware = bogart.middleware.gzip (req) ->
-      bogart.html 'Hello World'
+    gzipMiddleware = bogart.middleware.gzip() 
 
-    res = gzipMiddleware jsgiRequest
+    res = gzipMiddleware jsgiRequest, (req) ->
+      bogart.html 'Hello World'
 
   it 'should have response body', (done) ->
     q.when(res, (res) ->
