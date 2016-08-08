@@ -1,7 +1,7 @@
 {
-  "name": "bogart",
+  "name": "bogart-edge",
   "description": "Fast JSGI web framework taking inspiration from Sinatra",
-  "version": "0.7.3",
+  "version": "0.7.5",
   "keywords": [
     "bogart",
     "framework",
