@@ -124,10 +124,10 @@ describe 'gzip', ->
     headers = { 'content-type': 'text/html', 'accept-encoding': 'gzip' }
     jsgiRequest = { method: 'post', env: {}, headers: headers, body: [] }
 
-    gzipMiddleware = bogart.middleware.gzip (req) ->
-      bogart.html 'Hello World'
+    gzipMiddleware = bogart.middleware.gzip() 
 
-    res = gzipMiddleware jsgiRequest
+    res = gzipMiddleware jsgiRequest, (req) ->
+      bogart.html 'Hello World'
 
   it 'should have response body', (done) ->
     q.when(res, (res) ->
@@ -514,10 +514,10 @@ describe 'string return adapter', ->
     str = 'This is a message'
     req = mockRequest.root()
 
-    stringReturnAdapterApp = bogart.middleware.stringReturnAdapter ->
-      str
+    stringReturnAdapterApp = bogart.middleware.stringReturnAdapter()
 
-    res = stringReturnAdapterApp req
+    res = stringReturnAdapterApp req, ->
+      str
 
   it 'should have correct body', (done) ->
     q.when res, (res) ->

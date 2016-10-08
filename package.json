@@ -1,7 +1,7 @@
 {
-  "name": "bogart",
+  "name": "bogart-edge",
   "description": "Fast JSGI web framework taking inspiration from Sinatra",
-  "version": "0.7.3",
+  "version": "0.7.12",
   "keywords": [
     "bogart",
     "framework",
@@ -24,8 +24,8 @@
     "email": "nrstott@gmail.com"
   },
   "dependencies": {
-    "q": ">0.9.6",
-    "jsgi": "notduncansmith/jsgi-node#patch-1",
+    "q": "0.9.6",
+    "jsgi": "1.0.0",
     "mustache": "0.7.2",
     "underscore": ">=1.4.4",
     "node-uuid": ">=1.2.0",
@@ -34,8 +34,8 @@
     "request": ">2.2.9",
     "commander": "*",
     "mkdirp": "*",
-    "sinon": ">1.5.2",
-    "bogart-injector": "~0.2.0",
+    "sinon": "1.5.2",
+    "bogart-injector": "^1.1.1",
     "negotiator": "~0.4.1",
     "inflect": "~0.3.0"
   },
