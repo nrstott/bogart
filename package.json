@@ -24,17 +24,17 @@
     "email": "nrstott@gmail.com"
   },
   "dependencies": {
-    "q": "0.9.6",
+    "q": ">0.9.6",
     "jsgi": "notduncansmith/jsgi-node#patch-1",
     "mustache": "0.7.2",
     "underscore": ">=1.4.4",
     "node-uuid": ">=1.2.0",
     "parted": "git://github.com/soitgoes/parted.git#v0.1.3",
     "oauth": "=0.9.5",
-    "request": "=2.2.9",
+    "request": ">2.2.9",
     "commander": "*",
     "mkdirp": "*",
-    "sinon": "1.5.2",
+    "sinon": ">1.5.2",
     "bogart-injector": "~0.2.0",
     "negotiator": "~0.4.1",
     "inflect": "~0.3.0"
