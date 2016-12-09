@@ -1,4 +1,5 @@
 require('jasmine-expect')
+XRegExp = require('xregexp')
 bogart = require '../lib/bogart'
 MockRequest = require './helpers/JsgiRequestHelper'
 Router = (require '../lib/router').Router
@@ -122,6 +123,27 @@ describe 'matches parameter', ->
         @fail err
       .fin done
 
+describe 'should supported named xregexp parameters', ->
+  res = null
+  controller = null
+  action = null
+
+  beforeEach -> 
+    router = bogart.router()
+    router.get new XRegExp('\/(?<controller>.*?)\/(?<action>.*?)$'), (req) ->
+      controller = req.params.controller
+      action = req.params.action
+
+    injector = createInjector(new MockRequest('/product/list'))
+    injector.value('next', null)
+    res = router injector
+
+  it 'should inject values into params', (done) ->
+    q.when res, ->
+      expect(controller).toBe 'product'
+      expect(action).toBe 'list'
+      done()
+
 describe 'order of routes matching should be in order defined', ->
   router = null
   res = null
@@ -167,6 +189,8 @@ describe 'partially matched route', ->
 
   it 'should be undefined', ->
     expect(res).toBeUndefined()
+
+
 
 describe 'partially matched route with parameter', ->
   res = null

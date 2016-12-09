@@ -37,7 +37,8 @@
     "sinon": "1.5.2",
     "bogart-injector": "^1.1.1",
     "negotiator": "~0.4.1",
-    "inflect": "~0.3.0"
+    "inflect": "~0.3.0",
+    "xregexp": "^3.1.1"
   },
   "devDependencies": {
     "haml": ">=0.4.2",
